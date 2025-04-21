@@ -17,49 +17,84 @@ export function ScrapingProgress() {
   const { toast } = useToast();
   const [progress, setProgress] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [currentSource, setCurrentSource] = useState('');
 
   const startScraping = async () => {
     setIsRunning(true);
     setProgress(0);
+    
+    let successCount = 0;
+    const totalSources = FUNDING_SOURCES.length;
 
-    for (let i = 0; i < FUNDING_SOURCES.length; i++) {
-      const source = FUNDING_SOURCES[i];
+    for (const source of FUNDING_SOURCES) {
       try {
-        await scrapeFundingSource(source.url);
-        setProgress(((i + 1) / FUNDING_SOURCES.length) * 100);
+        setCurrentSource(source.name);
+        console.log(`Starting to scrape ${source.name}...`);
         
-        toast({
-          title: `${source.name} successfully scraped`,
-          description: "Data has been added to the database",
-        });
+        const result = await scrapeFundingSource(source.url);
+        
+        if (result.success) {
+          successCount++;
+          toast({
+            title: `${source.name} erfolgreich gescraped`,
+            description: `${result.data?.length || 0} Förderungen gefunden`,
+          });
+        } else {
+          toast({
+            title: `Fehler beim Scrapen von ${source.name}`,
+            description: result.error,
+            variant: "destructive",
+          });
+        }
       } catch (error) {
         console.error(`Error scraping ${source.name}:`, error);
         toast({
-          title: `Error scraping ${source.name}`,
+          title: `Fehler beim Scrapen von ${source.name}`,
           description: error.message,
           variant: "destructive",
         });
+      } finally {
+        setProgress((successCount / totalSources) * 100);
       }
     }
 
     setIsRunning(false);
+    setCurrentSource('');
+    
+    toast({
+      title: "Scraping abgeschlossen",
+      description: `${successCount} von ${totalSources} Quellen erfolgreich verarbeitet`,
+    });
   };
 
   return (
     <div className="space-y-4 p-4">
-      <h2 className="text-xl font-bold">Funding Data Collection</h2>
+      <h2 className="text-xl font-bold">Förderungs-Daten Sammlung</h2>
       <div className="space-y-2">
         <Progress value={progress} className="w-full" />
         <p className="text-sm text-gray-500">
-          Progress: {Math.round(progress)}%
+          Fortschritt: {Math.round(progress)}%
+          {currentSource && ` - Verarbeite: ${currentSource}`}
         </p>
       </div>
       <Button 
         onClick={startScraping} 
         disabled={isRunning}
+        className="w-full"
       >
-        {isRunning ? 'Scraping...' : 'Start Scraping'}
+        {isRunning ? 'Scraping läuft...' : 'Scraping starten'}
       </Button>
+      
+      <div className="mt-4">
+        <h3 className="font-semibold mb-2">Zu scrapende Quellen:</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          {FUNDING_SOURCES.map((source) => (
+            <li key={source.url} className="text-sm">
+              {source.name}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
