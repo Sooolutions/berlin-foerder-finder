@@ -1,21 +1,21 @@
 
 import { Input } from "@/components/ui/input";
 
-interface AgeStepProps {
+interface IncomeStepProps {
   value: number | null;
   onChange: (value: number | null) => void;
 }
 
-const AgeStep = ({ value, onChange }: AgeStepProps) => {
+const IncomeStep = ({ value, onChange }: IncomeStepProps) => {
   return (
     <div className="space-y-6 animate-fade-in">
       <h3 className="text-3xl font-medium text-center mb-8">
-        Wie alt sind Sie?
+        Wie hoch ist Ihr jährliches Bruttoeinkommen?
       </h3>
       <Input
         type="number"
-        id="age"
-        placeholder="Alter eingeben"
+        id="income"
+        placeholder="Jahreseinkommen in Euro"
         className="w-full max-w-md mx-auto text-lg"
         value={value || ""}
         onChange={(e) => onChange(parseInt(e.target.value) || null)}
@@ -24,4 +24,4 @@ const AgeStep = ({ value, onChange }: AgeStepProps) => {
   );
 };
 
-export default AgeStep;
+export default IncomeStep;

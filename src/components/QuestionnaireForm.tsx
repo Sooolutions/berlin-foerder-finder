@@ -3,7 +3,15 @@ import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import StepProgress from "./questionnaire/StepProgress";
 import AgeStep from "./questionnaire/steps/AgeStep";
 import DistrictStep from "./questionnaire/steps/DistrictStep";
+import IncomeStep from "./questionnaire/steps/IncomeStep";
+import MaritalStatusStep from "./questionnaire/steps/MaritalStatusStep";
 import QuestionnaireNav from "./questionnaire/steps/QuestionnaireNav";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { berlinDistricts, educationLevels, employmentStatus, interestAreas } from "@/data/mockData";
 
 const QuestionnaireForm = () => {
   const navigate = useNavigate();
@@ -43,40 +51,17 @@ const QuestionnaireForm = () => {
         );
       case 3:
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Wie hoch ist Ihr jährliches Bruttoeinkommen?</h3>
-            <Input
-              type="number"
-              id="income"
-              placeholder="Jahreseinkommen in Euro"
-              className="w-full"
-              value={answers.income || ""}
-              onChange={(e) => updateAnswers("income", parseInt(e.target.value) || null)}
-            />
-          </div>
+          <IncomeStep
+            value={answers.income}
+            onChange={(value) => updateAnswers("income", value)}
+          />
         );
       case 4:
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Was ist Ihr Familienstand?</h3>
-            <RadioGroup
-              value={answers.maritalStatus || ""}
-              onValueChange={(value) => updateAnswers("maritalStatus", value as 'single' | 'married' | 'partnered')}
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="single" id="single" />
-                <Label htmlFor="single">Ledig</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="married" id="married" />
-                <Label htmlFor="married">Verheiratet</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="partnered" id="partnered" />
-                <Label htmlFor="partnered">In Partnerschaft</Label>
-              </div>
-            </RadioGroup>
-          </div>
+          <MaritalStatusStep
+            value={answers.maritalStatus}
+            onChange={(value) => updateAnswers("maritalStatus", value)}
+          />
         );
       case 5:
         return (
@@ -172,10 +157,12 @@ const QuestionnaireForm = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
-      <div className="p-6">
+    <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
+      <div className="p-8">
         <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
-        {renderStepContent()}
+        <div className="min-h-[400px] flex items-center justify-center py-8">
+          {renderStepContent()}
+        </div>
         <QuestionnaireNav
           onPrevious={goToPreviousStep}
           onNext={handleNext}
