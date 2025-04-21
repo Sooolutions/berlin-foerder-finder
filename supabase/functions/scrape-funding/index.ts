@@ -1,7 +1,8 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import FirecrawlApp from '@mendable/firecrawl-js';
+// Import Firecrawl from a URL instead of a package name
+import FirecrawlApp from 'https://esm.sh/@mendable/firecrawl-js@latest';
 
 const ALLOWED_URLS = [
   'https://daten.berlin.de',
@@ -48,19 +49,9 @@ serve(async (req) => {
       throw new Error(crawlResponse.error || 'Crawl failed');
     }
 
-    // Process and store the results in Supabase
-    const { data: { supabaseClient } } = await req.json();
-    const processedData = processFundingData(crawlResponse.data);
+    // Process the raw data into our funding format
+    const processedData = processFundingData(crawlResponse.data || []);
     
-    // Insert the processed data into the funding table
-    const { error: insertError } = await supabaseClient
-      .from('funding')
-      .insert(processedData);
-
-    if (insertError) {
-      throw insertError;
-    }
-
     return new Response(JSON.stringify({ success: true, data: processedData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -107,7 +98,29 @@ function inferCategories(item: any): string[] {
   if (content.includes('arbeit') || content.includes('beruf')) {
     categories.add('Arbeit');
   }
-  // Add more category inference logic as needed
+  if (content.includes('wohnen') || content.includes('miet')) {
+    categories.add('Wohnen');
+  }
+  if (content.includes('familie') || content.includes('kind')) {
+    categories.add('Familie');
+  }
+  if (content.includes('gesundheit') || content.includes('krankheit')) {
+    categories.add('Gesundheit');
+  }
+  if (content.includes('integration') || content.includes('migration')) {
+    categories.add('Integration');
+  }
+  if (content.includes('kultur') || content.includes('kunst')) {
+    categories.add('Kultur');
+  }
+  if (content.includes('sozial')) {
+    categories.add('Soziales');
+  }
+  
+  // Ensure we return at least one category
+  if (categories.size === 0) {
+    categories.add('Soziales');
+  }
   
   return Array.from(categories);
 }
@@ -118,9 +131,12 @@ function generateTags(item: any): string[] {
   const content = (item.content || '').toLowerCase();
   
   // Add tags based on content analysis
-  // This should be enhanced based on actual data patterns
   if (content.includes('förderung')) tags.add('Förderung');
   if (content.includes('zuschuss')) tags.add('Zuschuss');
+  if (content.includes('darlehen')) tags.add('Darlehen');
+  if (content.includes('antrag')) tags.add('Antragspflichtig');
+  if (content.includes('beratung')) tags.add('Beratung');
+  if (content.includes('beihilfe')) tags.add('Beihilfe');
   
   return Array.from(tags);
 }
