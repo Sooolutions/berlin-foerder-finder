@@ -1,15 +1,9 @@
-
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
-import { berlinDistricts, educationLevels, employmentStatus, interestAreas } from "@/data/mockData";
+import StepProgress from "./questionnaire/StepProgress";
+import AgeStep from "./questionnaire/steps/AgeStep";
+import DistrictStep from "./questionnaire/steps/DistrictStep";
+import QuestionnaireNav from "./questionnaire/steps/QuestionnaireNav";
 
 const QuestionnaireForm = () => {
   const navigate = useNavigate();
@@ -23,8 +17,6 @@ const QuestionnaireForm = () => {
     totalSteps
   } = useQuestionnaire();
 
-  const progressPercentage = (currentStep / totalSteps) * 100;
-
   const handleNext = () => {
     if (isLastStep) {
       navigate("/results");
@@ -37,38 +29,17 @@ const QuestionnaireForm = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Wie alt sind Sie?</h3>
-            <Input
-              type="number"
-              id="age"
-              placeholder="Alter eingeben"
-              className="w-full"
-              value={answers.age || ""}
-              onChange={(e) => updateAnswers("age", parseInt(e.target.value) || null)}
-            />
-          </div>
+          <AgeStep 
+            value={answers.age}
+            onChange={(value) => updateAnswers("age", value)}
+          />
         );
       case 2:
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">In welchem Bezirk wohnen Sie?</h3>
-            <Select
-              value={answers.district || ""}
-              onValueChange={(value) => updateAnswers("district", value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Bezirk auswählen" />
-              </SelectTrigger>
-              <SelectContent>
-                {berlinDistricts.map((district) => (
-                  <SelectItem key={district} value={district}>
-                    {district}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <DistrictStep
+            value={answers.district}
+            onChange={(value) => updateAnswers("district", value)}
+          />
         );
       case 3:
         return (
@@ -203,28 +174,14 @@ const QuestionnaireForm = () => {
   return (
     <div className="max-w-xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
       <div className="p-6">
-        <div className="mb-6">
-          <div className="flex justify-between text-sm text-gray-500 mb-1">
-            <span>Schritt {currentStep} von {totalSteps}</span>
-            <span>{Math.round(progressPercentage)}%</span>
-          </div>
-          <Progress value={progressPercentage} className="h-2" />
-        </div>
-
+        <StepProgress currentStep={currentStep} totalSteps={totalSteps} />
         {renderStepContent()}
-
-        <div className="flex justify-between mt-8">
-          <Button
-            variant="outline"
-            onClick={goToPreviousStep}
-            disabled={currentStep === 1}
-          >
-            Zurück
-          </Button>
-          <Button onClick={handleNext}>
-            {isLastStep ? "Ergebnisse anzeigen" : "Weiter"}
-          </Button>
-        </div>
+        <QuestionnaireNav
+          onPrevious={goToPreviousStep}
+          onNext={handleNext}
+          isFirstStep={currentStep === 1}
+          isLastStep={isLastStep}
+        />
       </div>
     </div>
   );
