@@ -5,98 +5,114 @@ import Footer from "@/components/Footer";
 import QuestionnaireForm from "@/components/QuestionnaireForm";
 import { Button } from "@/components/ui/button";
 import { QuestionnaireProvider } from "@/context/QuestionnaireContext";
+import { ArrowDown } from "lucide-react";
 
 const Index = () => {
   const [startQuestionnaire, setStartQuestionnaire] = useState(false);
+
+  const scrollToInfo = () => {
+    document.getElementById('info-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-grow container mx-auto px-4 py-12">
-        {!startQuestionnaire ? (
+      <main className="flex-grow">
+        <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-6 text-berlin-blue">
+            <h1 className="text-5xl font-bold mb-6 text-primary animate-fade-in-up">
               Berliner Förderungs-Matcher
             </h1>
-            <p className="text-xl mb-8">
+            <p className="text-xl mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               Finden Sie schnell und einfach Förderungen und Unterstützungsangebote in Berlin, 
               die perfekt zu Ihrer persönlichen Situation passen.
             </p>
             
-            <div className="bg-white p-8 rounded-lg shadow-md mb-12">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-4 rounded-lg border border-gray-200 hover:border-berlin-blue hover:shadow-md transition-all duration-300">
-                  <div className="bg-berlin-blue/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-berlin-blue text-xl font-bold">1</span>
-                  </div>
-                  <h3 className="font-semibold mb-2">Beantworten Sie Fragen</h3>
-                  <p className="text-sm text-gray-600">
-                    Teilen Sie uns einige Details zu Ihrer persönlichen Situation mit.
-                  </p>
-                </div>
+            {!startQuestionnaire ? (
+              <div className="space-y-8">
+                <Button 
+                  size="lg" 
+                  className="px-8 py-6 text-lg bg-primary hover:bg-primary/90 animate-fade-in-up"
+                  style={{ animationDelay: '0.4s' }}
+                  onClick={() => setStartQuestionnaire(true)}
+                >
+                  Jetzt Förderungen finden
+                </Button>
                 
-                <div className="text-center p-4 rounded-lg border border-gray-200 hover:border-berlin-blue hover:shadow-md transition-all duration-300">
-                  <div className="bg-berlin-blue/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-berlin-blue text-xl font-bold">2</span>
-                  </div>
-                  <h3 className="font-semibold mb-2">Matching-Algorithmus</h3>
-                  <p className="text-sm text-gray-600">
-                    Wir finden Förderungen, die zu Ihren spezifischen Umständen passen.
-                  </p>
-                </div>
-                
-                <div className="text-center p-4 rounded-lg border border-gray-200 hover:border-berlin-blue hover:shadow-md transition-all duration-300">
-                  <div className="bg-berlin-blue/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-berlin-blue text-xl font-bold">3</span>
-                  </div>
-                  <h3 className="font-semibold mb-2">Erhalten Sie Ergebnisse</h3>
-                  <p className="text-sm text-gray-600">
-                    Bekommen Sie eine übersichtliche Liste mit allen passenden Förderungen.
-                  </p>
+                <div 
+                  className="flex flex-col items-center cursor-pointer animate-fade-in-up"
+                  style={{ animationDelay: '0.6s' }}
+                  onClick={scrollToInfo}
+                >
+                  <p className="text-sm text-muted-foreground mb-2">Mehr erfahren</p>
+                  <ArrowDown className="animate-bounce" />
                 </div>
               </div>
-              
-              <Button 
-                size="lg" 
-                className="px-8 py-6 text-lg"
-                onClick={() => setStartQuestionnaire(true)}
-              >
-                Jetzt Förderungen finden
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">Warum der Förderungs-Matcher?</h2>
-                <ul className="space-y-2 text-gray-700">
-                  <li>✓ Basierend auf aktuellen Daten aus offiziellen Quellen</li>
-                  <li>✓ Persönlich auf Ihre Situation zugeschnitten</li>
-                  <li>✓ Einfacher Zugang zu oft übersehenen Förderungen</li>
-                  <li>✓ Zeit- und ressourcensparend ohne Behördengänge</li>
+            ) : (
+              <QuestionnaireProvider>
+                <QuestionnaireForm />
+              </QuestionnaireProvider>
+            )}
+          </div>
+        </section>
+
+        <section id="info-section" className="py-24 bg-secondary/5">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+              <div className="space-y-6">
+                <h2 className="text-3xl font-semibold mb-6 text-secondary">
+                  Warum der Förderungs-Matcher?
+                </h2>
+                <ul className="space-y-4 text-lg">
+                  <li className="flex items-center space-x-3">
+                    <span className="text-primary">✓</span>
+                    <span>Basierend auf aktuellen Daten aus offiziellen Quellen</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-primary">✓</span>
+                    <span>Persönlich auf Ihre Situation zugeschnitten</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-primary">✓</span>
+                    <span>Einfacher Zugang zu oft übersehenen Förderungen</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-primary">✓</span>
+                    <span>Zeit- und ressourcensparend ohne Behördengänge</span>
+                  </li>
                 </ul>
               </div>
               
-              <div>
-                <h2 className="text-2xl font-semibold mb-4">Datenquellen</h2>
-                <p className="text-gray-700 mb-2">
+              <div className="space-y-6">
+                <h2 className="text-3xl font-semibold mb-6 text-secondary">
+                  Datenquellen
+                </h2>
+                <p className="text-lg mb-4">
                   Unser Förderungs-Matcher nutzt Daten aus offiziellen Quellen, darunter:
                 </p>
-                <ul className="text-sm text-gray-600">
-                  <li>• Datenportal Berlin</li>
-                  <li>• Förderdatenbank Bund, Länder, EU</li>
-                  <li>• Investitionsbank Berlin (IBB)</li>
-                  <li>• Berliner Senatsverwaltungen</li>
-                  <li>• und weitere offizielle Verwaltungsportale</li>
+                <ul className="space-y-2 text-lg text-muted-foreground">
+                  <li className="flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-primary"></span>
+                    <span>Datenportal Berlin</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-primary"></span>
+                    <span>Förderdatenbank Bund, Länder, EU</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-primary"></span>
+                    <span>Investitionsbank Berlin (IBB)</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-primary"></span>
+                    <span>Berliner Senatsverwaltungen</span>
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
-        ) : (
-          <QuestionnaireProvider>
-            <QuestionnaireForm />
-          </QuestionnaireProvider>
-        )}
+        </section>
       </main>
       
       <Footer />
