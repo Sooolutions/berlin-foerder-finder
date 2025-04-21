@@ -48,6 +48,87 @@ export type Database = {
         }
         Relationships: []
       }
+      funding: {
+        Row: {
+          amount: string | null
+          application_deadline: string | null
+          application_process: string | null
+          categories: Database["public"]["Enums"]["funding_category"][]
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string
+          district: string[] | null
+          education_level: string[] | null
+          employment_status: string[] | null
+          id: string
+          income_max: number | null
+          income_min: number | null
+          max_age: number | null
+          min_age: number | null
+          organization: string
+          requires_children: boolean | null
+          requires_marriage: boolean | null
+          tags: string[]
+          title: string
+          updated_at: string | null
+          url: string
+          valid_until: string | null
+        }
+        Insert: {
+          amount?: string | null
+          application_deadline?: string | null
+          application_process?: string | null
+          categories: Database["public"]["Enums"]["funding_category"][]
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description: string
+          district?: string[] | null
+          education_level?: string[] | null
+          employment_status?: string[] | null
+          id?: string
+          income_max?: number | null
+          income_min?: number | null
+          max_age?: number | null
+          min_age?: number | null
+          organization: string
+          requires_children?: boolean | null
+          requires_marriage?: boolean | null
+          tags: string[]
+          title: string
+          updated_at?: string | null
+          url: string
+          valid_until?: string | null
+        }
+        Update: {
+          amount?: string | null
+          application_deadline?: string | null
+          application_process?: string | null
+          categories?: Database["public"]["Enums"]["funding_category"][]
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string
+          district?: string[] | null
+          education_level?: string[] | null
+          employment_status?: string[] | null
+          id?: string
+          income_max?: number | null
+          income_min?: number | null
+          max_age?: number | null
+          min_age?: number | null
+          organization?: string
+          requires_children?: boolean | null
+          requires_marriage?: boolean | null
+          tags?: string[]
+          title?: string
+          updated_at?: string | null
+          url?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -56,7 +137,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      funding_category:
+        | "Bildung"
+        | "Arbeit"
+        | "Wohnen"
+        | "Familie"
+        | "Gesundheit"
+        | "Integration"
+        | "Kultur"
+        | "Soziales"
+        | "Sport"
+        | "Wirtschaft"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -171,6 +262,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      funding_category: [
+        "Bildung",
+        "Arbeit",
+        "Wohnen",
+        "Familie",
+        "Gesundheit",
+        "Integration",
+        "Kultur",
+        "Soziales",
+        "Sport",
+        "Wirtschaft",
+      ],
+    },
   },
 } as const
