@@ -4,10 +4,14 @@ import { Progress } from "@/components/ui/progress";
 interface StepProgressProps {
   currentStep: number;
   totalSteps: number;
+  value?: number; // Optional direct progress value
 }
 
-const StepProgress = ({ currentStep, totalSteps }: StepProgressProps) => {
-  const progressPercentage = (currentStep / totalSteps) * 100;
+const StepProgress = ({ currentStep, totalSteps, value }: StepProgressProps) => {
+  // Calculate progress as either the provided value or based on steps
+  const progressPercentage = value !== undefined
+    ? value
+    : (currentStep / totalSteps) * 100;
 
   return (
     <div className="mb-6">
