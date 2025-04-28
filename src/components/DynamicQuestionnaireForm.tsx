@@ -1,12 +1,9 @@
-
 import { useNavigate } from "react-router-dom";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import StepProgress from "./questionnaire/StepProgress";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { QuestionData, getQuestionData } from "@/data/questionnaireData";
 
 const DynamicQuestionnaireForm = () => {
@@ -24,12 +21,11 @@ const DynamicQuestionnaireForm = () => {
   // Get the current question data
   const questionData = getQuestionData(currentQuestionId);
 
-  // Handle the selection of an answer and proceed to the next question
+  // Handle the selection of an answer
   const handleSelect = (value: string) => {
-    // Update the answer for the current question
+    updateAnswer(currentQuestionId, value);
     const nextQuestionId = goToNextQuestion(currentQuestionId, value);
     
-    // If this was the last question, navigate to results
     if (nextQuestionId === "final") {
       navigate("/results");
     }
@@ -37,7 +33,7 @@ const DynamicQuestionnaireForm = () => {
 
   // Simple progress calculation - how far we are in our question history
   const progressPercentage = Math.min(
-    ((questionHistory.length - 1) / 7) * 100, // Assuming max 8 questions deep
+    ((questionHistory.length - 1) / 7) * 100,
     100
   );
 
