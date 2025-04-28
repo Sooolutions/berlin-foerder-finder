@@ -6,7 +6,7 @@ interface QuestionnaireContextType {
   currentQuestionId: string;
   answers: UserAnswers;
   updateAnswer: (questionId: string, answer: any) => void;
-  goToNextQuestion: (currentQuestionId: string, answer: any) => void;
+  goToNextQuestion: (currentQuestionId: string, answer: any) => string; // Changed to return string
   goToPreviousQuestion: () => void;
   resetQuestionnaire: () => void;
   questionHistory: string[];
@@ -189,7 +189,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     }));
   };
 
-  const goToNextQuestion = (currentQuestionId: string, answer: any) => {
+  const goToNextQuestion = (currentQuestionId: string, answer: any): string => {
     // Store the current answer
     updateAnswer(currentQuestionId, answer);
     

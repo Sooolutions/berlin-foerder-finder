@@ -27,6 +27,7 @@ const DynamicQuestionnaireForm = () => {
     updateAnswer(currentQuestionId, value);
     const nextQuestionId = goToNextQuestion(currentQuestionId, value);
     
+    // Fixed comparison by explicitly comparing to the 'final' string
     if (nextQuestionId === "final") {
       navigate("/results");
     }

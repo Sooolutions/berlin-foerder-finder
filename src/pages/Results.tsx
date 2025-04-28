@@ -1,7 +1,6 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { QuestionnaireProvider, useQuestionnaire } from "@/context/QuestionnaireContext";
 import { useFundingResults } from "@/hooks/useFundingResults";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 const ResultsContent = () => {
-  const { answers } = useQuestionnaire();
-  const { data: fundings, isLoading, error } = useFundingResults(answers);
+  // Call useFundingResults without providing answers to get all funding entries
+  const { data: fundings, isLoading, error } = useFundingResults();
 
   if (isLoading) {
     return (
@@ -57,10 +56,10 @@ const ResultsContent = () => {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold mb-2">
-          Ihre passenden Förderungsmöglichkeiten
+          Verfügbare Förderungsmöglichkeiten
         </h2>
         <p className="text-gray-600">
-          Wir haben {fundings.length} Förderungsmöglichkeiten gefunden, die zu Ihren Angaben passen könnten.
+          Wir haben {fundings.length} Förderungsmöglichkeiten für Sie gefunden.
         </p>
       </div>
 
@@ -75,7 +74,7 @@ const ResultsContent = () => {
                 </CardDescription>
               </div>
               <div>
-                {funding.categories.map((category) => (
+                {funding.categories && funding.categories.map((category) => (
                   <Badge key={category} variant="outline" className="bg-berlin-blue/10 text-berlin-blue ml-2">
                     {category}
                   </Badge>
@@ -110,7 +109,7 @@ const ResultsContent = () => {
             </div>
             
             <div className="mt-4 flex flex-wrap gap-1">
-              {funding.tags.map((tag) => (
+              {funding.tags && funding.tags.map((tag) => (
                 <Badge key={tag} variant="secondary" className="text-xs">
                   {tag}
                 </Badge>
@@ -151,9 +150,7 @@ const Results = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-12">
-        <QuestionnaireProvider>
-          <ResultsContent />
-        </QuestionnaireProvider>
+        <ResultsContent />
       </main>
       <Footer />
     </div>

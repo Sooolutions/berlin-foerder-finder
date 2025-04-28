@@ -53,7 +53,7 @@ export type Database = {
           amount: string | null
           application_deadline: string | null
           application_process: string | null
-          categories: Database["public"]["Enums"]["funding_category"][]
+          categories: Database["public"]["Enums"]["funding_category"][] | null
           contact_email: string | null
           contact_phone: string | null
           created_at: string | null
@@ -69,7 +69,7 @@ export type Database = {
           organization: string
           requires_children: boolean | null
           requires_marriage: boolean | null
-          tags: string[]
+          tags: string[] | null
           title: string
           updated_at: string | null
           url: string
@@ -79,7 +79,7 @@ export type Database = {
           amount?: string | null
           application_deadline?: string | null
           application_process?: string | null
-          categories: Database["public"]["Enums"]["funding_category"][]
+          categories?: Database["public"]["Enums"]["funding_category"][] | null
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string | null
@@ -95,7 +95,7 @@ export type Database = {
           organization: string
           requires_children?: boolean | null
           requires_marriage?: boolean | null
-          tags: string[]
+          tags?: string[] | null
           title: string
           updated_at?: string | null
           url: string
@@ -105,7 +105,7 @@ export type Database = {
           amount?: string | null
           application_deadline?: string | null
           application_process?: string | null
-          categories?: Database["public"]["Enums"]["funding_category"][]
+          categories?: Database["public"]["Enums"]["funding_category"][] | null
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string | null
@@ -121,7 +121,7 @@ export type Database = {
           organization?: string
           requires_children?: boolean | null
           requires_marriage?: boolean | null
-          tags?: string[]
+          tags?: string[] | null
           title?: string
           updated_at?: string | null
           url?: string

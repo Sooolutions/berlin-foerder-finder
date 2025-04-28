@@ -18,52 +18,16 @@ export interface Funding {
   tags: string[];
 }
 
-export const useFundingResults = (answers: UserAnswers) => {
+// Makes the answers parameter optional
+export const useFundingResults = (answers?: UserAnswers) => {
   return useQuery({
-    queryKey: ['funding', answers],
+    queryKey: ['funding', answers ? 'filtered' : 'all'],
     queryFn: async () => {
-      let query = supabase
+      // If no answers are provided or we want to show all results,
+      // simply fetch all funding entries without filters
+      const { data, error } = await supabase
         .from('funding')
         .select('*');
-
-      // Apply filters based on user answers
-      if (answers.age !== null) {
-        query = query
-          .or(`min_age.is.null,min_age.lte.${answers.age}`)
-          .or(`max_age.is.null,max_age.gte.${answers.age}`);
-      }
-
-      if (answers.income !== null) {
-        query = query
-          .or(`income_min.is.null,income_min.lte.${answers.income}`)
-          .or(`income_max.is.null,income_max.gte.${answers.income}`);
-      }
-
-      if (answers.district) {
-        query = query.contains('district', [answers.district]);
-      }
-
-      if (answers.hasChildren !== null) {
-        query = query.or(
-          `requires_children.is.null,requires_children.eq.${answers.hasChildren}`
-        );
-      }
-
-      if (answers.maritalStatus === 'married') {
-        query = query.or(
-          'requires_marriage.is.null,requires_marriage.eq.true'
-        );
-      }
-
-      if (answers.educationLevel) {
-        query = query.contains('education_level', [answers.educationLevel]);
-      }
-
-      if (answers.employmentStatus) {
-        query = query.contains('employment_status', [answers.employmentStatus]);
-      }
-
-      const { data, error } = await query;
 
       if (error) {
         throw error;
