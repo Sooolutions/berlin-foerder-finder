@@ -1,3 +1,4 @@
+
 export interface QuestionData {
   id: string;
   question: string;
@@ -558,4 +559,18 @@ const questionsMap: Record<string, QuestionData> = {
     options: ["Ausland", "Mentoring", "Karriere", "Lernen", "Community"]
   },
   "Q6_U18_Ausbildung_3_Ja_Egal": {
-    id: "Q6
+    id: "Q6_U18_Ausbildung_3_Ja_Egal",
+    question: "Welche Themen interessieren dich besonders?",
+    options: ["Ausland", "Mentoring", "Karriere", "Lernen", "Community"]
+  },
+  "Q6_U18_Ausbildung_Abschluss_Ja_Egal": {
+    id: "Q6_U18_Ausbildung_Abschluss_Ja_Egal",
+    question: "Welche Themen interessieren dich besonders?",
+    options: ["Ausland", "Mentoring", "Karriere", "Lernen", "Community"]
+  }
+};
+
+// Function to get question data by ID
+export function getQuestionData(questionId: string): QuestionData | undefined {
+  return questionsMap[questionId];
+}
