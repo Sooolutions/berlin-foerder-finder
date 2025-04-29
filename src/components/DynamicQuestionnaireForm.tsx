@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { QuestionData, getQuestionData } from "@/data/questionnaireData";
+import { useEffect, useState } from "react";
 
 const DynamicQuestionnaireForm = () => {
   const navigate = useNavigate();
@@ -19,25 +20,38 @@ const DynamicQuestionnaireForm = () => {
     isLastQuestion
   } = useQuestionnaire();
 
+  // Track loading state to prevent multiple clicks
+  const [isProcessing, setIsProcessing] = useState(false);
+  
   // Get the current question data
   const questionData = getQuestionData(currentQuestionId);
 
+  // Calculate total number of questions in the questionnaire path
+  // This is an estimation based on the typical path length
+  const estimatedTotalSteps = 7;
+  
+  // Calculate progress based on how far we are in our question history
+  const progressPercentage = Math.min(
+    ((questionHistory.length - 1) / estimatedTotalSteps) * 100,
+    100
+  );
+
   // Handle the selection of an answer
   const handleSelect = (value: string) => {
+    if (isProcessing) return; // Prevent multiple clicks
+    
+    setIsProcessing(true);
     updateAnswer(currentQuestionId, value);
+    
     const nextQuestionId = goToNextQuestion(currentQuestionId, value);
     
-    // Fixed comparison by explicitly comparing to the 'final' string
+    // Navigate to results if we've reached the final step
     if (nextQuestionId === "final") {
       navigate("/results");
     }
+    
+    setIsProcessing(false);
   };
-
-  // Simple progress calculation - how far we are in our question history
-  const progressPercentage = Math.min(
-    ((questionHistory.length - 1) / 7) * 100,
-    100
-  );
 
   // Render the current question
   const renderQuestion = () => {
@@ -72,7 +86,11 @@ const DynamicQuestionnaireForm = () => {
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
       <div className="p-8">
-        <StepProgress currentStep={questionHistory.length} totalSteps={8} value={progressPercentage} />
+        <StepProgress 
+          currentStep={questionHistory.length} 
+          totalSteps={estimatedTotalSteps} 
+          value={progressPercentage} 
+        />
         
         <div className="min-h-[400px] flex items-center justify-center py-8">
           {renderQuestion()}
@@ -82,13 +100,16 @@ const DynamicQuestionnaireForm = () => {
           <Button
             variant="outline"
             onClick={goToPreviousQuestion}
-            disabled={questionHistory.length <= 1}
+            disabled={questionHistory.length <= 1 || isProcessing}
           >
             Zurück
           </Button>
 
           {isLastQuestion && (
-            <Button onClick={() => navigate("/results")}>
+            <Button 
+              onClick={() => navigate("/results")}
+              disabled={isProcessing}
+            >
               Ergebnisse anzeigen
             </Button>
           )}

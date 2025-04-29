@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { berlinDistricts, educationLevels, employmentStatus, interestAreas } from "@/data/mockData";
 
 interface QuestionnaireContextType {
@@ -174,6 +174,9 @@ const isEndOfQuestionnaire = (nextQuestionId: string): boolean => {
   return nextQuestionId === "final";
 };
 
+// Key for storing questionnaire answers in localStorage
+const QUESTIONNAIRE_ANSWERS_KEY = "questionnaire_answers";
+
 const QuestionnaireContext = createContext<QuestionnaireContextType | undefined>(undefined);
 
 export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -182,44 +185,74 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   const [questionHistory, setQuestionHistory] = useState<string[]>(["Q1"]); // Track question path
   const [isLastQuestion, setIsLastQuestion] = useState(false);
 
+  // Load answers from localStorage if available
+  useEffect(() => {
+    const savedAnswers = localStorage.getItem(QUESTIONNAIRE_ANSWERS_KEY);
+    if (savedAnswers) {
+      try {
+        const parsedAnswers = JSON.parse(savedAnswers);
+        setAnswers(parsedAnswers);
+      } catch (error) {
+        console.error("Error parsing saved answers:", error);
+      }
+    }
+  }, []);
+
   const updateAnswer = (questionId: string, answer: any) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: answer,
-    }));
+    setAnswers((prev) => {
+      const updatedAnswers = {
+        ...prev,
+        [questionId]: answer,
+      };
+      
+      // Save to localStorage
+      localStorage.setItem(QUESTIONNAIRE_ANSWERS_KEY, JSON.stringify(updatedAnswers));
+      
+      return updatedAnswers;
+    });
   };
 
   const goToNextQuestion = (currentQuestionId: string, answer: any): string => {
     // Store the current answer
     updateAnswer(currentQuestionId, answer);
     
-    // Calculate next question based on current question and answer
-    const nextQuestionId = getNextQuestionId(currentQuestionId, answer);
-    
-    // Check if this is the last question
-    const isLast = isEndOfQuestionnaire(nextQuestionId);
-    setIsLastQuestion(isLast);
-    
-    // If not at the end, go to next question
-    if (!isLast) {
-      setCurrentQuestionId(nextQuestionId);
-      setQuestionHistory((prev) => [...prev, nextQuestionId]);
+    try {
+      // Calculate next question based on current question and answer
+      const nextQuestionId = getNextQuestionId(currentQuestionId, answer);
+      
+      // Check if this is the last question
+      const isLast = isEndOfQuestionnaire(nextQuestionId);
+      setIsLastQuestion(isLast);
+      
+      // If not at the end, go to next question
+      if (!isLast) {
+        setCurrentQuestionId(nextQuestionId);
+        setQuestionHistory((prev) => [...prev, nextQuestionId]);
+      }
+      
+      return nextQuestionId;
+    } catch (error) {
+      console.error("Error navigating to next question:", error);
+      // In case of error, stay on current question
+      return currentQuestionId;
     }
-    
-    return nextQuestionId;
   };
 
   const goToPreviousQuestion = () => {
     if (questionHistory.length > 1) {
-      // Remove current question from history
-      const newHistory = [...questionHistory];
-      newHistory.pop();
-      
-      // Set the previous question as current
-      const previousQuestionId = newHistory[newHistory.length - 1];
-      setCurrentQuestionId(previousQuestionId);
-      setQuestionHistory(newHistory);
-      setIsLastQuestion(false);
+      try {
+        // Remove current question from history
+        const newHistory = [...questionHistory];
+        newHistory.pop();
+        
+        // Set the previous question as current
+        const previousQuestionId = newHistory[newHistory.length - 1];
+        setCurrentQuestionId(previousQuestionId);
+        setQuestionHistory(newHistory);
+        setIsLastQuestion(false);
+      } catch (error) {
+        console.error("Error navigating to previous question:", error);
+      }
     }
   };
 
@@ -228,6 +261,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     setAnswers(initialAnswers);
     setQuestionHistory(["Q1"]);
     setIsLastQuestion(false);
+    localStorage.removeItem(QUESTIONNAIRE_ANSWERS_KEY);
   };
 
   return (
