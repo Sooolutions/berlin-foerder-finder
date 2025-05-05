@@ -18,11 +18,20 @@ const StepProgress = ({ currentStep, totalSteps, value }: StepProgressProps) => 
 
   // Animate the progress bar
   useEffect(() => {
+    // Reset progress to create animation effect
     setProgressValue(0);
-    const timer = setTimeout(() => {
-      setProgressValue(progressPercentage);
-    }, 100);
-    return () => clearTimeout(timer);
+    
+    // Use requestAnimationFrame for smoother animation
+    const animationFrame = requestAnimationFrame(() => {
+      // Small delay to ensure the animation is visible
+      setTimeout(() => {
+        setProgressValue(progressPercentage);
+      }, 50);
+    });
+    
+    return () => {
+      cancelAnimationFrame(animationFrame);
+    };
   }, [progressPercentage]);
 
   return (
@@ -31,7 +40,11 @@ const StepProgress = ({ currentStep, totalSteps, value }: StepProgressProps) => 
         <span>Schritt {currentStep} von {totalSteps}</span>
         <span>{Math.round(progressPercentage)}%</span>
       </div>
-      <Progress value={progressValue} className="h-2 transition-all duration-500" />
+      <Progress 
+        value={progressValue} 
+        className="h-2 transition-all duration-500" 
+        aria-label="Fragebogen-Fortschritt" 
+      />
     </div>
   );
 };
