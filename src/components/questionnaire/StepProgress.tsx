@@ -14,12 +14,14 @@ const StepProgress = ({ currentStep, totalSteps, value }: StepProgressProps) => 
   // Calculate progress as either the provided value or based on steps
   const progressPercentage = value !== undefined
     ? value
-    : (currentStep / totalSteps) * 100;
+    : Math.min((currentStep / totalSteps) * 100, 100);
 
   // Animate the progress bar
   useEffect(() => {
-    // Reset progress to create animation effect
-    setProgressValue(0);
+    // Reset progress to create animation effect if we're at the beginning
+    if (currentStep === 1) {
+      setProgressValue(0);
+    }
     
     // Use requestAnimationFrame for smoother animation
     const animationFrame = requestAnimationFrame(() => {
@@ -32,7 +34,7 @@ const StepProgress = ({ currentStep, totalSteps, value }: StepProgressProps) => 
     return () => {
       cancelAnimationFrame(animationFrame);
     };
-  }, [progressPercentage]);
+  }, [progressPercentage, currentStep]);
 
   return (
     <div className="mb-6">

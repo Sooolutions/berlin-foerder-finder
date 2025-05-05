@@ -1,8 +1,13 @@
 
+import { QuestionnaireProvider } from "@/context/QuestionnaireContext";
 import DynamicQuestionnaireForm from "./DynamicQuestionnaireForm";
 
 const QuestionnaireForm = () => {
-  return <DynamicQuestionnaireForm />;
+  return (
+    <QuestionnaireProvider>
+      <DynamicQuestionnaireForm />
+    </QuestionnaireProvider>
+  );
 };
 
 export default QuestionnaireForm;

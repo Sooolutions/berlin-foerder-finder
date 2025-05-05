@@ -1,5 +1,7 @@
+
 import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
 import { berlinDistricts, educationLevels, employmentStatus, interestAreas } from "@/data/mockData";
+import { getQuestionData } from "@/data/questionnaireData";
 
 interface QuestionnaireContextType {
   currentQuestionId: string;
@@ -227,8 +229,10 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
           try {
             // We need to check the next question for each possible answer
             // If any of them is not "final", this is not the last question
-            const questionData = require("@/data/questionnaireData").getQuestionData(lastQuestionId);
+            const questionData = getQuestionData(lastQuestionId);
             if (questionData && questionData.options && questionData.options.length > 0) {
+              // Check if this is the last question by checking if all options lead to final
+              // This is a simplification - we should check if this is the last question for the current answer
               const isLast = questionData.options.every(
                 (option: string) => getNextQuestionId(lastQuestionId, option) === "final"
               );
@@ -271,6 +275,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     try {
       // Calculate next question based on current question and answer
       const nextQuestionId = getNextQuestionId(currentQuestionId, answer);
+      console.log("Current Question:", currentQuestionId, "Answer:", answer, "Next Question:", nextQuestionId);
       
       // Check if this is the last question
       const isLast = isEndOfQuestionnaire(nextQuestionId);

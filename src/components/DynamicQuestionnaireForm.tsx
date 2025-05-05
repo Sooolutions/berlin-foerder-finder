@@ -55,7 +55,9 @@ const DynamicQuestionnaireForm = () => {
           setIsProcessing(false);
         }, 500); // Small delay for better UX
       } else {
-        setIsProcessing(false);
+        setTimeout(() => {
+          setIsProcessing(false);
+        }, 300); // Small delay for better UX even when not navigating to results
       }
     } catch (error) {
       console.error("Error navigating to next question:", error);
@@ -122,8 +124,6 @@ const DynamicQuestionnaireForm = () => {
           >
             Zurück
           </Button>
-
-          {/* Remove the "Ergebnisse anzeigen" button as we now auto-navigate */}
         </div>
       </div>
     </div>
