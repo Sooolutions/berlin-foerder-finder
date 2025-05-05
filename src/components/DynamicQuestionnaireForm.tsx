@@ -123,14 +123,7 @@ const DynamicQuestionnaireForm = () => {
             Zurück
           </Button>
 
-          {isLastQuestion && (
-            <Button 
-              onClick={() => navigate("/results")}
-              disabled={isProcessing}
-            >
-              Ergebnisse anzeigen
-            </Button>
-          )}
+          {/* Remove the "Ergebnisse anzeigen" button as we now auto-navigate */}
         </div>
       </div>
     </div>

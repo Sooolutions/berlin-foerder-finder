@@ -1,11 +1,23 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import QuestionnaireForm from "@/components/QuestionnaireForm";
 import { Button } from "@/components/ui/button";
-import { QuestionnaireProvider } from "@/context/QuestionnaireContext";
+import { QuestionnaireProvider, useQuestionnaire } from "@/context/QuestionnaireContext";
 import { ArrowDown } from "lucide-react";
+
+// Component to reset the questionnaire when starting from the homepage
+const QuestionnaireWithReset = () => {
+  const { resetQuestionnaire } = useQuestionnaire();
+
+  useEffect(() => {
+    // Reset the questionnaire when this component mounts
+    resetQuestionnaire();
+  }, [resetQuestionnaire]);
+
+  return <QuestionnaireForm />;
+};
 
 const Index = () => {
   const [startQuestionnaire, setStartQuestionnaire] = useState(false);
@@ -51,7 +63,7 @@ const Index = () => {
               </div>
             ) : (
               <QuestionnaireProvider>
-                <QuestionnaireForm />
+                <QuestionnaireWithReset />
               </QuestionnaireProvider>
             )}
           </div>
