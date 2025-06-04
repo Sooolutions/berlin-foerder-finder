@@ -14,7 +14,7 @@ const ResultsContent = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <Loader2 className="h-12 w-12 animate-spin text-berlin-orange" />
+        <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
         <p className="text-lg text-gray-600">Wir durchsuchen alle verfügbaren Förderungen für dich...</p>
         <p className="text-sm text-gray-500">Das kann einen Moment dauern</p>
       </div>
@@ -31,7 +31,7 @@ const ResultsContent = () => {
           <p className="text-red-600 mb-6">
             Bitte versuche es später erneut oder kontaktiere den Support.
           </p>
-          <Button onClick={() => window.location.href = "/"} className="bg-berlin-orange hover:bg-berlin-orange/90">
+          <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
             Neue Suche starten
           </Button>
         </div>
@@ -43,7 +43,7 @@ const ResultsContent = () => {
     return (
       <div className="text-center my-12 max-w-2xl mx-auto">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
-          <h2 className="text-2xl font-bold mb-4 text-berlin-blue">
+          <h2 className="text-2xl font-bold mb-4 text-blue-800">
             Keine passenden Förderungen gefunden
           </h2>
           <p className="text-gray-600 mb-6">
@@ -51,7 +51,7 @@ const ResultsContent = () => {
             Versuche es mit anderen Kriterien oder kontaktiere direkt die Beratungsstellen.
           </p>
           <div className="space-x-4">
-            <Button onClick={() => window.location.href = "/"} className="bg-berlin-orange hover:bg-berlin-orange/90">
+            <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
               Neue Suche starten
             </Button>
             <Button variant="outline" asChild>
@@ -68,7 +68,7 @@ const ResultsContent = () => {
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       {/* Success Header */}
-      <div className="text-center bg-gradient-to-r from-berlin-blue to-berlin-orange text-white p-8 rounded-lg shadow-lg">
+      <div className="text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg shadow-lg">
         <div className="flex justify-center mb-4">
           <div className="bg-white/20 rounded-full p-4">
             <Star className="w-8 h-8" />
@@ -89,11 +89,11 @@ const ResultsContent = () => {
             <Shield className="w-4 h-4" />
             <span className="font-medium">Alle Daten offiziell verifiziert</span>
           </div>
-          <div className="flex items-center space-x-2 text-berlin-blue">
+          <div className="flex items-center space-x-2 text-blue-600">
             <Users className="w-4 h-4" />
             <span className="font-medium">Persönlich auf dich abgestimmt</span>
           </div>
-          <div className="flex items-center space-x-2 text-berlin-orange">
+          <div className="flex items-center space-x-2 text-purple-600">
             <MapPin className="w-4 h-4" />
             <span className="font-medium">Speziell für Berlin</span>
           </div>
@@ -102,18 +102,18 @@ const ResultsContent = () => {
 
       {/* Funding Cards */}
       {fundings.map((funding, index) => (
-        <Card key={funding.id} className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-berlin-orange" style={{ animationDelay: `${index * 0.1}s` }}>
+        <Card key={funding.id} className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500" style={{ animationDelay: `${index * 0.1}s` }}>
           <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50">
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <CardTitle className="text-2xl mb-2 text-berlin-blue">{funding.title}</CardTitle>
-                <CardDescription className="text-lg font-medium text-berlin-orange">
+                <CardTitle className="text-2xl mb-2 text-gray-900">{funding.title}</CardTitle>
+                <CardDescription className="text-lg font-medium text-blue-600">
                   {funding.organization}
                 </CardDescription>
               </div>
               <div className="flex flex-wrap gap-2">
                 {funding.categories && funding.categories.map((category) => (
-                  <Badge key={category} variant="outline" className="bg-berlin-blue/10 text-berlin-blue border-berlin-blue/20">
+                  <Badge key={category} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                     {category}
                   </Badge>
                 ))}
@@ -163,10 +163,10 @@ const ResultsContent = () => {
           <CardFooter className="justify-between bg-gray-50 border-t pt-4">
             <div className="text-sm text-gray-600">
               <span className="font-medium">Kontakt:</span>{" "}
-              {funding.contact_email && <span className="text-berlin-blue">{funding.contact_email}</span>}
-              {funding.contact_phone && <span> | Tel: <span className="text-berlin-blue">{funding.contact_phone}</span></span>}
+              {funding.contact_email && <span className="text-blue-600">{funding.contact_email}</span>}
+              {funding.contact_phone && <span> | Tel: <span className="text-blue-600">{funding.contact_phone}</span></span>}
             </div>
-            <Button asChild size="sm" className="bg-berlin-orange hover:bg-berlin-orange/90">
+            <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700">
               <a href={funding.url} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
                 <span>Mehr Details</span>
                 <ExternalLink className="w-4 h-4" />
@@ -178,12 +178,12 @@ const ResultsContent = () => {
       
       {/* Action buttons */}
       <div className="text-center bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-        <h3 className="text-xl font-semibold mb-4 text-berlin-blue">Was möchtest du als nächstes tun?</h3>
+        <h3 className="text-xl font-semibold mb-4 text-gray-900">Was möchtest du als nächstes tun?</h3>
         <div className="space-x-4">
-          <Button onClick={() => window.location.href = "/"} variant="outline" className="border-berlin-blue text-berlin-blue hover:bg-berlin-blue hover:text-white">
+          <Button onClick={() => window.location.href = "/"} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
             Neue Suche starten
           </Button>
-          <Button asChild className="bg-berlin-orange hover:bg-berlin-orange/90">
+          <Button asChild className="bg-blue-600 hover:bg-blue-700">
             <a href="https://www.berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
               Beratungsstellen finden
             </a>

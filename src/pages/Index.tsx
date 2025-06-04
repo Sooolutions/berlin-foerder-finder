@@ -13,7 +13,7 @@ const Index = () => {
   };
 
   const startQuestionnaire = () => {
-    navigate("/user-info");
+    navigate("/questionnaire");
   };
 
   return (
