@@ -1,29 +1,19 @@
-
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import QuestionnaireForm from "@/components/QuestionnaireForm";
 import { Button } from "@/components/ui/button";
-import { QuestionnaireProvider, useQuestionnaire } from "@/context/QuestionnaireContext";
 import { ArrowDown, Users, Target, Heart, CheckCircle } from "lucide-react";
-
-// Component to reset the questionnaire when starting from the homepage
-const QuestionnaireWithReset = () => {
-  const { resetQuestionnaire } = useQuestionnaire();
-
-  useEffect(() => {
-    // Reset the questionnaire when this component mounts
-    resetQuestionnaire();
-  }, [resetQuestionnaire]);
-
-  return <QuestionnaireForm />;
-};
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const [startQuestionnaire, setStartQuestionnaire] = useState(false);
+  const navigate = useNavigate();
 
   const scrollToInfo = () => {
     document.getElementById('info-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const startQuestionnaire = () => {
+    navigate("/user-info");
   };
 
   return (
@@ -59,47 +49,41 @@ const Index = () => {
               Finde Förderungen und Unterstützung, die wirklich zu dir und deiner Situation in Berlin passen.
             </p>
             
-            {!startQuestionnaire ? (
-              <div className="space-y-8">
-                <div className="flex flex-wrap justify-center gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                  <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
-                    <Users className="w-5 h-5 text-berlin-blue" />
-                    <span className="text-sm font-medium">Über 200 Förderungen</span>
-                  </div>
-                  <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
-                    <Target className="w-5 h-5 text-berlin-orange" />
-                    <span className="text-sm font-medium">Persönlich abgestimmt</span>
-                  </div>
-                  <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="text-sm font-medium">Offiziell verifiziert</span>
-                  </div>
+            <div className="space-y-8">
+              <div className="flex flex-wrap justify-center gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+                <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
+                  <Users className="w-5 h-5 text-berlin-blue" />
+                  <span className="text-sm font-medium">Über 200 Förderungen</span>
                 </div>
-                
-                <Button 
-                  size="lg" 
-                  className="px-12 py-6 text-lg bg-berlin-orange hover:bg-berlin-orange/90 text-white shadow-xl transform hover:scale-105 transition-all duration-300 animate-fade-in-up"
-                  style={{ animationDelay: '0.4s' }}
-                  onClick={() => setStartQuestionnaire(true)}
-                >
-                  Jetzt Förderungen finden
-                  <ArrowDown className="ml-2 w-5 h-5" />
-                </Button>
-                
-                <div 
-                  className="flex flex-col items-center cursor-pointer animate-fade-in-up text-gray-600 hover:text-berlin-blue transition-colors"
-                  style={{ animationDelay: '0.6s' }}
-                  onClick={scrollToInfo}
-                >
-                  <p className="text-sm mb-2">Mehr über den Matcher erfahren</p>
-                  <ArrowDown className="animate-bounce w-5 h-5" />
+                <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
+                  <Target className="w-5 h-5 text-berlin-orange" />
+                  <span className="text-sm font-medium">Persönlich abgestimmt</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-sm font-medium">Offiziell verifiziert</span>
                 </div>
               </div>
-            ) : (
-              <QuestionnaireProvider>
-                <QuestionnaireWithReset />
-              </QuestionnaireProvider>
-            )}
+              
+              <Button 
+                size="lg" 
+                className="px-12 py-6 text-lg bg-berlin-orange hover:bg-berlin-orange/90 text-white shadow-xl transform hover:scale-105 transition-all duration-300 animate-fade-in-up"
+                style={{ animationDelay: '0.4s' }}
+                onClick={startQuestionnaire}
+              >
+                Jetzt Förderungen finden
+                <ArrowDown className="ml-2 w-5 h-5" />
+              </Button>
+              
+              <div 
+                className="flex flex-col items-center cursor-pointer animate-fade-in-up text-gray-600 hover:text-berlin-blue transition-colors"
+                style={{ animationDelay: '0.6s' }}
+                onClick={scrollToInfo}
+              >
+                <p className="text-sm mb-2">Mehr über den Matcher erfahren</p>
+                <ArrowDown className="animate-bounce w-5 h-5" />
+              </div>
+            </div>
           </div>
         </section>
 

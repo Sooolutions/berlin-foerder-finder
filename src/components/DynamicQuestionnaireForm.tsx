@@ -28,6 +28,15 @@ const DynamicQuestionnaireForm = () => {
   // Get the current question data
   const questionData = getQuestionData(currentQuestionId);
 
+  // Skip Q1 and Q2 questions as they are handled in UserInfo page
+  useEffect(() => {
+    if (currentQuestionId === "Q1" || currentQuestionId.startsWith("Q2_")) {
+      // If we're on a user info question, start from the first actual questionnaire question
+      // This should not happen if the flow is correct, but it's a safety check
+      console.log("Skipping user info questions in main questionnaire");
+    }
+  }, [currentQuestionId]);
+
   // Constant total steps to make progress more predictable
   // Most paths have around 4-6 questions based on the provided structure
   const estimatedTotalSteps = 6;
@@ -72,7 +81,7 @@ const DynamicQuestionnaireForm = () => {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
           <h3 className="text-2xl font-medium mb-4 text-red-800">Frage nicht gefunden</h3>
           <p className="text-red-600 mb-6">Die Frage mit der ID "{currentQuestionId}" konnte nicht gefunden werden.</p>
-          <Button onClick={resetQuestionnaire} className="bg-berlin-orange hover:bg-berlin-orange/90">
+          <Button onClick={() => navigate("/user-info")} className="bg-berlin-orange hover:bg-berlin-orange/90">
             Fragebogen neu starten
           </Button>
         </div>
@@ -161,8 +170,7 @@ const DynamicQuestionnaireForm = () => {
           <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
             <Button
               variant="outline"
-              onClick={goToPreviousQuestion}
-              disabled={questionHistory.length <= 1 || isProcessing}
+              onClick={() => navigate("/user-info")}
               className="flex items-center space-x-2 hover:bg-gray-50"
             >
               <ArrowLeft className="w-4 h-4" />
