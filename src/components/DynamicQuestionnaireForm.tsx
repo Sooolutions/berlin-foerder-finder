@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { QuestionData, getQuestionData } from "@/data/questionnaireData";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CheckCircle, ArrowLeft, Shield, Users } from "lucide-react";
 
 const DynamicQuestionnaireForm = () => {
@@ -14,12 +14,8 @@ const DynamicQuestionnaireForm = () => {
   const {
     currentQuestionId,
     answers,
-    updateAnswer,
     goToNextQuestion,
-    goToPreviousQuestion,
     questionHistory,
-    isLastQuestion,
-    resetQuestionnaire
   } = useQuestionnaire();
 
   // Track loading state to prevent multiple clicks
@@ -28,13 +24,7 @@ const DynamicQuestionnaireForm = () => {
   // Get the current question data
   const questionData = getQuestionData(currentQuestionId);
 
-  // Reset questionnaire when component mounts to start fresh
-  useEffect(() => {
-    resetQuestionnaire();
-  }, [resetQuestionnaire]);
-
   // Constant total steps to make progress more predictable
-  // Most paths have around 4-6 questions based on the provided structure
   const estimatedTotalSteps = 6;
   
   // Calculate progress based on how far we are in our question history
@@ -47,7 +37,7 @@ const DynamicQuestionnaireForm = () => {
   const handleSelect = async (value: string) => {
     if (isProcessing) {
       console.log("Already processing, ignoring click");
-      return; // Prevent multiple clicks
+      return;
     }
     
     console.log("Starting handleSelect with value:", value, "for question:", currentQuestionId);

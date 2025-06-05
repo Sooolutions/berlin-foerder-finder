@@ -1,6 +1,4 @@
-
-import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
-import { berlinDistricts, educationLevels, employmentStatus, interestAreas } from "@/data/mockData";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 import { getQuestionData } from "@/data/questionnaireData";
 
 interface QuestionnaireContextType {
@@ -206,51 +204,6 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   const [answers, setAnswers] = useState<UserAnswers>(initialAnswers);
   const [questionHistory, setQuestionHistory] = useState<string[]>(["Q1"]); // Track question path
   const [isLastQuestion, setIsLastQuestion] = useState(false);
-
-  // Load answers and history from localStorage if available
-  useEffect(() => {
-    try {
-      const savedAnswers = localStorage.getItem(QUESTIONNAIRE_ANSWERS_KEY);
-      const savedHistory = localStorage.getItem(QUESTIONNAIRE_HISTORY_KEY);
-      
-      if (savedAnswers) {
-        const parsedAnswers = JSON.parse(savedAnswers);
-        setAnswers(parsedAnswers);
-      }
-      
-      if (savedHistory) {
-        const parsedHistory = JSON.parse(savedHistory);
-        setQuestionHistory(parsedHistory);
-        
-        // Set current question to the last question in history
-        if (parsedHistory.length > 0) {
-          const lastQuestionId = parsedHistory[parsedHistory.length - 1];
-          setCurrentQuestionId(lastQuestionId);
-          
-          // Check if this was the last question
-          try {
-            // We need to check the next question for each possible answer
-            // If any of them is not "final", this is not the last question
-            const questionData = getQuestionData(lastQuestionId);
-            if (questionData && questionData.options && questionData.options.length > 0) {
-              // Check if this is the last question by checking if all options lead to final
-              // This is a simplification - we should check if this is the last question for the current answer
-              const isLast = questionData.options.every(
-                (option: string) => getNextQuestionId(lastQuestionId, option) === "final"
-              );
-              setIsLastQuestion(isLast);
-            }
-          } catch (error) {
-            console.error("Error checking if last question:", error);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error loading saved questionnaire state:", error);
-      // On error, reset to initial state
-      resetQuestionnaire();
-    }
-  }, []);
 
   const updateAnswer = (questionId: string, answer: any) => {
     console.log("updateAnswer called:", questionId, answer);
