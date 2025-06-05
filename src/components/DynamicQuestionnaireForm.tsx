@@ -44,7 +44,7 @@ const DynamicQuestionnaireForm = () => {
   );
 
   // Handle the selection of an answer
-  const handleSelect = (value: string) => {
+  const handleSelect = async (value: string) => {
     if (isProcessing) {
       console.log("Already processing, ignoring click");
       return; // Prevent multiple clicks
@@ -53,28 +53,26 @@ const DynamicQuestionnaireForm = () => {
     console.log("Starting handleSelect with value:", value, "for question:", currentQuestionId);
     setIsProcessing(true);
     
-    // Update the answer first
-    updateAnswer(currentQuestionId, value);
-    
-    // Small delay to ensure answer is stored
-    setTimeout(() => {
-      try {
-        const nextQuestionId = goToNextQuestion(currentQuestionId, value);
-        console.log("Next question ID from goToNextQuestion:", nextQuestionId);
-        
-        // Navigate to results if we've reached the final step
-        if (nextQuestionId === "final") {
-          console.log("Navigating to results page");
-          navigate("/results");
-        } else {
-          console.log("Moving to next question:", nextQuestionId);
-        }
-      } catch (error) {
-        console.error("Error in handleSelect:", error);
-      } finally {
-        setIsProcessing(false);
+    try {
+      // Call goToNextQuestion and get the next question ID
+      const nextQuestionId = goToNextQuestion(currentQuestionId, value);
+      console.log("Next question ID from goToNextQuestion:", nextQuestionId);
+      
+      // Navigate to results if we've reached the final step
+      if (nextQuestionId === "final") {
+        console.log("Navigating to results page");
+        navigate("/results");
+      } else {
+        console.log("Successfully moved to next question:", nextQuestionId);
       }
-    }, 100);
+    } catch (error) {
+      console.error("Error in handleSelect:", error);
+    } finally {
+      // Reset processing state after a short delay
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 300);
+    }
   };
 
   // If no question data is found, provide option to reset the questionnaire
@@ -91,6 +89,11 @@ const DynamicQuestionnaireForm = () => {
       </div>
     );
   }
+
+  // Add debug info
+  console.log("Current question ID:", currentQuestionId);
+  console.log("Question data:", questionData);
+  console.log("Current answers:", answers);
 
   // Render the current question
   return (

@@ -7,7 +7,7 @@ interface QuestionnaireContextType {
   currentQuestionId: string;
   answers: UserAnswers;
   updateAnswer: (questionId: string, answer: any) => void;
-  goToNextQuestion: (currentQuestionId: string, answer: any) => string; // Changed to return string
+  goToNextQuestion: (currentQuestionId: string, answer: any) => string;
   goToPreviousQuestion: () => void;
   resetQuestionnaire: () => void;
   questionHistory: string[];
@@ -23,6 +23,8 @@ const initialAnswers: UserAnswers = {};
 
 // Define question branching logic based on the provided structure
 const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
+  console.log("getNextQuestionId called with:", currentQuestionId, answer);
+  
   // Define the branching logic based on the provided question flow
   switch (currentQuestionId) {
     // Initial age question
@@ -251,6 +253,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   }, []);
 
   const updateAnswer = (questionId: string, answer: any) => {
+    console.log("updateAnswer called:", questionId, answer);
     setAnswers((prev) => {
       const updatedAnswers = {
         ...prev,
@@ -269,32 +272,39 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   };
 
   const goToNextQuestion = (currentQuestionId: string, answer: any): string => {
-    // Store the current answer
+    console.log("goToNextQuestion called with:", currentQuestionId, answer);
+    
+    // Store the current answer first
     updateAnswer(currentQuestionId, answer);
     
     try {
       // Calculate next question based on current question and answer
       const nextQuestionId = getNextQuestionId(currentQuestionId, answer);
-      console.log("Current Question:", currentQuestionId, "Answer:", answer, "Next Question:", nextQuestionId);
+      console.log("Next question calculated:", nextQuestionId);
       
       // Check if this is the last question
       const isLast = isEndOfQuestionnaire(nextQuestionId);
       setIsLastQuestion(isLast);
       
-      // If not at the end, go to next question
+      // If not at the end, update the current question state
       if (!isLast) {
+        console.log("Setting currentQuestionId to:", nextQuestionId);
         setCurrentQuestionId(nextQuestionId);
         
         // Update history
-        const newHistory = [...questionHistory, nextQuestionId];
-        setQuestionHistory(newHistory);
-        
-        // Save history to localStorage
-        try {
-          localStorage.setItem(QUESTIONNAIRE_HISTORY_KEY, JSON.stringify(newHistory));
-        } catch (error) {
-          console.error("Error saving history to localStorage:", error);
-        }
+        setQuestionHistory(prev => {
+          const newHistory = [...prev, nextQuestionId];
+          console.log("Updated history:", newHistory);
+          
+          // Save history to localStorage
+          try {
+            localStorage.setItem(QUESTIONNAIRE_HISTORY_KEY, JSON.stringify(newHistory));
+          } catch (error) {
+            console.error("Error saving history to localStorage:", error);
+          }
+          
+          return newHistory;
+        });
       }
       
       return nextQuestionId;
@@ -327,6 +337,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   };
 
   const resetQuestionnaire = () => {
+    console.log("Resetting questionnaire");
     setCurrentQuestionId("Q1");
     setAnswers(initialAnswers);
     setQuestionHistory(["Q1"]);
