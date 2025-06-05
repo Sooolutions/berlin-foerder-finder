@@ -45,29 +45,36 @@ const DynamicQuestionnaireForm = () => {
 
   // Handle the selection of an answer
   const handleSelect = (value: string) => {
-    if (isProcessing) return; // Prevent multiple clicks
+    if (isProcessing) {
+      console.log("Already processing, ignoring click");
+      return; // Prevent multiple clicks
+    }
     
+    console.log("Starting handleSelect with value:", value, "for question:", currentQuestionId);
     setIsProcessing(true);
+    
+    // Update the answer first
     updateAnswer(currentQuestionId, value);
     
-    try {
-      const nextQuestionId = goToNextQuestion(currentQuestionId, value);
-      
-      // Navigate to results if we've reached the final step
-      if (nextQuestionId === "final") {
-        setTimeout(() => {
+    // Small delay to ensure answer is stored
+    setTimeout(() => {
+      try {
+        const nextQuestionId = goToNextQuestion(currentQuestionId, value);
+        console.log("Next question ID from goToNextQuestion:", nextQuestionId);
+        
+        // Navigate to results if we've reached the final step
+        if (nextQuestionId === "final") {
+          console.log("Navigating to results page");
           navigate("/results");
-          setIsProcessing(false);
-        }, 500); // Small delay for better UX
-      } else {
-        setTimeout(() => {
-          setIsProcessing(false);
-        }, 300); // Small delay for better UX even when not navigating to results
+        } else {
+          console.log("Moving to next question:", nextQuestionId);
+        }
+      } catch (error) {
+        console.error("Error in handleSelect:", error);
+      } finally {
+        setIsProcessing(false);
       }
-    } catch (error) {
-      console.error("Error navigating to next question:", error);
-      setIsProcessing(false);
-    }
+    }, 100);
   };
 
   // If no question data is found, provide option to reset the questionnaire
@@ -126,39 +133,42 @@ const DynamicQuestionnaireForm = () => {
               </div>
 
               {Array.isArray(questionData.options) && questionData.options.length > 0 && (
-                <RadioGroup
-                  value={answers[currentQuestionId] || ""}
-                  onValueChange={handleSelect}
-                  className="max-w-2xl mx-auto grid grid-cols-1 gap-4"
-                  name={`question-${currentQuestionId}`}
-                >
+                <div className="max-w-2xl mx-auto grid grid-cols-1 gap-4">
                   {questionData.options.map((option, index) => (
                     <div 
-                      key={option} 
+                      key={`${currentQuestionId}-${option}`}
                       className={`flex items-center space-x-4 p-6 rounded-xl border-2 transition-all duration-300 hover:border-berlin-orange hover:shadow-md cursor-pointer ${
                         answers[currentQuestionId] === option 
                           ? 'border-berlin-orange bg-berlin-orange/5 shadow-md' 
                           : 'border-gray-200 bg-white hover:bg-gray-50'
-                      }`}
+                      } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
                       style={{ animationDelay: `${index * 0.1}s` }}
+                      onClick={() => handleSelect(option)}
                     >
-                      <RadioGroupItem 
-                        value={option} 
-                        id={`option-${currentQuestionId}-${option.replace(/\s/g, '-')}`}
-                        className="text-berlin-orange border-berlin-orange" 
-                      />
-                      <Label 
-                        htmlFor={`option-${currentQuestionId}-${option.replace(/\s/g, '-')}`}
-                        className="flex-1 cursor-pointer text-lg font-medium text-gray-800"
+                      <RadioGroup
+                        value={answers[currentQuestionId] || ""}
+                        className="pointer-events-none"
                       >
-                        {option}
-                      </Label>
+                        <div className="flex items-center space-x-3">
+                          <RadioGroupItem 
+                            value={option} 
+                            id={`option-${currentQuestionId}-${option.replace(/\s/g, '-')}`}
+                            className="text-berlin-orange border-berlin-orange pointer-events-none" 
+                          />
+                          <Label 
+                            htmlFor={`option-${currentQuestionId}-${option.replace(/\s/g, '-')}`}
+                            className="flex-1 cursor-pointer text-lg font-medium text-gray-800 pointer-events-none"
+                          >
+                            {option}
+                          </Label>
+                        </div>
+                      </RadioGroup>
                       {answers[currentQuestionId] === option && (
-                        <CheckCircle className="h-6 w-6 text-berlin-orange animate-fade-in-up" />
+                        <CheckCircle className="h-6 w-6 text-berlin-orange animate-fade-in-up pointer-events-none" />
                       )}
                     </div>
                   ))}
-                </RadioGroup>
+                </div>
               )}
             </div>
           </div>
@@ -168,6 +178,7 @@ const DynamicQuestionnaireForm = () => {
               variant="outline"
               onClick={() => navigate("/")}
               className="flex items-center space-x-2 hover:bg-gray-50"
+              disabled={isProcessing}
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Zurück</span>
