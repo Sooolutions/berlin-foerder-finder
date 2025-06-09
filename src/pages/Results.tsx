@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useFundingResults } from "@/hooks/useFundingResults";
@@ -65,6 +64,13 @@ const ResultsContent = () => {
     );
   }
 
+  // Sort fundings to show "Berufsausbildungsbeihilfe (BAB)" first
+  const sortedFundings = fundings ? [...fundings].sort((a, b) => {
+    if (a.title.includes("Berufsausbildungsbeihilfe") || a.title.includes("BAB")) return -1;
+    if (b.title.includes("Berufsausbildungsbeihilfe") || b.title.includes("BAB")) return 1;
+    return 0;
+  }) : [];
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Simple header with count */}
@@ -76,7 +82,7 @@ const ResultsContent = () => {
       </div>
 
       {/* Funding Cards */}
-      {fundings.map((funding) => (
+      {sortedFundings.map((funding) => (
         <Card key={funding.id} className="hover:shadow-lg transition-shadow duration-300">
           <CardHeader>
             <div className="flex justify-between items-start">
@@ -100,10 +106,12 @@ const ResultsContent = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               {funding.amount && (
-                <div className="flex items-center space-x-2 text-sm">
-                  <Euro className="w-4 h-4 text-green-600" />
-                  <span className="font-medium">Förderhöhe:</span>
-                  <span className="text-green-700">{funding.amount}</span>
+                <div className="flex items-start space-x-2 text-sm">
+                  <Euro className="w-4 h-4 text-green-600 mt-0.5" />
+                  <div>
+                    <span className="font-medium block">Förderhöhe:</span>
+                    <span className="text-green-700">{funding.amount}</span>
+                  </div>
                 </div>
               )}
               
