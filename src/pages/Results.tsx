@@ -5,7 +5,7 @@ import { useFundingResults } from "@/hooks/useFundingResults";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Star, MapPin, Euro, Calendar, ExternalLink, Users, Shield } from "lucide-react";
+import { Loader2, MapPin, Euro, Calendar, ExternalLink } from "lucide-react";
 
 const ResultsContent = () => {
   // Call useFundingResults without providing answers to get all funding entries
@@ -66,53 +66,28 @@ const ResultsContent = () => {
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      {/* Success Header */}
-      <div className="text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg shadow-lg">
-        <div className="flex justify-center mb-4">
-          <div className="bg-white/20 rounded-full p-4">
-            <Star className="w-8 h-8" />
-          </div>
-        </div>
-        <h2 className="text-3xl font-bold mb-2">
-          Perfekt! Wir haben passende Förderungen für dich gefunden
-        </h2>
-        <p className="text-blue-100 text-lg">
-          {fundings.length} Förderungsmöglichkeiten, die zu deiner Situation in Berlin passen.
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Simple header with count */}
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold mb-2 text-gray-900">Förderungsmöglichkeiten</h2>
+        <p className="text-gray-600">
+          {fundings.length} {fundings.length === 1 ? 'Förderung gefunden' : 'Förderungen gefunden'}
         </p>
       </div>
 
-      {/* Trust indicators */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-        <div className="flex flex-wrap justify-center gap-6 text-sm">
-          <div className="flex items-center space-x-2 text-green-700">
-            <Shield className="w-4 h-4" />
-            <span className="font-medium">Alle Daten offiziell verifiziert</span>
-          </div>
-          <div className="flex items-center space-x-2 text-blue-600">
-            <Users className="w-4 h-4" />
-            <span className="font-medium">Persönlich auf dich abgestimmt</span>
-          </div>
-          <div className="flex items-center space-x-2 text-purple-600">
-            <MapPin className="w-4 h-4" />
-            <span className="font-medium">Speziell für Berlin</span>
-          </div>
-        </div>
-      </div>
-
       {/* Funding Cards */}
-      {fundings.map((funding, index) => (
-        <Card key={funding.id} className="hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500" style={{ animationDelay: `${index * 0.1}s` }}>
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50">
+      {fundings.map((funding) => (
+        <Card key={funding.id} className="hover:shadow-lg transition-shadow duration-300">
+          <CardHeader>
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <CardTitle className="text-2xl mb-2 text-gray-900">{funding.title}</CardTitle>
-                <CardDescription className="text-lg font-medium text-blue-600">
+                <CardTitle className="text-xl mb-1 text-gray-900">{funding.title}</CardTitle>
+                <CardDescription className="text-lg text-blue-600">
                   {funding.organization}
                 </CardDescription>
               </div>
               <div className="flex flex-wrap gap-2">
-                {funding.categories && funding.categories.map((category) => (
+                {funding.categories && funding.categories.slice(0, 2).map((category) => (
                   <Badge key={category} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                     {category}
                   </Badge>
@@ -120,51 +95,60 @@ const ResultsContent = () => {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            <p className="text-gray-700 mb-6 leading-relaxed">{funding.description}</p>
+          <CardContent>
+            <p className="text-gray-700 mb-4 leading-relaxed">{funding.description}</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               {funding.amount && (
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Euro className="w-5 h-5 text-green-600" />
-                    <h4 className="font-semibold text-green-800">Förderhöhe</h4>
-                  </div>
-                  <p className="text-green-700 font-medium">{funding.amount}</p>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Euro className="w-4 h-4 text-green-600" />
+                  <span className="font-medium">Förderhöhe:</span>
+                  <span className="text-green-700">{funding.amount}</span>
                 </div>
               )}
               
               {funding.application_deadline && (
-                <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Calendar className="w-5 h-5 text-orange-600" />
-                    <h4 className="font-semibold text-orange-800">Bewerbungsfrist</h4>
-                  </div>
-                  <p className="text-orange-700 font-medium">{funding.application_deadline}</p>
+                <div className="flex items-center space-x-2 text-sm">
+                  <Calendar className="w-4 h-4 text-orange-600" />
+                  <span className="font-medium">Bewerbungsfrist:</span>
+                  <span className="text-orange-700">{funding.application_deadline}</span>
                 </div>
               )}
             </div>
             
             {funding.application_process && (
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
-                <h4 className="font-semibold mb-2 text-blue-800">Antragsprozess</h4>
-                <p className="text-blue-700">{funding.application_process}</p>
+              <div className="bg-gray-50 p-3 rounded-lg border mb-4">
+                <h4 className="font-medium mb-1 text-gray-800 text-sm">Antragsprozess</h4>
+                <p className="text-gray-600 text-sm">{funding.application_process}</p>
               </div>
             )}
             
-            <div className="flex flex-wrap gap-2">
-              {funding.tags && funding.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-xs bg-gray-100 text-gray-600">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            {funding.tags && funding.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {funding.tags.slice(0, 4).map((tag) => (
+                  <Badge key={tag} variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                    {tag}
+                  </Badge>
+                ))}
+                {funding.tags.length > 4 && (
+                  <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                    +{funding.tags.length - 4} weitere
+                  </Badge>
+                )}
+              </div>
+            )}
           </CardContent>
           <CardFooter className="justify-between bg-gray-50 border-t pt-4">
             <div className="text-sm text-gray-600">
-              <span className="font-medium">Kontakt:</span>{" "}
-              {funding.contact_email && <span className="text-blue-600">{funding.contact_email}</span>}
-              {funding.contact_phone && <span> | Tel: <span className="text-blue-600">{funding.contact_phone}</span></span>}
+              {funding.contact_email && (
+                <div className="flex items-center space-x-1">
+                  <span className="font-medium">Kontakt:</span>
+                  <span className="text-blue-600">{funding.contact_email}</span>
+                </div>
+              )}
+              {funding.contact_phone && (
+                <div className="text-blue-600 text-xs">Tel: {funding.contact_phone}</div>
+              )}
             </div>
             <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700">
               <a href={funding.url} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
@@ -177,8 +161,7 @@ const ResultsContent = () => {
       ))}
       
       {/* Action buttons */}
-      <div className="text-center bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900">Was möchtest du als nächstes tun?</h3>
+      <div className="text-center bg-white p-6 rounded-lg shadow-sm border border-gray-100 mt-8">
         <div className="space-x-4">
           <Button onClick={() => window.location.href = "/"} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
             Neue Suche starten
