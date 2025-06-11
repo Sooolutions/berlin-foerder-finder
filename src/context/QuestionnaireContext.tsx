@@ -155,33 +155,7 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
       const year = currentQuestionId.split("_")[3];
       return `Q6_U18_Ausbildung_${year}_Ja_Egal`;
       
-    // All other Q5 questions lead to final results
-    case "Q5_U18_Schule_Ja_Ja":
-    case "Q5_U18_Schule_Ja_Nein":
-    case "Q5_U18_Schule_Nein_EigeneWohnung":
-    case "Q5_U18_Schule_Nein_Betreeungseinrichtung":
-    case "Q5_U18_Schule_Nein_Verwandte":
-    case "Q5_U18_Schule_Nein_Sonstiges":
-    case "Q5_U18_Ausbildung_1_Nein":
-    case "Q5_U18_Ausbildung_2_Nein":
-    case "Q5_U18_Ausbildung_3_Nein":
-    case "Q5_U18_Ausbildung_Abschluss_Nein":
-    case "Q5_U18_nichtsdavon_Praktikum_Ja":
-    case "Q5_U18_nichtsdavon_Warten_Ja":
-    case "Q5_U18_nichtsdavon_Arbeiten_Ja":
-    case "Q5_U18_nichtsdavon_Praktikum_Nein":
-    case "Q5_U18_nichtsdavon_Warten_Nein":
-    case "Q5_U18_nichtsdavon_Arbeiten_Nein":
-    case "Q5_18_24_Schule_Ja_Ja":
-    case "Q5_18_24_Schule_Nein_Ja":
-    case "Q5_18_24_Schule_Ja_Nein":
-    case "Q5_18_24_Schule_Nein_Nein":
-    case "Q6_U18_Ausbildung_1_Ja_Egal":
-    case "Q6_U18_Ausbildung_2_Ja_Egal":
-    case "Q6_U18_Ausbildung_3_Ja_Egal":
-    case "Q6_U18_Ausbildung_Abschluss_Ja_Egal":
-      return "final";
-      
+    // All other Q5 and Q6 questions lead to final results
     default:
       console.log(`No specific next question defined for ID: ${currentQuestionId}, using final as default`);
       return "final"; // Default path for anything else
@@ -330,3 +304,5 @@ export const useQuestionnaire = (): QuestionnaireContextType => {
   }
   return context;
 };
+
+export default QuestionnaireContext;

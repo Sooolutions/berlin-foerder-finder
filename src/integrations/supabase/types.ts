@@ -69,6 +69,7 @@ export type Database = {
           organization: string
           requires_children: boolean | null
           requires_marriage: boolean | null
+          "Soft Tags": string[] | null
           tags: string[] | null
           title: string
           updated_at: string | null
@@ -95,6 +96,7 @@ export type Database = {
           organization: string
           requires_children?: boolean | null
           requires_marriage?: boolean | null
+          "Soft Tags"?: string[] | null
           tags?: string[] | null
           title: string
           updated_at?: string | null
@@ -121,6 +123,7 @@ export type Database = {
           organization?: string
           requires_children?: boolean | null
           requires_marriage?: boolean | null
+          "Soft Tags"?: string[] | null
           tags?: string[] | null
           title?: string
           updated_at?: string | null

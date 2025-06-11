@@ -141,6 +141,8 @@ const questionsMap: Record<string, QuestionData> = {
     question: "Möchtest du dich auf die Schule, Ausbildung oder Arbeit vorbereiten?",
     options: ["Ja", "Nein"]
   },
+  
+  // 18-24 Q4 questions
   "Q4_18_24_Schule_Ja": {
     id: "Q4_18_24_Schule_Ja",
     question: "Suchst du Unterstützung in der Schule (Nachhilfe, Beratung, etc.)?",
@@ -284,6 +286,8 @@ const questionsMap: Record<string, QuestionData> = {
     question: "Welche Themen interessieren dich besonders?",
     options: ["Karriereplanung", "Lernen und Schulabschluss", "Persönliche Entwicklung", "Freizeit", "Unterstützung im Alltag"]
   },
+  
+  // 18-24 Q5 questions
   "Q5_18_24_Schule_Ja_Ja": {
     id: "Q5_18_24_Schule_Ja_Ja",
     question: "In welchem Bereich möchtest du unterstützt werden?",
