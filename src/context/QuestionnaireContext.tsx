@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { getQuestionData } from "@/data/questionnaireData";
 
@@ -88,9 +89,9 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
     case "Q3_18_24_Schule":
       return answer === "Ja" ? "Q4_18_24_Schule_Ja" : "Q4_18_24_Schule_Nein";
       
-    // 18-24 vocational training path
+    // 18-24 vocational training path - uses the same questions as under 18
     case "Q3_18_24_Ausbildung":
-      if (answer === "1") return "Q4_U18_Ausbildung_1"; // Reuse the under 18 path
+      if (answer === "1") return "Q4_U18_Ausbildung_1";
       if (answer === "2") return "Q4_U18_Ausbildung_2";
       if (answer === "3") return "Q4_U18_Ausbildung_3";
       return "Q4_U18_Ausbildung_Abschluss";
@@ -105,15 +106,15 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
     case "Q3_18_24_Arbeit":
     case "Q3_18_24_Übergangsphase":
     case "Q3_18_24_Arbeitssuchend":
+    case "Q4_18_24_Studium_Anfänger:in":
+    case "Q4_18_24_Studium_Mittendrin":
+    case "Q4_18_24_Studium_Abschluss":
     case "Q3_Ü65_Berufstätig":
     case "Q3_Ü65_Übergang":
     case "Q3_Ü65_Rente":
     case "Q3_Ü65_Pflege":
     case "Q3_Ü65_Sonstiges":
     case "Q4_U18_nichtsdavon_Suche":
-    case "Q4_18_24_Studium_Anfänger:in":
-    case "Q4_18_24_Studium_Mittendrin":
-    case "Q4_18_24_Studium_Abschluss":
       return "final";
       
     // Under 18 school paths
@@ -155,7 +156,7 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
       const year = currentQuestionId.split("_")[3];
       return `Q6_U18_Ausbildung_${year}_Ja_Egal`;
       
-    // All other Q5 and Q6 questions lead to final results
+    // All other Q5 and Q6 questions lead to final results according to the table
     default:
       console.log(`No specific next question defined for ID: ${currentQuestionId}, using final as default`);
       return "final"; // Default path for anything else
