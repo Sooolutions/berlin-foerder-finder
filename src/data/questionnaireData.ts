@@ -1,4 +1,3 @@
-
 export interface QuestionData {
   id: string;
   question: string;
@@ -287,7 +286,7 @@ const questionsMap: Record<string, QuestionData> = {
     options: ["Karriereplanung", "Lernen und Schulabschluss", "Persönliche Entwicklung", "Freizeit", "Unterstützung im Alltag"]
   },
   
-  // 18-24 Q5 questions
+  // 18-24 Q5 questions - FIXED: Added missing questions
   "Q5_18_24_Schule_Ja_Ja": {
     id: "Q5_18_24_Schule_Ja_Ja",
     question: "In welchem Bereich möchtest du unterstützt werden?",

@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { getQuestionData } from "@/data/questionnaireData";
 
@@ -142,11 +141,12 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
       const aktivity = currentQuestionId.split("_")[3];
       return answer === "Ja" ? `Q5_U18_nichtsdavon_${aktivity}_Ja` : `Q5_U18_nichtsdavon_${aktivity}_Nein`;
       
-    // 18-24 school support
+    // 18-24 school support - FIXED: Correct ID generation
     case "Q4_18_24_Schule_Ja":
+      return answer === "Ja" ? "Q5_18_24_Schule_Ja_Ja" : "Q5_18_24_Schule_Ja_Nein";
+      
     case "Q4_18_24_Schule_Nein":
-      const graduationStatus = currentQuestionId.split("_")[3];
-      return answer === "Ja" ? `Q5_18_24_Schule_${graduationStatus}_Ja` : `Q5_18_24_Schule_${graduationStatus}_Nein`;
+      return answer === "Ja" ? "Q5_18_24_Schule_Nein_Ja" : "Q5_18_24_Schule_Nein_Nein";
     
     // Additional support for vocational training
     case "Q5_U18_Ausbildung_1_Ja":
