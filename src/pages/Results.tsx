@@ -9,6 +9,10 @@ import { Loader2, MapPin, Euro, Calendar, ExternalLink } from "lucide-react";
 
 const ResultsContent = () => {
   const { answers } = useQuestionnaire();
+  
+  console.log("Results page - current answers:", answers);
+  console.log("Results page - Q1 answer:", answers.Q1);
+  
   // Pass the user's answers to get filtered results based on age
   const { data: fundings, isLoading, error } = useFundingResults(answers);
 
@@ -49,6 +53,11 @@ const ResultsContent = () => {
           </h2>
           <p className="text-gray-600 mb-6">
             Leider konnten wir keine Förderungen finden, die zu deinen Angaben passen.
+            {answers.Q1 && (
+              <span className="block mt-2 text-sm">
+                Filterkriterium: Altersgruppe "{answers.Q1}"
+              </span>
+            )}
             Versuche es mit anderen Kriterien oder kontaktiere direkt die Beratungsstellen.
           </p>
           <div className="space-x-4">
@@ -102,6 +111,11 @@ const ResultsContent = () => {
           {fundings.length} {fundings.length === 1 ? 'Förderung gefunden' : 'Förderungen gefunden'}
           {ageDisplay && ` für deine Altersgruppe`}
         </p>
+        {answers.Q1 && (
+          <p className="text-sm text-gray-500 mt-1">
+            Gefiltert nach Altersgruppe: {answers.Q1}
+          </p>
+        )}
       </div>
 
       {/* Funding Cards */}
