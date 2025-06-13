@@ -1,3 +1,4 @@
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useFundingResults } from "@/hooks/useFundingResults";
@@ -10,8 +11,11 @@ import { Loader2, MapPin, Euro, Calendar, ExternalLink } from "lucide-react";
 const ResultsContent = () => {
   const { answers } = useQuestionnaire();
   
-  console.log("Results page - current answers:", answers);
-  console.log("Results page - Q1 answer:", answers.Q1);
+  console.log("=== RESULTS PAGE DEBUG ===");
+  console.log("Current answers object:", answers);
+  console.log("Q1 answer specifically:", answers.Q1);
+  console.log("Answers keys:", Object.keys(answers || {}));
+  console.log("=== END RESULTS PAGE DEBUG ===");
   
   // Pass the user's answers to get filtered results based on age
   const { data: fundings, isLoading, error } = useFundingResults(answers);
@@ -117,6 +121,16 @@ const ResultsContent = () => {
           </p>
         )}
       </div>
+
+      {/* Debug info - will be visible to help diagnose */}
+      {answers.Q1 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
+          <p><strong>Debug Info:</strong></p>
+          <p>Q1 Antwort: {answers.Q1}</p>
+          <p>Anzahl gefundener Förderungen: {fundings.length}</p>
+          <p>Filter aktiv: Ja</p>
+        </div>
+      )}
 
       {/* Funding Cards */}
       {sortedFundings.map((funding) => (

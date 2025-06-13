@@ -40,35 +40,52 @@ export const useFundingResults = (answers?: UserAnswers) => {
   return useQuery({
     queryKey: ['funding', answers ? 'filtered' : 'all', answers?.Q1],
     queryFn: async () => {
-      console.log("Fetching funding with answers:", answers);
+      console.log("=== FUNDING QUERY DEBUG ===");
+      console.log("Full answers object:", answers);
+      console.log("Q1 answer:", answers?.Q1);
       
       let query = supabase.from('funding').select('*');
 
       // If answers are provided and Q1 answer exists, filter by age tag
       if (answers && answers.Q1) {
         const ageTag = getAgeTagFromAnswer(answers.Q1);
-        console.log("Age tag for filtering:", ageTag);
+        console.log("Mapped age tag:", ageTag);
         
         if (ageTag) {
-          // Filter for funding entries that contain the age tag in their tags array
           console.log("Applying filter for age tag:", ageTag);
+          // Use the correct Supabase filter syntax
           query = query.contains('tags', [ageTag]);
         }
       } else {
-        console.log("No Q1 answer found, fetching all funding");
+        console.log("No Q1 answer found - showing all funding");
       }
 
       const { data, error } = await query;
 
       if (error) {
-        console.error("Error fetching funding:", error);
+        console.error("Supabase query error:", error);
         throw error;
       }
 
-      console.log("Fetched funding data:", data);
-      console.log("Number of funding entries:", data?.length || 0);
+      console.log("Raw data from Supabase:", data);
+      console.log("Number of entries returned:", data?.length || 0);
+      
+      // Additional filtering on the client side as backup
+      let filteredData = data;
+      if (answers && answers.Q1) {
+        const ageTag = getAgeTagFromAnswer(answers.Q1);
+        if (ageTag) {
+          filteredData = data?.filter(funding => {
+            const hasTag = funding.tags && funding.tags.includes(ageTag);
+            console.log(`Funding "${funding.title}" has tag "${ageTag}":`, hasTag, "Tags:", funding.tags);
+            return hasTag;
+          }) || [];
+          console.log("After client-side filtering:", filteredData.length, "entries remain");
+        }
+      }
 
-      return data as Funding[];
+      console.log("=== END FUNDING QUERY DEBUG ===");
+      return filteredData as Funding[];
     },
   });
 };
