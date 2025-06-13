@@ -18,16 +18,38 @@ export interface Funding {
   tags: string[];
 }
 
-// Makes the answers parameter optional
+// Maps Q1 answers to corresponding tags
+const getAgeTagFromAnswer = (ageAnswer: string): string | null => {
+  switch (ageAnswer) {
+    case "unter 18":
+      return "U18";
+    case "18-24":
+      return "18-24";
+    case "25-64":
+      return "25-64";
+    case "über 65":
+      return "65+";
+    default:
+      return null;
+  }
+};
+
 export const useFundingResults = (answers?: UserAnswers) => {
   return useQuery({
-    queryKey: ['funding', answers ? 'filtered' : 'all'],
+    queryKey: ['funding', answers ? 'filtered' : 'all', answers?.Q1],
     queryFn: async () => {
-      // If no answers are provided or we want to show all results,
-      // simply fetch all funding entries without filters
-      const { data, error } = await supabase
-        .from('funding')
-        .select('*');
+      let query = supabase.from('funding').select('*');
+
+      // If answers are provided and Q1 answer exists, filter by age tag
+      if (answers && answers.Q1) {
+        const ageTag = getAgeTagFromAnswer(answers.Q1);
+        if (ageTag) {
+          // Filter for funding entries that contain the age tag in their tags array
+          query = query.contains('tags', [ageTag]);
+        }
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         throw error;

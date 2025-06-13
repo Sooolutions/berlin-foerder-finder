@@ -1,14 +1,17 @@
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useFundingResults } from "@/hooks/useFundingResults";
+import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, MapPin, Euro, Calendar, ExternalLink } from "lucide-react";
 
 const ResultsContent = () => {
-  // Call useFundingResults without providing answers to get all funding entries
-  const { data: fundings, isLoading, error } = useFundingResults();
+  const { answers } = useQuestionnaire();
+  // Pass the user's answers to get filtered results based on age
+  const { data: fundings, isLoading, error } = useFundingResults(answers);
 
   if (isLoading) {
     return (
@@ -54,7 +57,7 @@ const ResultsContent = () => {
               Neue Suche starten
             </Button>
             <Button variant="outline" asChild>
-              <a href="https://www.berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
+              <a href="https://berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
                 Beratung finden
               </a>
             </Button>
@@ -71,13 +74,34 @@ const ResultsContent = () => {
     return 0;
   }) : [];
 
+  // Get age group for display
+  const getAgeGroupDisplay = (ageAnswer: string) => {
+    switch (ageAnswer) {
+      case "unter 18":
+        return "unter 18 Jahren";
+      case "18-24":
+        return "18-24 Jahren";
+      case "25-64":
+        return "25-64 Jahren";
+      case "über 65":
+        return "über 65 Jahren";
+      default:
+        return "";
+    }
+  };
+
+  const ageDisplay = answers.Q1 ? getAgeGroupDisplay(answers.Q1) : "";
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Simple header with count */}
+      {/* Header with personalized message */}
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2 text-gray-900">Förderungsmöglichkeiten</h2>
+        <h2 className="text-2xl font-bold mb-2 text-gray-900">
+          Förderungsmöglichkeiten {ageDisplay && `für ${ageDisplay}`}
+        </h2>
         <p className="text-gray-600">
           {fundings.length} {fundings.length === 1 ? 'Förderung gefunden' : 'Förderungen gefunden'}
+          {ageDisplay && ` für deine Altersgruppe`}
         </p>
       </div>
 
