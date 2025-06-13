@@ -9,45 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      Förderungen: {
-        Row: {
-          alter_max: number | null
-          alter_min: number | null
-          Bezirk: string | null
-          einkommen_max: number | null
-          gueltig_bis: string | null
-          id: number
-          link: string | null
-          tags: string | null
-          titel: string | null
-          Zielgruppe: string | null
-        }
-        Insert: {
-          alter_max?: number | null
-          alter_min?: number | null
-          Bezirk?: string | null
-          einkommen_max?: number | null
-          gueltig_bis?: string | null
-          id?: number
-          link?: string | null
-          tags?: string | null
-          titel?: string | null
-          Zielgruppe?: string | null
-        }
-        Update: {
-          alter_max?: number | null
-          alter_min?: number | null
-          Bezirk?: string | null
-          einkommen_max?: number | null
-          gueltig_bis?: string | null
-          id?: number
-          link?: string | null
-          tags?: string | null
-          titel?: string | null
-          Zielgruppe?: string | null
-        }
-        Relationships: []
-      }
       funding: {
         Row: {
           amount: string | null

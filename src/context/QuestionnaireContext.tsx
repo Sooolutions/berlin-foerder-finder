@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { getQuestionData } from "@/data/questionnaireData";
 
@@ -65,6 +66,60 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
       if (answer === "In Rente") return "Q3_Ü65_Rente";
       if (answer === "Pflege oder Betreuung (selbst betroffen oder Angehörige)") return "Q3_Ü65_Pflege";
       return "Q3_Ü65_Sonstiges";
+
+    // 25-64 Q3 paths
+    case "Q3_25_64_Studium":
+      if (answer === "Studienanfänger:in") return "Q4_25_64_Studium_Anfänger:in";
+      if (answer === "Mittendrin") return "Q4_25_64_Studium_Mittendrin";
+      return "Q4_25_64_Studium_Abschluss";
+      
+    case "Q3_25_64_Arbeiten":
+      if (answer === "Vollzeit") return "Q4_25_64_Arbeiten_Voll";
+      if (answer === "Teilzeit") return "Q4_25_64_Arbeiten_Teil";
+      return "Q4_25_64_Arbeiten_Selbst";
+      
+    case "Q3_25_64_Arbeitssuchend":
+      if (answer === "Jobsuche") return "Q4_25_64_Arbeitssuchend_Suche";
+      if (answer === "Qualifizierung") return "Q4_25_64_Arbeitssuchend_Qualifizierung";
+      if (answer === "Persönliche Unterstützung") return "Q4_25_64_Arbeitssuchend_Persönlich";
+      return "Q4_25_64_Arbeitssuchend_Orientierung";
+      
+    case "Q3_25_64_Weiterbildung":
+      if (answer === "Finanzierung") return "Q4_25_64_Weiterbildung_Finanzierung";
+      if (answer === "Karriereplanung nach der Weiterbildung") return "Q4_25_64_Weiterbildung_Karriereplanung";
+      if (answer === "Unterstützung beim Abschluss") return "Q4_25_64_Weiterbildung_Abschluss";
+      return "Q4_25_64_Weiterbildung_Vernetzung";
+      
+    case "Q3_25_64_Übergang":
+      if (answer === "Neuorientierung im Beruf") return "Q4_25_64_Übergang_Neuorientierung";
+      if (answer === "Weiterbildung oder Qualifikation") return "Q4_25_64_Übergang_Weiterbildung";
+      if (answer === "Persönliche Entwicklung oder Sabbatical") return "Q4_25_64_Übergang_Persönlich";
+      return "Q4_25_64_Übergang_Gründung";
+      
+    case "Q3_25_64_Familie":
+      if (answer === "Beruflicher Wiedereinstieg") return "Q4_25_64_Familie_Wiedereinstieg";
+      if (answer === "Unterstützung der Familienzeit") return "Q4_25_64_Familie_Unterstützung";
+      if (answer === "Qualifizierung während der Auszeit") return "Q4_25_64_Familie_Qualifizierung";
+      return "final"; // Austausch mit anderen leads to final
+      
+    case "Q3_25_64_Sonstiges":
+      if (answer === "Persönliche Entwicklung") return "Q4_25_64_Sonstiges_Persönlich";
+      if (answer === "Berufliche Orientierung/Weiterbildung") return "Q4_25_64_Sonstiges_Weiterbildung";
+      if (answer === "Soziales Engagement") return "Q4_25_64_Sonstiges_Soziales";
+      return "Q4_25_64_Sonstiges_Unterstützung";
+
+    // 25-64 Q4 paths that need Q5 questions
+    case "Q4_25_64_Arbeiten_Voll":
+      if (answer === "Umschulung für einen neuen Bereich") return "Q5_25_64_Arbeiten_Voll_Umschulung";
+      return "final"; // All other options lead to final
+      
+    case "Q4_25_64_Arbeiten_Teil":
+      if (answer === "Wechsel in Vollzeitbeschäftigung") return "Q5_25_64_Arbeiten_Teil_Wechsel";
+      return "final"; // All other options lead to final
+      
+    case "Q4_25_64_Arbeiten_Selbst":
+      if (answer === "Unternehmensfinanzierung") return "Q5_25_64_Arbeiten_Selbstständig_Finanzen";
+      return "final"; // All other options lead to final
       
     // Under 18 school path
     case "Q3_U18_Schule":
@@ -114,6 +169,33 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
     case "Q3_Ü65_Pflege":
     case "Q3_Ü65_Sonstiges":
     case "Q4_U18_nichtsdavon_Suche":
+    // All 25-64 Q4 paths that lead directly to final
+    case "Q4_25_64_Studium_Anfänger:in":
+    case "Q4_25_64_Studium_Mittendrin":
+    case "Q4_25_64_Studium_Abschluss":
+    case "Q4_25_64_Arbeitssuchend_Suche":
+    case "Q4_25_64_Arbeitssuchend_Qualifizierung":
+    case "Q4_25_64_Arbeitssuchend_Persönlich":
+    case "Q4_25_64_Arbeitssuchend_Orientierung":
+    case "Q4_25_64_Weiterbildung_Finanzierung":
+    case "Q4_25_64_Weiterbildung_Karriereplanung":
+    case "Q4_25_64_Weiterbildung_Abschluss":
+    case "Q4_25_64_Weiterbildung_Vernetzung":
+    case "Q4_25_64_Übergang_Neuorientierung":
+    case "Q4_25_64_Übergang_Weiterbildung":
+    case "Q4_25_64_Übergang_Persönlich":
+    case "Q4_25_64_Übergang_Gründung":
+    case "Q4_25_64_Familie_Wiedereinstieg":
+    case "Q4_25_64_Familie_Unterstützung":
+    case "Q4_25_64_Familie_Qualifizierung":
+    case "Q4_25_64_Sonstiges_Persönlich":
+    case "Q4_25_64_Sonstiges_Weiterbildung":
+    case "Q4_25_64_Sonstiges_Soziales":
+    case "Q4_25_64_Sonstiges_Unterstützung":
+    // All Q5 paths for 25-64
+    case "Q5_25_64_Arbeiten_Voll_Umschulung":
+    case "Q5_25_64_Arbeiten_Teil_Wechsel":
+    case "Q5_25_64_Arbeiten_Selbstständig_Finanzen":
       return "final";
       
     // Under 18 school paths
