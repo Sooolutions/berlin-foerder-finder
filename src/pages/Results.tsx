@@ -1,8 +1,7 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useFundingResults } from "@/hooks/useFundingResults";
-import { useQuestionnaire } from "@/context/QuestionnaireContext";
+import { useQuestionnaire, QuestionnaireProvider } from "@/context/QuestionnaireContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -217,7 +216,9 @@ const Results = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-12">
-        <ResultsContent />
+        <QuestionnaireProvider>
+          <ResultsContent />
+        </QuestionnaireProvider>
       </main>
       <Footer />
     </div>
