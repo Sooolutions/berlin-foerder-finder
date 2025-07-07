@@ -29,7 +29,7 @@ const getAgeTagFromAnswer = (ageAnswer: string): string | null => {
     case "25-64":
       return "25-64";
     case "über 65":
-      return "65+";
+      return "65plus";
     default:
       console.log("No matching tag found for age answer:", ageAnswer);
       return null;
