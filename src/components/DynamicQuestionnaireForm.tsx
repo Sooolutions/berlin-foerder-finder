@@ -15,6 +15,7 @@ const DynamicQuestionnaireForm = () => {
     currentQuestionId,
     answers,
     goToNextQuestion,
+    goToPreviousQuestion,
     questionHistory,
   } = useQuestionnaire();
 
@@ -32,6 +33,17 @@ const DynamicQuestionnaireForm = () => {
     ((questionHistory.length) / estimatedTotalSteps) * 100,
     100
   );
+
+  // Handle going back to previous question or home
+  const handleBack = () => {
+    if (questionHistory.length > 1) {
+      // Go to previous question if there are previous questions
+      goToPreviousQuestion();
+    } else {
+      // Navigate to home if it's the first question
+      navigate("/");
+    }
+  };
 
   // Handle the selection of an answer
   const handleSelect = async (value: string) => {
@@ -169,7 +181,7 @@ const DynamicQuestionnaireForm = () => {
           <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
             <Button
               variant="outline"
-              onClick={() => navigate("/")}
+              onClick={handleBack}
               className="flex items-center space-x-2 hover:bg-gray-50"
               disabled={isProcessing}
             >

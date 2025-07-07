@@ -2,8 +2,16 @@
 import DynamicQuestionnaireForm from "@/components/DynamicQuestionnaireForm";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useQuestionnaire } from "@/context/QuestionnaireContext";
+import { useEffect } from "react";
 
 const Questionnaire = () => {
+  const { resetQuestionnaire } = useQuestionnaire();
+  
+  // Reset questionnaire when component mounts to ensure fresh start
+  useEffect(() => {
+    resetQuestionnaire();
+  }, [resetQuestionnaire]);
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
