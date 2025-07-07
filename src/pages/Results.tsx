@@ -244,9 +244,7 @@ const Results = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-12">
-        <QuestionnaireProvider>
-          <ResultsContent />
-        </QuestionnaireProvider>
+        <ResultsContent />
       </main>
       <Footer />
     </div>
