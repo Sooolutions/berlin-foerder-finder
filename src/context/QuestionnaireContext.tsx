@@ -326,6 +326,8 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   };
 
   const goToPreviousQuestion = () => {
+    console.log("goToPreviousQuestion called, current history:", questionHistory);
+    
     if (questionHistory.length > 1) {
       try {
         // Remove current question from history
@@ -334,6 +336,8 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         
         // Set the previous question as current
         const previousQuestionId = newHistory[newHistory.length - 1];
+        console.log("Going back to question:", previousQuestionId);
+        
         setCurrentQuestionId(previousQuestionId);
         setQuestionHistory(newHistory);
         setIsLastQuestion(false);
