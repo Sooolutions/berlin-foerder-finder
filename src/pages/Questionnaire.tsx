@@ -3,15 +3,21 @@ import DynamicQuestionnaireForm from "@/components/DynamicQuestionnaireForm";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const Questionnaire = () => {
   const { resetQuestionnaire } = useQuestionnaire();
+  const hasReset = useRef(false);
   
-  // Reset questionnaire when component mounts to ensure fresh start
+  // Reset questionnaire only once when component mounts
   useEffect(() => {
-    resetQuestionnaire();
-  }, [resetQuestionnaire]);
+    if (!hasReset.current) {
+      console.log("Resetting questionnaire on mount");
+      resetQuestionnaire();
+      hasReset.current = true;
+    }
+  }, []); // Empty dependency array - only run once
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

@@ -265,6 +265,11 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   const updateAnswer = (questionId: string, answer: any) => {
     console.log("updateAnswer called:", questionId, answer);
     setAnswers((prev) => {
+      // Only update if the answer is actually different
+      if (prev[questionId] === answer) {
+        return prev;
+      }
+      
       const updatedAnswers = {
         ...prev,
         [questionId]: answer,
@@ -284,13 +289,13 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   const goToNextQuestion = (currentQuestionId: string, answer: any): string => {
     console.log("goToNextQuestion called with:", currentQuestionId, answer);
     
-    // Store the current answer first
-    updateAnswer(currentQuestionId, answer);
-    
     try {
       // Calculate next question based on current question and answer
       const nextQuestionId = getNextQuestionId(currentQuestionId, answer);
       console.log("Next question calculated:", nextQuestionId);
+      
+      // Store the current answer
+      updateAnswer(currentQuestionId, answer);
       
       // Check if this is the last question
       const isLast = isEndOfQuestionnaire(nextQuestionId);
