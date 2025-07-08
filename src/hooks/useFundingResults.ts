@@ -36,28 +36,87 @@ const getAgeTagFromAnswer = (ageAnswer: string): string | null => {
   }
 };
 
+// Maps Q2 answers to corresponding tags
+const getActivityTagFromAnswer = (activityAnswer: string): string | null => {
+  console.log("Mapping activity answer to tag:", activityAnswer);
+  switch (activityAnswer) {
+    case "Schule":
+      return "Schule";
+    case "Ausbildung":
+      return "Ausbildung";
+    case "Studium":
+      return "Studium";
+    case "Arbeit":
+    case "Arbeiten":
+    case "Berufstätig":
+      return "Arbeit";
+    case "Übergangsphase":
+      return "Übergangsphase";
+    case "Arbeitssuchend":
+      return "Arbeitssuchend";
+    case "Weiterbildung/Umschulung":
+      return "Weiterbildung";
+    case "Pflege von Angehörigen oder Familienzeit":
+      return "Familie";
+    case "Sonstiges":
+      return "Sonstiges";
+    case "Übergang in den Ruhestand":
+      return "Beratung";
+    case "In Rente":
+      return "Rente";
+    case "Pflege oder Betreuung (selbst betroffen oder Angehörige)":
+      return "Pflege";
+    default:
+      console.log("No matching tag found for activity answer:", activityAnswer);
+      return null;
+  }
+};
+
+// Helper function to get Q2 answer from all answers
+const getQ2Answer = (answers: UserAnswers): string | null => {
+  // Check all possible Q2 question IDs
+  const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
+  if (q2Keys.length > 0) {
+    const q2Key = q2Keys[0]; // Get the first Q2 answer
+    return answers[q2Key];
+  }
+  return null;
+};
+
 export const useFundingResults = (answers?: UserAnswers) => {
   return useQuery({
-    queryKey: ['funding', answers ? 'filtered' : 'all', answers?.Q1],
+    queryKey: ['funding', answers ? 'filtered' : 'all', answers?.Q1, getQ2Answer(answers)],
     queryFn: async () => {
       console.log("=== FUNDING QUERY DEBUG ===");
       console.log("Full answers object:", answers);
       console.log("Q1 answer:", answers?.Q1);
       
+      const q2Answer = getQ2Answer(answers);
+      console.log("Q2 answer:", q2Answer);
+      
       let query = supabase.from('funding').select('*');
 
-      // If answers are provided and Q1 answer exists, filter by age tag
-      if (answers && answers.Q1) {
-        const ageTag = getAgeTagFromAnswer(answers.Q1);
-        console.log("Mapped age tag:", ageTag);
-        
-        if (ageTag) {
-          console.log("Applying filter for age tag:", ageTag);
-          // Use the correct Supabase filter syntax
-          query = query.contains('tags', [ageTag]);
-        }
+      // Get filter tags
+      const ageTag = answers?.Q1 ? getAgeTagFromAnswer(answers.Q1) : null;
+      const activityTag = q2Answer ? getActivityTagFromAnswer(q2Answer) : null;
+      
+      console.log("Mapped age tag:", ageTag);
+      console.log("Mapped activity tag:", activityTag);
+
+      // Apply database filters if we have tags
+      if (ageTag && !activityTag) {
+        // Only age filter
+        console.log("Applying age filter only:", ageTag);
+        query = query.contains('tags', [ageTag]);
+      } else if (!ageTag && activityTag) {
+        // Only activity filter  
+        console.log("Applying activity filter only:", activityTag);
+        query = query.contains('tags', [activityTag]);
+      } else if (ageTag && activityTag) {
+        // Both filters - we'll do this client-side since Supabase has limitations
+        console.log("Will apply both filters client-side");
       } else {
-        console.log("No Q1 answer found - showing all funding");
+        console.log("No filters - showing all funding");
       }
 
       const { data, error } = await query;
@@ -70,18 +129,30 @@ export const useFundingResults = (answers?: UserAnswers) => {
       console.log("Raw data from Supabase:", data);
       console.log("Number of entries returned:", data?.length || 0);
       
-      // Additional filtering on the client side as backup
+      // Client-side filtering for combined filters or as backup
       let filteredData = data;
-      if (answers && answers.Q1) {
-        const ageTag = getAgeTagFromAnswer(answers.Q1);
-        if (ageTag) {
-          filteredData = data?.filter(funding => {
-            const hasTag = funding.tags && funding.tags.includes(ageTag);
-            console.log(`Funding "${funding.title}" has tag "${ageTag}":`, hasTag, "Tags:", funding.tags);
-            return hasTag;
-          }) || [];
-          console.log("After client-side filtering:", filteredData.length, "entries remain");
-        }
+      
+      if (ageTag || activityTag) {
+        filteredData = data?.filter(funding => {
+          let hasAgeTag = true;
+          let hasActivityTag = true;
+          
+          if (ageTag) {
+            hasAgeTag = funding.tags && funding.tags.includes(ageTag);
+            console.log(`Funding "${funding.title}" has age tag "${ageTag}":`, hasAgeTag);
+          }
+          
+          if (activityTag) {
+            hasActivityTag = funding.tags && funding.tags.includes(activityTag);
+            console.log(`Funding "${funding.title}" has activity tag "${activityTag}":`, hasActivityTag);
+          }
+          
+          const result = hasAgeTag && hasActivityTag;
+          console.log(`Funding "${funding.title}" passes all filters:`, result, "Tags:", funding.tags);
+          return result;
+        }) || [];
+        
+        console.log("After client-side filtering:", filteredData.length, "entries remain");
       }
 
       console.log("=== END FUNDING QUERY DEBUG ===");

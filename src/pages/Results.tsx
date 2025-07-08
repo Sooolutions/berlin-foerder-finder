@@ -117,16 +117,29 @@ const ResultsContent = () => {
         </p>
         {answers.Q1 && (
           <p className="text-sm text-gray-500 mt-1">
-            Gefiltert nach Altersgruppe: {answers.Q1}
+            Gefiltert nach: {answers.Q1}
+            {(() => {
+              const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
+              const q2Answer = q2Keys.length > 0 ? answers[q2Keys[0]] : null;
+              return q2Answer ? ` + ${q2Answer}` : '';
+            })()}
           </p>
         )}
       </div>
 
       {/* Debug info - will be visible to help diagnose */}
-      {answers.Q1 && (
+      {(answers.Q1 || (() => {
+        const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
+        return q2Keys.length > 0;
+      })()) && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
           <p><strong>Debug Info:</strong></p>
           <p>Q1 Antwort: {answers.Q1}</p>
+          {(() => {
+            const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
+            const q2Answer = q2Keys.length > 0 ? answers[q2Keys[0]] : null;
+            return q2Answer ? <p>Q2 Antwort: {q2Answer}</p> : null;
+          })()}
           <p>Anzahl gefundener Förderungen: {fundings.length}</p>
           <p>Filter aktiv: Ja</p>
         </div>
