@@ -36,7 +36,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-12">
               <h1 className="text-6xl md:text-7xl font-bold mb-8 text-gray-900 leading-tight">
-                Berliner Förderungs-Matcher
+                DrinFürDich
               </h1>
               <p className="text-2xl md:text-3xl text-gray-600 mb-12 leading-relaxed max-w-4xl mx-auto">
                 Finde passende Förderungen und Unterstützung für deine Situation in Berlin
@@ -81,7 +81,7 @@ const Index = () => {
             <div className="max-w-6xl mx-auto px-4">
               <div className="text-center mb-16">
                 <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-                  Warum der Berliner Förderungs-Matcher?
+                  Warum DrinFürDich?
                 </h2>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                   Einfach, schnell und zuverlässig zu deinen passenden Förderungen
