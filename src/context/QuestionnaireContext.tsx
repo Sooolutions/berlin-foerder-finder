@@ -29,10 +29,10 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
     // Initial age question
     case "Q1":
       if (answer === "unter 18") return "Q2_U18";
-      if (answer === "18-24") return "Q2_18_24";
+      if (answer === "18-24") return "Q2_18-24";
       if (answer === "25-64") return "Q2_25_64";
       if (answer === "über 65") return "Q2_Ü65";
-      return "Q2_18_24"; // Default path
+      return "Q2_18-24"; // Default path
       
     // Under 18 nationality question (NEW FLOW)
     case "Q2_U18":
@@ -85,14 +85,93 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
     case "Q9_U18":
       return "final";
       
-    // 18-24 activity options
-    case "Q2_18_24":
-      if (answer === "Schule") return "Q3_18_24_Schule";
-      if (answer === "Ausbildung") return "Q3_18_24_Ausbildung";
-      if (answer === "Studium") return "Q3_18_24_Studium";
-      if (answer === "Arbeit") return "Q3_18_24_Arbeit";
-      if (answer === "Übergangsphase") return "Q3_18_24_Übergangsphase";
-      return "Q3_18_24_Arbeitssuchend";
+    // 18-24 nationality question (NEW FLOW)
+    case "Q2_18-24":
+      return "Q3_18-24"; // All nationality answers lead to Q3_18-24
+      
+    // 18-24 activity question (NEW FLOW)
+    case "Q3_18-24":
+      if (answer === "Schule") return "Q4_18-24_Schule";
+      if (answer === "Ausbildung") return "Q4_18-24_Ausbildung";
+      if (answer === "Studium") return "Q4_18-24_Studium";
+      if (answer === "Arbeiten") return "Q4_18-24_Arbeiten";
+      if (answer === "Arbeitssuchend") return "Q4_18-24_Arbeitssuchend";
+      if (answer === "Weiterbildung/Umschulung") return "Q4_18-24_Weiterbildung";
+      if (answer === "Übergangsphase") return "Q4_18-24_Übergangsphase";
+      if (answer === "Pflege von Angehörigen oder Familienzeit") return "Q4_18-24_Pflege";
+      return "Q4_18-24_Sonstiges";
+      
+    // 18-24 Q4 paths (NEW FLOW)
+    case "Q4_18-24_Schule":
+    case "Q4_18-24_Ausbildung":
+    case "Q4_18-24_Studium":
+    case "Q4_18-24_Arbeiten":
+    case "Q4_18-24_Arbeitssuchend":
+    case "Q4_18-24_Weiterbildung":
+    case "Q4_18-24_Übergangsphase":
+    case "Q4_18-24_Pflege":
+    case "Q4_18-24_Sonstiges":
+      return "Q5_18-24";
+      
+    // 18-24 Q5 living situation (NEW FLOW)
+    case "Q5_18-24":
+      if (answer === "Alleine (eigene Wohnung)") return "Q6_18-24_Alleine";
+      if (answer === "Bei meiner Familie") return "Q6_18-24_Familie";
+      if (answer === "Wohngemeinschaft (WG)") return "Q6_18-24_WG";
+      if (answer === "In einem Wohnheim (Studentenwohnheim, etc.)") return "Q6_18-24_Wohnheim";
+      return "Q6_18-24_Ohne";
+      
+    // 18-24 Q6 housing cost questions (NEW FLOW)
+    case "Q6_18-24_Alleine":
+    case "Q6_18-24_Familie":
+    case "Q6_18-24_WG":
+    case "Q6_18-24_Wohnheim":
+    case "Q6_18-24_Ohne":
+      // Route to financial questions based on activity
+      const previousAnswers18_24 = JSON.parse(localStorage.getItem('questionnaireAnswers') || '{}');
+      const activity18_24 = previousAnswers18_24["Q3_18-24"];
+      if (activity18_24 === "Schule") return "Q7_18-24_Schule";
+      if (activity18_24 === "Ausbildung") return "Q7_18-24_Ausbildung";
+      if (activity18_24 === "Studium") return "Q7_18-24_Studium";
+      if (activity18_24 === "Arbeiten") return "Q7_18-24_Arbeiten";
+      if (activity18_24 === "Arbeitssuchend") return "Q7_18-24_Arbeitssuchend";
+      if (activity18_24 === "Weiterbildung/Umschulung") return "Q7_18-24_Weiterbildung";
+      if (activity18_24 === "Übergangsphase") return "Q7_18-24_Übergangsphase";
+      if (activity18_24 === "Pflege von Angehörigen oder Familienzeit") return "Q7_18-24_Pflege";
+      return "Q7_18-24_Sonstiges";
+      
+    // 18-24 Q7 financial questions (NEW FLOW)
+    case "Q7_18-24_Schule":
+    case "Q7_18-24_Ausbildung":
+    case "Q7_18-24_Studium":
+    case "Q7_18-24_Arbeiten":
+    case "Q7_18-24_Arbeitssuchend":
+    case "Q7_18-24_Weiterbildung":
+    case "Q7_18-24_Übergangsphase":
+    case "Q7_18-24_Pflege":
+    case "Q7_18-24_Sonstiges":
+      return "Q8_18-24";
+      
+    // 18-24 Q8 health question (NEW FLOW)
+    case "Q8_18-24":
+      if (answer === "Ja") return "Q9_18-24_Ja";
+      // Check if user is from abroad (non-German nationality)
+      const previousAnswers18_24_health = JSON.parse(localStorage.getItem('questionnaireAnswers') || '{}');
+      const nationality18_24 = previousAnswers18_24_health["Q2_18-24"];
+      if (nationality18_24 && nationality18_24 !== "Deutsch") {
+        return "Q9_18-24_Ausland_Nein";
+      }
+      return "Q9_18-24_Nein";
+      
+    // 18-24 Q9 support questions (NEW FLOW)
+    case "Q9_18-24_Ja":
+    case "Q9_18-24_Nein":
+    case "Q9_18-24_Ausland_Nein":
+      return "Q10_18-24";
+      
+    // 18-24 Q10 final question (NEW FLOW)
+    case "Q10_18-24":
+      return "final";
       
     // 25-64 activity options
     case "Q2_25_64":

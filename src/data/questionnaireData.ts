@@ -13,11 +13,161 @@ const questionsMap: Record<string, QuestionData> = {
     options: ["unter 18", "18-24", "25-64", "über 65"]
   },
 
-  // What are you currently doing - by age group (OLD STRUCTURE - REPLACED BELOW)
-  "Q2_18_24": {
-    id: "Q2_18_24",
+  // 18-24 paths - New structure
+  "Q2_18-24": {
+    id: "Q2_18-24",
+    question: "Welche Staatsangehörigkeit hast du?",
+    options: ["Deutsch", "Ukrainisch", "Türkisch", "Syrisch", "EU-Ausland", "Russland", "Indien", "Andere"]
+  },
+  "Q3_18-24": {
+    id: "Q3_18-24",
     question: "Was machst du aktuell?",
-    options: ["Schule", "Ausbildung", "Studium", "Arbeit", "Übergangsphase", "Arbeitssuchend"]
+    options: ["Schule", "Ausbildung", "Studium", "Arbeiten", "Arbeitssuchend", "Weiterbildung/Umschulung", "Übergangsphase", "Pflege von Angehörigen oder Familienzeit", "Sonstiges"]
+  },
+  "Q4_18-24_Schule": {
+    id: "Q4_18-24_Schule",
+    question: "Hast du Probleme in der Schule?",
+    options: ["Lernschwierigkeiten", "Mobbing", "Mittagessen", "Schulmaterial"]
+  },
+  "Q4_18-24_Ausbildung": {
+    id: "Q4_18-24_Ausbildung",
+    question: "Was würdest du dir für deine Ausbildung wünschen?",
+    options: ["Mehr Unterstützung in der Berufsschule (z. B. Nachhilfe, Prüfungsvorbereitung)", "Besseres Miteinander mit Ausbilder:innen/Kolleg:innen", "Mehr Verantwortung und Vertrauen", "Klare Perspektiven für die Zeit nach der Ausbildung (z. B. Übernahme, Weiterbildung)"]
+  },
+  "Q4_18-24_Studium": {
+    id: "Q4_18-24_Studium",
+    question: "Was würdest du dir für dein Studium wünschen, um es erfolgreich abzuschließen und dich optimal auf nächste Schritte vorzubereiten?",
+    options: ["Mehr Unterstützung im Studium", "Bessere Anbindung an Professor:innen/Dozent:innen", "Mehr Austausch mit Kommiliton:innen", "Finanzielle Unterstützung"]
+  },
+  "Q4_18-24_Arbeiten": {
+    id: "Q4_18-24_Arbeiten",
+    question: "Was würdest du dir für deine aktuelle Situation bei der Arbeit wünschen?",
+    options: ["Ein besseres Arbeitsklima oder einen anderen Job", "Mehr Verantwortung oder Aufstiegsmöglichkeiten", "Flexiblere Arbeitszeiten oder die Möglichkeit, im Homeoffice zu arbeiten", "Bessere Vergütung oder finanzielle Unterstützung"]
+  },
+  "Q4_18-24_Arbeitssuchend": {
+    id: "Q4_18-24_Arbeitssuchend",
+    question: "Was würde dir im Moment am meisten helfen, einen passenden Job zu finden?",
+    options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Gezielte Trainings/Kurse, die mich fit für den Arbeitsmarkt machen", "Finanzielle Unterstützung, um die Zeit der Arbeitssuche zu überbrücken", "Hilfe bei der Erstellung meiner Bewerbungsunterlagen"]
+  },
+  "Q4_18-24_Weiterbildung": {
+    id: "Q4_18-24_Weiterbildung",
+    question: "Was würde dir helfen, deine Weiterbildung erfolgreich abzuschließen?",
+    options: ["Bessere Vereinbarkeit mit meinem Alltag (z. B. Arbeit, Familie)", "Gezieltere Förderung für meine spezifischen Lernziele", "Finanzielle Unterstützung (z. B. für Material, Gebühren oder Lebenshaltungskosten)", "Mehr Austausch mit anderen Teilnehmer:innen"]
+  },
+  "Q4_18-24_Übergangsphase": {
+    id: "Q4_18-24_Übergangsphase",
+    question: "Was würde dir in dieser Übergangsphase am meisten helfen, einen passenden Weg zu finden?",
+    options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Möglichkeiten, praktische Erfahrungen zu sammeln (z. B. durch Praktika)", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Finanzielle Unterstützung, um die Zeit zu überbrücken"]
+  },
+  "Q4_18-24_Pflege": {
+    id: "Q4_18-24_Pflege",
+    question: "Was würde dir helfen, die Pflege oder Familienzeit besser mit deinem Alltag zu vereinbaren?",
+    options: ["Informationen über Entlastungsangebote", "Austausch mit anderen jungen Pflegenden", "Beratung, wie ich die Pflege mit meinem Beruf/Ausbildung vereinbaren kann", "Psychologische Unterstützung"]
+  },
+  "Q4_18-24_Sonstiges": {
+    id: "Q4_18-24_Sonstiges",
+    question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+    options: ["Einen Weg aus der momentanen Perspektivlosigkeit finden", "Mehr Möglichkeiten für soziale Kontakte und Freizeitgestaltung", "Bessere finanzielle Absicherung", "Beratungs- und Unterstützungsangebote"]
+  },
+  "Q5_18-24": {
+    id: "Q5_18-24",
+    question: "Was beschreibt deine Wohnsituation am besten?",
+    options: ["Alleine (eigene Wohnung)", "Bei meiner Familie", "Wohngemeinschaft (WG)", "In einem Wohnheim (Studentenwohnheim, etc.)", "Ich habe aktuell keinen Wohnsitz"]
+  },
+  "Q6_18-24_Alleine": {
+    id: "Q6_18-24_Alleine",
+    question: "Wie hoch sind deine gesamten monatlichen Wohnkosten?",
+    options: ["Unter 300€", "301-500€", "501-800€", "801-1.200€", "Über 1.200€"]
+  },
+  "Q6_18-24_Familie": {
+    id: "Q6_18-24_Familie",
+    question: "Hast du das Gefühl das es finanzielle Probleme gibt?",
+    options: ["Ja", "Nein"]
+  },
+  "Q6_18-24_WG": {
+    id: "Q6_18-24_WG",
+    question: "Wie hoch sind deine gesamten monatlichen Wohnkosten?",
+    options: ["Unter 300€", "301-500€", "501-800€", "801-1.200€", "Über 1.200€"]
+  },
+  "Q6_18-24_Wohnheim": {
+    id: "Q6_18-24_Wohnheim",
+    question: "Wie hoch sind deine monatlichen Wohnkosten im Wohnheim ungefähr?",
+    options: ["Unter 200€", "201-400€", "401-600€", "Über 600€"]
+  },
+  "Q6_18-24_Ohne": {
+    id: "Q6_18-24_Ohne",
+    question: "Um die richtigen Hilfsangebote zu finden, brauchen wir etwas mehr Informationen. Wie wohnst du aktuell?",
+    options: ["Bei Freunden/Bekannten", "In einer Notunterkunft oder einem Obdachlosenheim", "Ich übernachte an öffentlichen Orten", "Ich wohne in einem Fahrzeug", "Nichts davon"]
+  },
+  "Q7_18-24_Schule": {
+    id: "Q7_18-24_Schule",
+    question: "Benötigst du finanzielle Unterstützung für deinen Schulabschluss?",
+    options: ["Ja", "Nein"]
+  },
+  "Q7_18-24_Ausbildung": {
+    id: "Q7_18-24_Ausbildung",
+    question: "Wie viel Ausbildungsvergütung (Brutto) erhältst du monatlich?",
+    options: ["unter 500€", "501-800€", "801-1.200€", "Über 1.200€"]
+  },
+  "Q7_18-24_Studium": {
+    id: "Q7_18-24_Studium",
+    question: "Welche Form der finanziellen Unterstützung würdest du dir für dein Studium am meisten wünschen?",
+    options: ["BAföG oder andere staatliche Hilfen", "Unterstützung bei den Studienkosten", "Nebenjob, der sich mit dem Studium vereinbaren lässt", "Ich habe Schwierigkeiten meine Lebensunterhaltungskosten zu decken", "Ich bin finanziell gut abgesichert"]
+  },
+  "Q7_18-24_Arbeiten": {
+    id: "Q7_18-24_Arbeiten",
+    question: "Wie hoch ist dein monatliches Brutto-Einkommen ungefähr?",
+    options: ["Unter 1.000€", "1.001-2.000€", "2.001-3.500€", "Über 3.500€"]
+  },
+  "Q7_18-24_Arbeitssuchend": {
+    id: "Q7_18-24_Arbeitssuchend",
+    question: "Beziehst du aktuell Sozialleistungen?",
+    options: ["Ich erhalte Arbeitslosengeld I", "ich erhalte Bürgergeld", "Ich erhalte keine Leistung", "Ich möchte dazu keine Angabe machen"]
+  },
+  "Q7_18-24_Weiterbildung": {
+    id: "Q7_18-24_Weiterbildung",
+    question: "Was beschreibt deine aktuelle finanzielle Situation am besten?",
+    options: ["Ich ein regelmäßiges Einkommen und komme gut zurecht", "Ich habe ein regelmäßiges Einkommen, aber es ist oft knapp am Monatsende", "Ich habe kein regelmäßiges Einkommen und muss meine Ersparnisse nutzen", "Ich habe kein regelmäßiges Einkommen und kann meine Ausgaben nicht decken", "Ich werde von meiner Familie oder Partner/Partnerin finanziert"]
+  },
+  "Q7_18-24_Übergangsphase": {
+    id: "Q7_18-24_Übergangsphase",
+    question: "Wie wird dein Lebensunterhalt in dieser Übergangsphase hauptsächlich finanziert?",
+    options: ["Durch meine Familie", "Durch eigene Ersparnisse", "Ich erhalte eine Sozialleistung (z.B. Bürgergeld, Arbeitslosengeld)", "Durch andere Quellen", "Ich kann meine Ausgaben aktuell nicht decken"]
+  },
+  "Q7_18-24_Pflege": {
+    id: "Q7_18-24_Pflege",
+    question: "Was beschreibt deine aktuelle finanzielle Situation am besten?",
+    options: ["Ich erhalte Pflegegeld oder eine andere Leistung", "Ich habe ein eigene Einkommen", "Mein Einkommen stammt hauptsächlich aus Leistungen", "Mein Einkommen reicht nicht aus, um meine Augaben zu decken"]
+  },
+  "Q7_18-24_Sonstiges": {
+    id: "Q7_18-24_Sonstiges",
+    question: "Was beschreibt deine aktuelle finanzielle Situation am besten?",
+    options: ["Ich ein regelmäßiges Einkommen und komme gut zurecht", "Ich habe ein regelmäßiges Einkommen, aber es ist oft knapp am Monatsende", "Ich habe kein regelmäßiges Einkommen und muss meine Ersparnisse nutzen", "Ich habe kein regelmäßiges Einkommen und kann meine Ausgaben nicht decken", "Ich werde von meiner Familie oder Partner/Partnerin finanziert"]
+  },
+  "Q8_18-24": {
+    id: "Q8_18-24",
+    question: "Gibt es gesundheitliche Besonderheiten, die deinen Alltag stark beeinflussen?",
+    options: ["Ja", "Nein"]
+  },
+  "Q9_18-24_Ja": {
+    id: "Q9_18-24_Ja",
+    question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+    options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf oder Ausbildung", "Mehr Austausch mit anderen Betroffenen"]
+  },
+  "Q9_18-24_Nein": {
+    id: "Q9_18-24_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Probleme in der Familie", "Schwierigkeiten im sozialen Umfeld", "Psychische Belastungen", "Schwierigkeiten mit Arbeit, Ausbildung oder Studium", "Umgang mit Schulden/Finanzen", "Ich kümmere mich um kranke oder pflegebedürftige Familienmitglieder", "Nichts davon"]
+  },
+  "Q9_18-24_Ausland_Nein": {
+    id: "Q9_18-24_Ausland_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Probleme in der Familie", "Schwierigkeiten im sozialen Umfeld", "Psychische Belastungen", "Schwierigkeiten mit Arbeit, Ausbildung oder Studium", "Umgang mit Schulden/Finanzen", "Schwierigkeiten in Deutschland anzukommen", "Ich kümmere mich um kranke oder pflegebedürftige Familienmitglieder", "Nichts davon"]
+  },
+  "Q10_18-24": {
+    id: "Q10_18-24",
+    question: "Was wünschst du dir?",
+    options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"]
   },
   "Q2_25_64": {
     id: "Q2_25_64",
