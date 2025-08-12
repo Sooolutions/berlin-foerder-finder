@@ -34,11 +34,56 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
       if (answer === "über 65") return "Q2_Ü65";
       return "Q2_18_24"; // Default path
       
-    // Under 18 activity options
+    // Under 18 nationality question (NEW FLOW)
     case "Q2_U18":
-      if (answer === "Schule") return "Q3_U18_Schule";
-      if (answer === "Ausbildung") return "Q3_U18_Ausbildung";
-      return "Q3_U18_nichtsdavon";
+      return "Q3_U18"; // All nationality answers lead to Q3_U18
+      
+    // Under 18 activity question (NEW FLOW)
+    case "Q3_U18":
+      if (answer === "Schule") return "Q4_U18_Schule";
+      if (answer === "Ausbildung") return "Q4_U18_Ausbildung";
+      if (answer === "FSJ oder FÖJ") return "Q4_U18_FSJ";
+      return "Q4_U18_Sonstiges";
+      
+    // Under 18 Q4 paths (NEW FLOW)
+    case "Q4_U18_Schule":
+    case "Q4_U18_Ausbildung":
+    case "Q4_U18_FSJ":
+    case "Q4_U18_Sonstiges":
+      return "Q5_U18";
+      
+    // Under 18 Q5 living situation (NEW FLOW)
+    case "Q5_U18":
+      if (answer === "Ja") return "Q6_U18_Eltern";
+      if (answer === "Nein, ich wohne in einer Betreuungseinrichtung (Wohngruppe, Internat, Heim, etc.)") return "Q6_U18_Betreuung";
+      return "Q6_U18_Verwandte";
+      
+    // Under 18 Q6 financial questions (NEW FLOW)
+    case "Q6_U18_Eltern":
+    case "Q6_U18_Betreuung":
+    case "Q6_U18_Verwandte":
+      return "Q7_U18";
+      
+    // Under 18 Q7 health question (NEW FLOW)
+    case "Q7_U18":
+      if (answer === "Ja") return "Q8_U18_Ja";
+      // Check if user is from abroad (non-German nationality)
+      const previousAnswers = JSON.parse(localStorage.getItem('questionnaireAnswers') || '{}');
+      const nationality = previousAnswers.Q2_U18;
+      if (nationality && nationality !== "Deutsch") {
+        return "Q8_U18_Ausland_Nein";
+      }
+      return "Q8_U18_Nein";
+      
+    // Under 18 Q8 support questions (NEW FLOW)
+    case "Q8_U18_Ja":
+    case "Q8_U18_Nein":
+    case "Q8_U18_Ausland_Nein":
+      return "Q9_U18";
+      
+    // Under 18 Q9 final question (NEW FLOW)
+    case "Q9_U18":
+      return "final";
       
     // 18-24 activity options
     case "Q2_18_24":
@@ -121,23 +166,7 @@ const getNextQuestionId = (currentQuestionId: string, answer: any): string => {
       if (answer === "Unternehmensfinanzierung") return "Q5_25_64_Arbeiten_Selbstständig_Finanzen";
       return "final"; // All other options lead to final
       
-    // Under 18 school path
-    case "Q3_U18_Schule":
-      return answer === "Ja" ? "Q4_U18_Schule_Ja" : "Q4_U18_Schule_Nein";
-      
-    // Under 18 vocational training path
-    case "Q3_U18_Ausbildung":
-      if (answer === "1") return "Q4_U18_Ausbildung_1";
-      if (answer === "2") return "Q4_U18_Ausbildung_2";
-      if (answer === "3") return "Q4_U18_Ausbildung_3";
-      return "Q4_U18_Ausbildung_Abschluss";
-      
-    // Under 18 other activities
-    case "Q3_U18_nichtsdavon":
-      if (answer === "Suche nach Ausbildung/Schule") return "Q4_U18_nichtsdavon_Suche";
-      if (answer === "Praktikum") return "Q4_U18_nichtsdavon_Praktikum";
-      if (answer === "Warten") return "Q4_U18_nichtsdavon_Warten";
-      return "Q4_U18_nichtsdavon_Arbeiten";
+     // OLD U18 PATH LOGIC - REMOVED (these question IDs no longer exist in new flow)
       
     // 18-24 school path
     case "Q3_18_24_Schule":

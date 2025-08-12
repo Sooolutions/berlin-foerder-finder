@@ -13,12 +13,7 @@ const questionsMap: Record<string, QuestionData> = {
     options: ["unter 18", "18-24", "25-64", "über 65"]
   },
 
-  // What are you currently doing - by age group
-  "Q2_U18": {
-    id: "Q2_U18",
-    question: "Was machst du aktuell?",
-    options: ["Schule", "Ausbildung", "nichts davon"]
-  },
+  // What are you currently doing - by age group (OLD STRUCTURE - REPLACED BELOW)
   "Q2_18_24": {
     id: "Q2_18_24",
     question: "Was machst du aktuell?",
@@ -35,21 +30,81 @@ const questionsMap: Record<string, QuestionData> = {
     options: ["Berufstätig", "Übergang in den Ruhestand", "In Rente", "Pflege oder Betreuung (selbst betroffen oder Angehörige)", "Sonstiges"]
   },
 
-  // Under 18 paths
-  "Q3_U18_Schule": {
-    id: "Q3_U18_Schule",
+  // Under 18 paths - New structure
+  "Q2_U18": {
+    id: "Q2_U18",
+    question: "Welche Staatsangehörigkeit hast du?",
+    options: ["Deutsch", "Ukrainisch", "Türkisch", "Syrisch", "EU-Ausland", "Russland", "Indien", "Andere"]
+  },
+  "Q3_U18": {
+    id: "Q3_U18",
+    question: "Was machst du aktuell?",
+    options: ["Schule", "Ausbildung", "FSJ oder FÖJ", "Sonstiges"]
+  },
+  "Q4_U18_Schule": {
+    id: "Q4_U18_Schule",
+    question: "Hast du Probleme in der Schule?",
+    options: ["Lernschwierigkeiten", "Mobbing", "Mittagessen", "Schulmaterial"]
+  },
+  "Q4_U18_Ausbildung": {
+    id: "Q4_U18_Ausbildung",
+    question: "Was würdest du dir für deine Ausbildung wünschen?",
+    options: ["Mehr Unterstützung beim Lernen", "Besseres Miteinander mit Ausbilder:in/Kolleg:innen", "Mehr Verantwortung/Anspruchsvollere Aufgaben", "Mehr Zeit für persönliche Projekte/Hobbys", "Finanzielle Unterstützung"]
+  },
+  "Q4_U18_FSJ": {
+    id: "Q4_U18_FSJ",
+    question: "Was würde dir helfen dein FSJ, FÖJ, oder ähnliches besser zu gestalten?",
+    options: ["Spezifische Weiterbildungen/Kurse", "Mehr Anerkennung für meine Arbeit", "Finanzielle Unterstützung", "Mehr Austausch mit anderen Freiwilligen"]
+  },
+  "Q4_U18_Sonstiges": {
+    id: "Q4_U18_Sonstiges",
+    question: "Was wünschst du dir für deine aktuelle Situation?",
+    options: ["Schnell einen passenden Schul-/Ausbildungsplatz finden", "Eine Ansprechperson finden, die mich berät und unterstützt", "Neue Freunde finden und spannende Aktivitäten machen", "Finanziell unabhängiger sein"]
+  },
+  "Q5_U18": {
+    id: "Q5_U18",
     question: "Wohnst du bei deinen Eltern?",
+    options: ["Ja", "Nein, ich wohne in einer Betreuungseinrichtung (Wohngruppe, Internat, Heim, etc.)", "Nein, ich wohne bei Verwandten/Bekannten"]
+  },
+  "Q6_U18_Eltern": {
+    id: "Q6_U18_Eltern",
+    question: "Hast du das Gefühl, dass es finanzielle Probleme gibt?",
     options: ["Ja", "Nein"]
   },
-  "Q3_U18_Ausbildung": {
-    id: "Q3_U18_Ausbildung",
-    question: "In welchem Jahr deiner Ausbildung befindest du dich?",
-    options: ["1", "2", "3", "Abschlussphase"]
+  "Q6_U18_Betreuung": {
+    id: "Q6_U18_Betreuung",
+    question: "Wer finanziert deinen Aufenthalt in der Einrichtung hauptsächlich?",
+    options: ["Eine Behörde", "Meine Familie", "Ich selbst", "Eine Stiftung", "Sonstiges"]
   },
-  "Q3_U18_nichtsdavon": {
-    id: "Q3_U18_nichtsdavon", 
-    question: "Was machst du aktuell?",
-    options: ["Suche nach Ausbildung/Schule", "Praktikum", "Warten", "Arbeiten"]
+  "Q6_U18_Verwandte": {
+    id: "Q6_U18_Verwandte",
+    question: "Wer finanziert hauptsächlich deinen monatlichen Lebensunterhalt?",
+    options: ["Meine Sorgeberechtigten", "Die Verwandten/Bekannten, bei denen ich wohne", "Ich selbst", "Das Jugendamt", "Ich weiß es nicht"]
+  },
+  "Q7_U18": {
+    id: "Q7_U18",
+    question: "Gibt es gesundheitliche Besonderheiten, die deinen Alltag stark beeinflussen?",
+    options: ["Ja", "Nein"]
+  },
+  "Q8_U18_Ja": {
+    id: "Q8_U18_Ja",
+    question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+    options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung in der Schule/Ausbildung", "Mehr Austausch mit anderen Betroffenen"]
+  },
+  "Q8_U18_Nein": {
+    id: "Q8_U18_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Probleme in der Familie", "Schwierigkeiten im sozialen Umfeld", "Psychische Belastungen", "Ich kümmere mich um kranke oder pflegebedürftige Familienmitglieder", "Nichts davon"]
+  },
+  "Q8_U18_Ausland_Nein": {
+    id: "Q8_U18_Ausland_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Probleme in der Familie", "Schwierigkeiten im sozialen Umfeld", "Psychische Belastungen", "Schwierigkeiten in Deutschland anzukommen", "Ich kümmere mich um kranke oder pflegebedürftige Familienmitglieder", "Nichts davon"]
+  },
+  "Q9_U18": {
+    id: "Q9_U18",
+    question: "Was wünschst du dir?",
+    options: ["Neue Freunde finden", "Beratung und Orientierung", "Spaß- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Ehrenamtliches Engagement"]
   },
 
   // 18-24 paths
