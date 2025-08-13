@@ -104,24 +104,24 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   };
 
   const getFinancialQuestion25_64 = (): string => {
-    const currentActivity = getAnswer("Q3_25_64");
+    const currentActivity = getAnswer("Q3_25-64");
     
     if (currentActivity === "Ausbildung") {
-      return "Q7_25_64_Ausbildung";
+      return "Q7_25-64_Ausbildung";
     } else if (currentActivity === "Studium") {
-      return "Q7_25_64_Studium";
+      return "Q7_25-64_Studium";
     } else if (currentActivity === "Arbeiten") {
-      return "Q7_25_64_Arbeiten";
+      return "Q7_25-64_Arbeiten";
     } else if (currentActivity === "Arbeitssuchend") {
-      return "Q7_25_64_Arbeitssuchend";
+      return "Q7_25-64_Arbeitssuchend";
     } else if (currentActivity === "Weiterbildung/Umschulung") {
-      return "Q7_25_64_Weiterbildung";
+      return "Q7_25-64_Weiterbildung";
     } else if (currentActivity === "Übergangsphase") {
-      return "Q7_25_64_Übergangsphase";
+      return "Q7_25-64_Übergangsphase";
     } else if (currentActivity === "Pflege von Angehörigen oder Familienzeit") {
-      return "Q7_25_64_Pflege";
+      return "Q7_25-64_Pflege";
     } else {
-      return "Q7_25_64_Sonstiges";
+      return "Q7_25-64_Sonstiges";
     }
   };
 
@@ -140,10 +140,10 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   };
 
   const getSupportQuestion25_64 = (): string => {
-    const nationality = getAnswer("Q2_25_64");
+    const nationality = getAnswer("Q2_25-64");
     const isNonGerman = nationality && nationality !== "Deutsch";
     
-    return isNonGerman ? "Q9_25_64_Ausland_Nein" : "Q9_25_64_Nein";
+    return isNonGerman ? "Q9_25-64_Ausland_Nein" : "Q9_25-64_Nein";
   };
 
   const getNextQuestionId = (currentId: string, answer: string): string => {
@@ -154,7 +154,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
       case "Q1":
         if (answer === "unter 18") return "Q2_U18";
         if (answer === "18-24") return "Q2_18-24";
-        if (answer === "25-64") return "Q2_25_64";
+        if (answer === "25-64") return "Q2_25-64";
         return "Q2_Ü65";
 
       // Under 18 paths - NEW STRUCTURE
@@ -251,60 +251,60 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         return "Q10_18-24";
 
       // 25-64 paths - NEW STRUCTURE
-      case "Q2_25_64":
-        return "Q3_25_64";
+      case "Q2_25-64":
+        return "Q3_25-64";
         
-      case "Q3_25_64":
-        if (answer === "Ausbildung") return "Q4_25_64_Ausbildung";
-        if (answer === "Studium") return "Q4_25_64_Studium";
-        if (answer === "Arbeiten") return "Q4_25_64_Arbeiten";
-        if (answer === "Arbeitssuchend") return "Q4_25_64_Arbeitssuchend";
-        if (answer === "Weiterbildung/Umschulung") return "Q4_25_64_Weiterbildung";
-        if (answer === "Übergangsphase") return "Q4_25_64_Übergangsphase";
-        if (answer === "Pflege von Angehörigen oder Familienzeit") return "Q4_25_64_Pflege";
-        return "Q4_25_64_Sonstiges";
+      case "Q3_25-64":
+        if (answer === "Ausbildung") return "Q4_25-64_Ausbildung";
+        if (answer === "Studium") return "Q4_25-64_Studium";
+        if (answer === "Arbeiten") return "Q4_25-64_Arbeiten";
+        if (answer === "Arbeitssuchend") return "Q4_25-64_Arbeitssuchend";
+        if (answer === "Weiterbildung/Umschulung") return "Q4_25-64_Weiterbildung";
+        if (answer === "Übergangsphase") return "Q4_25-64_Übergangsphase";
+        if (answer === "Pflege von Angehörigen oder Familienzeit") return "Q4_25-64_Pflege";
+        return "Q4_25-64_Sonstiges";
         
-      case "Q4_25_64_Ausbildung":
-      case "Q4_25_64_Studium":
-      case "Q4_25_64_Arbeiten":
-      case "Q4_25_64_Arbeitssuchend":
-      case "Q4_25_64_Weiterbildung":
-      case "Q4_25_64_Übergangsphase":
-      case "Q4_25_64_Pflege":
-      case "Q4_25_64_Sonstiges":
-        return "Q5_25_64";
+      case "Q4_25-64_Ausbildung":
+      case "Q4_25-64_Studium":
+      case "Q4_25-64_Arbeiten":
+      case "Q4_25-64_Arbeitssuchend":
+      case "Q4_25-64_Weiterbildung":
+      case "Q4_25-64_Übergangsphase":
+      case "Q4_25-64_Pflege":
+      case "Q4_25-64_Sonstiges":
+        return "Q5_25-64";
         
-      case "Q5_25_64":
-        if (answer === "ich wohne zur Miete") return "Q6_25_64_Miete";
-        if (answer === "Wohneigentum") return "Q6_25_64_Eigentum";
-        if (answer === "Bei meiner Familie") return "Q6_25_64_Familie";
-        if (answer === "Wohngemeinschaft (WG)") return "Q6_25_64_WG";
-        return "Q6_25_64_Ohne";
+      case "Q5_25-64":
+        if (answer === "ich wohne zur Miete") return "Q6_25-64_Miete";
+        if (answer === "Wohneigentum") return "Q6_25-64_Eigentum";
+        if (answer === "Bei meiner Familie") return "Q6_25-64_Familie";
+        if (answer === "Wohngemeinschaft (WG)") return "Q6_25-64_WG";
+        return "Q6_25-64_Ohne";
         
-      case "Q6_25_64_Miete":
-      case "Q6_25_64_Eigentum":
-      case "Q6_25_64_Familie":
-      case "Q6_25_64_WG":
-      case "Q6_25_64_Ohne":
+      case "Q6_25-64_Miete":
+      case "Q6_25-64_Eigentum":
+      case "Q6_25-64_Familie":
+      case "Q6_25-64_WG":
+      case "Q6_25-64_Ohne":
         return getFinancialQuestion25_64();
         
-      case "Q7_25_64_Ausbildung":
-      case "Q7_25_64_Studium":
-      case "Q7_25_64_Arbeiten":
-      case "Q7_25_64_Arbeitssuchend":
-      case "Q7_25_64_Weiterbildung":
-      case "Q7_25_64_Übergangsphase":
-      case "Q7_25_64_Pflege":
-      case "Q7_25_64_Sonstiges":
-        return "Q8_25_64";
+      case "Q7_25-64_Ausbildung":
+      case "Q7_25-64_Studium":
+      case "Q7_25-64_Arbeiten":
+      case "Q7_25-64_Arbeitssuchend":
+      case "Q7_25-64_Weiterbildung":
+      case "Q7_25-64_Übergangsphase":
+      case "Q7_25-64_Pflege":
+      case "Q7_25-64_Sonstiges":
+        return "Q8_25-64";
         
-      case "Q8_25_64":
-        return answer === "Ja" ? "Q9_25_64_Ja" : getSupportQuestion25_64();
+      case "Q8_25-64":
+        return answer === "Ja" ? "Q9_25-64_Ja" : getSupportQuestion25_64();
         
-      case "Q9_25_64_Ja":
-      case "Q9_25_64_Nein":
-      case "Q9_25_64_Ausland_Nein":
-        return "Q10_25_64";
+      case "Q9_25-64_Ja":
+      case "Q9_25-64_Nein":
+      case "Q9_25-64_Ausland_Nein":
+        return "Q10_25-64";
 
       // Over 65 activity options
       case "Q2_Ü65":
@@ -317,7 +317,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
       // Final questions for all paths
       case "Q9_U18":
       case "Q10_18-24":
-      case "Q10_25_64":
+      case "Q10_25-64":
       case "Q3_Ü65_Berufstätig":
       case "Q3_Ü65_Übergang":
       case "Q3_Ü65_Rente":

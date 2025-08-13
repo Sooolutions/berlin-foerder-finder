@@ -14,9 +14,11 @@ const DynamicQuestionnaireForm = () => {
   const {
     currentQuestionId,
     answers,
+    updateAnswer,
     goToNextQuestion,
     goToPreviousQuestion,
     questionHistory,
+    isLastQuestion,
   } = useQuestionnaire();
 
   // Track loading state to prevent multiple clicks
@@ -56,17 +58,21 @@ const DynamicQuestionnaireForm = () => {
     setIsProcessing(true);
     
     try {
-      // Call goToNextQuestion and get the next question ID
-      const nextQuestionId = goToNextQuestion(currentQuestionId, value);
-      console.log("Next question ID from goToNextQuestion:", nextQuestionId);
+      // Update the answer first
+      updateAnswer(currentQuestionId, value);
       
-      // Navigate to results if we've reached the final step
-      if (nextQuestionId === "final") {
-        console.log("Navigating to results page");
-        navigate("/results");
-      } else {
-        console.log("Successfully moved to next question:", nextQuestionId);
-      }
+      // Then call goToNextQuestion
+      goToNextQuestion();
+      
+      // Check if this was the last question by checking if isLastQuestion becomes true
+      setTimeout(() => {
+        if (isLastQuestion) {
+          console.log("Navigating to results page");
+          navigate("/results");
+        } else {
+          console.log("Successfully moved to next question");
+        }
+      }, 100);
     } catch (error) {
       console.error("Error in handleSelect:", error);
     } finally {

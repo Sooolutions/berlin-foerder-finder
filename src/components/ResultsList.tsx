@@ -113,38 +113,46 @@ const ResultsList = () => {
 
 function filterFundingsByUserAnswers(fundings: Funding[], userAnswers: UserAnswers): Funding[] {
   return fundings.filter((funding) => {
-    // Altersfilter
+    // Altersfilter - convert string to number for comparison
     if (
       funding.eligibility.minAge !== undefined &&
-      userAnswers.age !== null &&
-      userAnswers.age < funding.eligibility.minAge
+      userAnswers.age !== null
     ) {
-      return false;
+      const userAge = typeof userAnswers.age === 'string' ? parseInt(userAnswers.age, 10) : userAnswers.age;
+      if (userAge < funding.eligibility.minAge) {
+        return false;
+      }
     }
     
     if (
       funding.eligibility.maxAge !== undefined &&
-      userAnswers.age !== null &&
-      userAnswers.age > funding.eligibility.maxAge
+      userAnswers.age !== null
     ) {
-      return false;
+      const userAge = typeof userAnswers.age === 'string' ? parseInt(userAnswers.age, 10) : userAnswers.age;
+      if (userAge > funding.eligibility.maxAge) {
+        return false;
+      }
     }
     
-    // Einkommensfilter
+    // Einkommensfilter - convert string to number for comparison
     if (
       funding.eligibility.income?.max !== undefined &&
-      userAnswers.income !== null &&
-      userAnswers.income > funding.eligibility.income.max
+      userAnswers.income !== null
     ) {
-      return false;
+      const userIncome = typeof userAnswers.income === 'string' ? parseInt(userAnswers.income, 10) : userAnswers.income;
+      if (userIncome > funding.eligibility.income.max) {
+        return false;
+      }
     }
     
     if (
       funding.eligibility.income?.min !== undefined &&
-      userAnswers.income !== null &&
-      userAnswers.income < funding.eligibility.income.min
+      userAnswers.income !== null
     ) {
-      return false;
+      const userIncome = typeof userAnswers.income === 'string' ? parseInt(userAnswers.income, 10) : userAnswers.income;
+      if (userIncome < funding.eligibility.income.min) {
+        return false;
+      }
     }
     
     // Bezirksfilter
@@ -169,10 +177,12 @@ function filterFundingsByUserAnswers(fundings: Funding[], userAnswers: UserAnswe
     
     if (
       funding.eligibility.family?.children !== undefined &&
-      userAnswers.hasChildren !== null &&
-      funding.eligibility.family.children !== userAnswers.hasChildren
+      userAnswers.hasChildren !== null
     ) {
-      return false;
+      const userHasChildren = typeof userAnswers.hasChildren === 'string' ? userAnswers.hasChildren === 'true' : userAnswers.hasChildren === true;
+      if (funding.eligibility.family.children !== userHasChildren) {
+        return false;
+      }
     }
     
     // Bildungsfilter
