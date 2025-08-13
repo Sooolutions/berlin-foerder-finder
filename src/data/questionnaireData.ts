@@ -1230,6 +1230,296 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q6_U18_Ausbildung_Abschluss_Ja_Egal",
     question: "Welche Themen interessieren dich besonders?",
     options: ["Ausland", "Mentoring", "Karriere", "Lernen", "Community"]
+  },
+
+  // 65+ Age Group Questions
+  "Q2_65plus": {
+    id: "Q2_65plus",
+    question: "Welche Staatsangehörigkeit hast du?",
+    options: [
+      "Deutsch",
+      "Ukrainisch",
+      "Türkisch", 
+      "Syrisch",
+      "EU-Ausland",
+      "Russland",
+      "Indien",
+      "Andere"
+    ]
+  },
+
+  "Q3_65plus": {
+    id: "Q3_65plus",
+    question: "Was machst du aktuell?",
+    options: [
+      "Ich bin Rente",
+      "Arbeiten (Voll- oder Teilzeit)",
+      "Pflege von Angehörigen",
+      "Ich bin erwerbsunfähig",
+      "Ich engagiere mich ehrenamtlich",
+      "Sonstiges"
+    ]
+  },
+
+  "Q4_65plus_Rente": {
+    id: "Q4_65plus_Rente", 
+    question: "Was würdest du dir für deinen Ruhestand wünschen, um ihn noch erfüllter zu gestalten?",
+    options: [
+      "Mehr soziale Kontakte und Freizeitaktivitäten",
+      "Unterstützung bei der Alltagsbewältigung",
+      "Möglichkeiten zur persönlichen Weiterentwicklung (z. B. neue Hobbys, Kurse)",
+      "Mehr finanzielle Sicherheit"
+    ]
+  },
+
+  "Q4_65plus_Arbeit": {
+    id: "Q4_65plus_Arbeit",
+    question: "Was würde dir helfen, deine Arbeit noch besser mit deinem Alltag zu vereinbaren?",
+    options: [
+      "Flexiblere Arbeitszeiten oder weniger Arbeitsstunden",
+      "Unterstützung bei körperlich anstrengenden Tätigkeiten",
+      "Weniger Stress und mehr Wertschätzung",
+      "Möglichkeiten zur beruflichen Weiterentwicklung",
+      "Ich bin zufrieden mit meiner Arbeit"
+    ]
+  },
+
+  "Q4_65plus_Pflege": {
+    id: "Q4_65plus_Pflege",
+    question: "Was würde dir helfen, die Pflege eines Familienmitglieds besser mit deinem Alltag zu vereinbaren?",
+    options: [
+      "Informationen über Entlastungsangebote (z. B. Pflegedienste, Kurzzeitpflege)",
+      "Austausch mit anderen pflegenden Angehörigen",
+      "Psychologische Unterstützung",
+      "Finanzielle Unterstützung",
+      "Ich bin zufrieden mit der Situation"
+    ]
+  },
+
+  "Q4_65plus_Erwerbsunfähig": {
+    id: "Q4_65plus_Erwerbsunfähig",
+    question: "Welche Unterstützung wünschst du dir, um deinen Alltag besser zu gestalten?",
+    options: [
+      "Gezielte gesundheitliche Unterstützung (z. B. Physio-, Ergotherapie)",
+      "Unterstützung bei der Alltagsbewältigung (z. B. Einkäufe, Haushalt)",
+      "Hilfe bei Behördengängen und Anträgen (z. B. Grundsicherung, Behindertenausweis)",
+      "Mehr soziale Kontakte und Freizeitgestaltung",
+      "Ich bin zufrieden mit der Situation"
+    ]
+  },
+
+  "Q4_65plus_Ehrenamt": {
+    id: "Q4_65plus_Ehrenamt",
+    question: "Was wünschst du dir für dein ehrenamtliches Engagement?",
+    options: [
+      "Anerkennung und Wertschätzung meiner Arbeit",
+      "Gezielte Fortbildungen/Qualifizierungen",
+      "Bessere Vernetzung mit anderen Ehrenamtlichen",
+      "Unterstützung bei den Fahrtkosten",
+      "Ich bin zufrieden mit meinem Engagement"
+    ]
+  },
+
+  "Q4_65plus_Sonstiges": {
+    id: "Q4_65plus_Sonstiges",
+    question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+    options: [
+      "Einen Weg aus der Einsamkeit finden",
+      "Beratung bei Problemen mit Ämtern und Behörden",
+      "Mehr Möglichkeiten für Freizeit und Reisen",
+      "Bessere finanzielle Absicherung",
+      "Ich bin mit meiner Situation zufrieden"
+    ]
+  },
+
+  "Q5_65plus": {
+    id: "Q5_65plus",
+    question: "Was beschreibt deine Wohnsituation am besten?",
+    options: [
+      "Alleine (eigene Wohnung)",
+      "Mit Partner:in/Familie",
+      "Seniorenheim/Pflegeeinrichtung",
+      "Ich habe aktuell keinen Wohnsitz"
+    ]
+  },
+
+  "Q6_65plus_Alleine": {
+    id: "Q6_65plus_Alleine",
+    question: "Wie hoch sind deine gesamten monatlichen Wohnkosten?",
+    options: [
+      "Unter 300€",
+      "301-500€",
+      "501-800€",
+      "801-1.200€",
+      "Über 1.200€"
+    ]
+  },
+
+  "Q6_65plus_Familie": {
+    id: "Q6_65plus_Familie",
+    question: "Wie hoch sind die gesamten monatlichen Wohnkosten?",
+    options: [
+      "Unter 500€",
+      "501-800€",
+      "801-1.200€",
+      "Über 1.200€"
+    ]
+  },
+
+  "Q6_65plus_Heim": {
+    id: "Q6_65plus_Heim",
+    question: "Wie hoch ist dein monatlicher Eigenanteil für die Kosten im Seniorenheim/in der Pflegeeinrichtung?",
+    options: [
+      "Unter 500 €",
+      "501-1.000 €",
+      "1.001-1.500 €",
+      "Über 1.500 €"
+    ]
+  },
+
+  "Q6_65plus_Ohne": {
+    id: "Q6_65plus_Ohne",
+    question: "Um die richtigen Hilfsangebote zu finden, brauchen wir etwas mehr Informationen. Wie wohnst du aktuell?",
+    options: [
+      "Bei Freunden/Bekannten",
+      "In einer Notunterkunft oder einem Obdachlosenheim",
+      "Ich übernachte an öffentlichen Orten",
+      "Ich wohne in einem Fahrzeug",
+      "Nichts davon"
+    ]
+  },
+
+  "Q7_65plus_Rente": {
+    id: "Q7_65plus_Rente",
+    question: "Wie beschreibst du deine aktuelle finanzielle Situation am besten, basierend auf deiner Rente und möglichen Zusatzeinkommen?",
+    options: [
+      "Meine Rente und/oder mein Zusatzeinkommen reichen gut aus",
+      "Ich beziehe Grundsicherung im Alter",
+      "Mein Einkommen ist knapp, und ich muss Ersparnisse nutzen",
+      "Mein Einkommen reicht nicht aus, um alle Ausgaben zu decken"
+    ]
+  },
+
+  "Q7_65plus_Arbeiten": {
+    id: "Q7_65plus_Arbeiten",
+    question: "Wie hoch ist dein monatliches Brutto-Einkommen (aus Arbeit) ungefähr?",
+    options: [
+      "Unter 1.000€",
+      "1.001-2.000€",
+      "2.001-3.500€",
+      "Über 3.500€"
+    ]
+  },
+
+  "Q7_65plus_Pflege": {
+    id: "Q7_65plus_Pflege",
+    question: "Was beschreibt deine aktuelle finanzielle Situation am besten, in Bezug auf die Pflegekosten?",
+    options: [
+      "Mein Einkommen reicht aus, um alle pflegebedingten Kosten zu decken",
+      "Mein Einkommen deckt die Kosten nicht, und ich muss Ersparnisse nutzen",
+      "Ich beziehe Leistungen der Sozialhilfe zur Finanzierung der Pflege",
+      "Ich bin überfordert mit den Anträgen und Behördengängen."
+    ]
+  },
+
+  "Q7_65plus_Erwerbsunfähig": {
+    id: "Q7_65plus_Erwerbsunfähig",
+    question: "Was beschreibt deine aktuelle finanzielle Situation am besten?",
+    options: [
+      "Ich beziehe eine Erwerbsminderungsrente oder Grundsicherung, die ausreicht",
+      "Ich beziehe Erwerbsminderungsrente, die jedoch nicht ausreicht",
+      "Ich habe kein oder nur ein geringes Einkommen und muss meine Ersparnisse nutzen",
+      "Ich bin finanziell von meiner Familie oder meinem Partner:in abhängig"
+    ]
+  },
+
+  "Q7_65plus_Ehrenamt": {
+    id: "Q7_65plus_Ehrenamt",
+    question: "Welche der folgenden Aussagen beschreibt deine finanzielle Situation in Bezug auf dein Ehrenamt am besten?",
+    options: [
+      "Mein Ehrenamt verursacht keine finanziellen Kosten",
+      "Ich erhalte eine Aufwandsentschädigung, die meine Kosten deckt",
+      "Ich habe Ausgaben (z. B. Fahrtkosten), die nicht vollständig erstattet werden",
+      "Ich möchte keine Angaben machen"
+    ]
+  },
+
+  "Q7_65plus_Sonstiges": {
+    id: "Q7_65plus_Sonstiges",
+    question: "Was beschreibt deine aktuelle finanzielle Situation am besten?",
+    options: [
+      "Ich ein regelmäßiges Einkommen und komme gut zurecht",
+      "Ich habe ein regelmäßiges Einkommen, aber es ist oft knapp am Monatsende",
+      "Ich habe kein regelmäßiges Einkommen und muss meine Ersparnisse nutzen",
+      "Ich habe kein regelmäßiges Einkommen und kann meine Ausgaben nicht decken",
+      "Ich werde von meiner Familie oder Partner/Partnerin finanziert"
+    ]
+  },
+
+  "Q8_65plus": {
+    id: "Q8_65plus",
+    question: "Gibt es gesundheitliche Besonderheiten, die deinen Alltag stark beeinflussen?",
+    options: [
+      "Ja",
+      "Nein"
+    ]
+  },
+
+  "Q9_65plus_Ja": {
+    id: "Q9_65plus_Ja",
+    question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+    options: [
+      "Hilfe beim Umgang mit der Erkrankung",
+      "Bessere Anbindung an Ärzt:innen oder Therapeut:innen",
+      "Unterstützung im Beruf/Alltag",
+      "Mehr Austausch mit anderen Betroffenen"
+    ]
+  },
+
+  "Q9_65plus_Nein": {
+    id: "Q9_65plus_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: [
+      "Probleme in der Familie",
+      "Schwierigkeiten im sozialen Umfeld",
+      "Psychische Belastungen",
+      "Schwierigkeiten im Alltag oder Beruf",
+      "Umgang mit Schulden/Finanzen",
+      "Ich kümmere mich um kranke oder pflegebedürftige Familienmitglieder",
+      "Mobilitätsprobleme",
+      "Nichts davon"
+    ]
+  },
+
+  "Q9_65plus_Ausland_Nein": {
+    id: "Q9_65plus_Ausland_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: [
+      "Probleme in der Familie",
+      "Schwierigkeiten im sozialen Umfeld",
+      "Psychische Belastungen",
+      "Schwierigkeiten im Alltag oder Beruf",
+      "Umgang mit Schulden/Finanzen",
+      "Schwierigkeiten in Deutschland anzukommen",
+      "Ich kümmere mich um kranke oder pflegebedürftige Familienmitglieder",
+      "Mobilitätsprobleme",
+      "Nichts davon"
+    ]
+  },
+
+  "Q10_65plus": {
+    id: "Q10_65plus",
+    question: "Was wünschst du dir?",
+    options: [
+      "Neue Leute kennenlernen und Kontakte knüpfen",
+      "Beratung und Orientierung",
+      "Freizeit- und Kulturangebote",
+      "Lern- und Weiterbildungsmöglichkeiten",
+      "Einstieg in die Selbstständigkeit oder Gründung",
+      "Seniorengerechte Freizeitangebote",
+      "Digitale Kompetenzen erlernen",
+      "Ehrenamtliches Engagement"
+    ]
   }
 };
 

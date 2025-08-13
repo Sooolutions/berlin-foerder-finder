@@ -146,6 +146,31 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     return isNonGerman ? "Q9_25-64_Ausland_Nein" : "Q9_25-64_Nein";
   };
 
+  const getSupportQuestion65plus = (): string => {
+    const nationality = getAnswer("Q2_65plus");
+    const isNonGerman = nationality && nationality !== "Deutsch";
+    
+    return isNonGerman ? "Q9_65plus_Ausland_Nein" : "Q9_65plus_Nein";
+  };
+
+  const getFinancialQuestion65plus = (): string => {
+    const currentActivity = getAnswer("Q3_65plus");
+    
+    if (currentActivity === "Ich bin Rente") {
+      return "Q7_65plus_Rente";
+    } else if (currentActivity === "Arbeiten (Voll- oder Teilzeit)") {
+      return "Q7_65plus_Arbeiten";
+    } else if (currentActivity === "Pflege von Angehörigen") {
+      return "Q7_65plus_Pflege";
+    } else if (currentActivity === "Ich bin erwerbsunfähig") {
+      return "Q7_65plus_Erwerbsunfähig";
+    } else if (currentActivity === "Ich engagiere mich ehrenamtlich") {
+      return "Q7_65plus_Ehrenamt";
+    } else {
+      return "Q7_65plus_Sonstiges";
+    }
+  };
+
   const getNextQuestionId = (currentId: string, answer: string): string => {
     console.log(`Determining next question for ${currentId} with answer: ${answer}`);
     
@@ -155,7 +180,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         if (answer === "unter 18") return "Q2_U18";
         if (answer === "18-24") return "Q2_18-24";
         if (answer === "25-64") return "Q2_25-64";
-        return "Q2_Ü65";
+        return "Q2_65plus";
 
       // Under 18 paths - NEW STRUCTURE
       case "Q2_U18":
@@ -306,7 +331,55 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
       case "Q9_25-64_Ausland_Nein":
         return "Q10_25-64";
 
-      // Over 65 activity options
+      // 65+ paths
+      case "Q2_65plus":
+        return "Q3_65plus";
+        
+      case "Q3_65plus":
+        if (answer === "Ich bin Rente") return "Q4_65plus_Rente";
+        if (answer === "Arbeiten (Voll- oder Teilzeit)") return "Q4_65plus_Arbeit";
+        if (answer === "Pflege von Angehörigen") return "Q4_65plus_Pflege";
+        if (answer === "Ich bin erwerbsunfähig") return "Q4_65plus_Erwerbsunfähig";
+        if (answer === "Ich engagiere mich ehrenamtlich") return "Q4_65plus_Ehrenamt";
+        return "Q4_65plus_Sonstiges";
+        
+      case "Q4_65plus_Rente":
+      case "Q4_65plus_Arbeit":
+      case "Q4_65plus_Pflege":
+      case "Q4_65plus_Erwerbsunfähig":
+      case "Q4_65plus_Ehrenamt":
+      case "Q4_65plus_Sonstiges":
+        return "Q5_65plus";
+        
+      case "Q5_65plus":
+        if (answer === "Alleine (eigene Wohnung)") return "Q6_65plus_Alleine";
+        if (answer === "Mit Partner:in/Familie") return "Q6_65plus_Familie";
+        if (answer === "Seniorenheim/Pflegeeinrichtung") return "Q6_65plus_Heim";
+        return "Q6_65plus_Ohne";
+        
+      case "Q6_65plus_Alleine":
+      case "Q6_65plus_Familie":
+      case "Q6_65plus_Heim":
+      case "Q6_65plus_Ohne":
+        return getFinancialQuestion65plus();
+        
+      case "Q7_65plus_Rente":
+      case "Q7_65plus_Arbeiten":
+      case "Q7_65plus_Pflege":
+      case "Q7_65plus_Erwerbsunfähig":
+      case "Q7_65plus_Ehrenamt":
+      case "Q7_65plus_Sonstiges":
+        return "Q8_65plus";
+        
+      case "Q8_65plus":
+        return answer === "Ja" ? "Q9_65plus_Ja" : getSupportQuestion65plus();
+        
+      case "Q9_65plus_Ja":
+      case "Q9_65plus_Nein":
+      case "Q9_65plus_Ausland_Nein":
+        return "Q10_65plus";
+
+      // Over 65 activity options (old format - keeping for compatibility)
       case "Q2_Ü65":
         if (answer === "Berufstätig") return "Q3_Ü65_Berufstätig";
         if (answer === "Übergang in den Ruhestand") return "Q3_Ü65_Übergang";
@@ -318,6 +391,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
       case "Q9_U18":
       case "Q10_18-24":
       case "Q10_25-64":
+      case "Q10_65plus":
       case "Q3_Ü65_Berufstätig":
       case "Q3_Ü65_Übergang":
       case "Q3_Ü65_Rente":
