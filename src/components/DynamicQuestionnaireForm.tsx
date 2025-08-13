@@ -61,25 +61,24 @@ const DynamicQuestionnaireForm = () => {
       // Update the answer first
       updateAnswer(currentQuestionId, value);
       
-      // Then call goToNextQuestion
-      goToNextQuestion();
-      
-      // Check if this was the last question by checking if isLastQuestion becomes true
+      // Small delay to ensure state update, then navigate
       setTimeout(() => {
-        if (isLastQuestion) {
-          console.log("Navigating to results page");
-          navigate("/results");
-        } else {
-          console.log("Successfully moved to next question");
-        }
-      }, 100);
+        goToNextQuestion();
+        
+        // Check if we should navigate to results after state has updated
+        setTimeout(() => {
+          if (isLastQuestion) {
+            console.log("Navigating to results page");
+            navigate("/results");
+          } else {
+            console.log("Successfully moved to next question");
+          }
+          setIsProcessing(false);
+        }, 50);
+      }, 50);
     } catch (error) {
       console.error("Error in handleSelect:", error);
-    } finally {
-      // Reset processing state after a short delay
-      setTimeout(() => {
-        setIsProcessing(false);
-      }, 300);
+      setIsProcessing(false);
     }
   };
 
