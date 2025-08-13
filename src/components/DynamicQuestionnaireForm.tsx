@@ -48,7 +48,7 @@ const DynamicQuestionnaireForm = () => {
   };
 
   // Handle the selection of an answer
-  const handleSelect = async (value: string) => {
+  const handleSelect = (value: string) => {
     if (isProcessing) {
       console.log("Already processing, ignoring click");
       return;
@@ -57,29 +57,22 @@ const DynamicQuestionnaireForm = () => {
     console.log("Starting handleSelect with value:", value, "for question:", currentQuestionId);
     setIsProcessing(true);
     
-    try {
-      // Update the answer first
-      updateAnswer(currentQuestionId, value);
+    // Update the answer
+    updateAnswer(currentQuestionId, value);
+    
+    // Navigate immediately after updating the answer
+    setTimeout(() => {
+      goToNextQuestion();
       
-      // Small delay to ensure state update, then navigate
+      // Check if we should navigate to results
       setTimeout(() => {
-        goToNextQuestion();
-        
-        // Check if we should navigate to results after state has updated
-        setTimeout(() => {
-          if (isLastQuestion) {
-            console.log("Navigating to results page");
-            navigate("/results");
-          } else {
-            console.log("Successfully moved to next question");
-          }
-          setIsProcessing(false);
-        }, 50);
-      }, 50);
-    } catch (error) {
-      console.error("Error in handleSelect:", error);
-      setIsProcessing(false);
-    }
+        if (isLastQuestion) {
+          console.log("Navigating to results page");
+          navigate("/results");
+        }
+        setIsProcessing(false);
+      }, 100);
+    }, 100);
   };
 
   // If no question data is found, provide option to reset the questionnaire
@@ -155,27 +148,23 @@ const DynamicQuestionnaireForm = () => {
                       style={{ animationDelay: `${index * 0.1}s` }}
                       onClick={() => handleSelect(option)}
                     >
-                      <RadioGroup
-                        value={answers[currentQuestionId] || ""}
-                        className="pointer-events-none"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <RadioGroupItem 
-                            value={option} 
-                            id={`option-${currentQuestionId}-${option.replace(/\s/g, '-')}`}
-                            className="text-berlin-orange border-berlin-orange pointer-events-none" 
-                          />
-                          <Label 
-                            htmlFor={`option-${currentQuestionId}-${option.replace(/\s/g, '-')}`}
-                            className="flex-1 cursor-pointer text-lg font-medium text-gray-800 pointer-events-none"
-                          >
-                            {option}
-                          </Label>
+                      <div className="flex items-center space-x-3 w-full">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          answers[currentQuestionId] === option 
+                            ? 'border-berlin-orange bg-berlin-orange' 
+                            : 'border-gray-300'
+                        }`}>
+                          {answers[currentQuestionId] === option && (
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          )}
                         </div>
-                      </RadioGroup>
-                      {answers[currentQuestionId] === option && (
-                        <CheckCircle className="h-6 w-6 text-berlin-orange animate-fade-in-up pointer-events-none" />
-                      )}
+                        <span className="flex-1 text-lg font-medium text-gray-800">
+                          {option}
+                        </span>
+                        {answers[currentQuestionId] === option && (
+                          <CheckCircle className="h-6 w-6 text-berlin-orange animate-fade-in-up" />
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
