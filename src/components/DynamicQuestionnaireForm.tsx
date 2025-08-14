@@ -50,29 +50,23 @@ const DynamicQuestionnaireForm = () => {
   // Handle the selection of an answer
   const handleSelect = (value: string) => {
     if (isProcessing) {
-      console.log("Already processing, ignoring click");
       return;
     }
     
-    console.log("Starting handleSelect with value:", value, "for question:", currentQuestionId);
     setIsProcessing(true);
     
     // Update the answer
     updateAnswer(currentQuestionId, value);
     
-    // Navigate immediately after updating the answer
+    // Use a single timeout to handle navigation
     setTimeout(() => {
-      goToNextQuestion();
-      
-      // Check if we should navigate to results
-      setTimeout(() => {
-        if (isLastQuestion) {
-          console.log("Navigating to results page");
-          navigate("/results");
-        }
-        setIsProcessing(false);
-      }, 100);
-    }, 100);
+      if (isLastQuestion) {
+        navigate("/results");
+      } else {
+        goToNextQuestion();
+      }
+      setIsProcessing(false);
+    }, 150);
   };
 
   // If no question data is found, provide option to reset the questionnaire
