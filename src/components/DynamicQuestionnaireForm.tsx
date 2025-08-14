@@ -61,25 +61,40 @@ const DynamicQuestionnaireForm = () => {
 
   // Handle the selection of an answer
   const handleSelect = (value: string) => {
+    console.log('handleSelect called:', { value, isProcessing, currentQuestionId });
+    
     if (isProcessing) {
+      console.log('Already processing, ignoring click');
       return;
     }
     
+    console.log('Processing answer selection...');
     setIsProcessing(true);
-    setAnimationDirection('forward');
     
-    // Update the answer immediately
+    // Update the answer first
     updateAnswer(currentQuestionId, value);
     
-    // Navigate after animation
+    // Start animation
+    setAnimationDirection('forward');
+    
+    // Wait for animation to complete, then navigate
     setTimeout(() => {
+      console.log('Animation complete, navigating...');
+      
       if (isLastQuestion) {
+        console.log('Last question reached, going to results');
         navigate("/results");
       } else {
+        console.log('Going to next question');
         goToNextQuestion();
+      }
+      
+      // Reset animation state
+      setTimeout(() => {
         setAnimationDirection(null);
         setIsProcessing(false);
-      }
+        console.log('Reset complete');
+      }, 50);
     }, 300);
   };
 
