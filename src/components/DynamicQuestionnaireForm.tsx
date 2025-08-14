@@ -68,18 +68,18 @@ const DynamicQuestionnaireForm = () => {
     setIsProcessing(true);
     setAnimationDirection('forward');
     
-    // Update the answer
+    // Update the answer immediately
     updateAnswer(currentQuestionId, value);
     
-    // Use a timeout to handle navigation with animation
+    // Navigate after animation
     setTimeout(() => {
       if (isLastQuestion) {
         navigate("/results");
       } else {
         goToNextQuestion();
+        setAnimationDirection(null);
+        setIsProcessing(false);
       }
-      setAnimationDirection(null);
-      setIsProcessing(false);
     }, 300);
   };
 
@@ -124,7 +124,11 @@ const DynamicQuestionnaireForm = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100">
+      <div className={`bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100 transition-transform duration-300 ease-out ${
+        animationDirection === 'forward' ? 'animate-slide-out-left' : 
+        animationDirection === 'backward' ? 'animate-slide-out-right' : 
+        'animate-fade-in'
+      }`}>
         <div className="p-8">
           <StepProgress 
             currentStep={questionHistory.length} 
@@ -132,12 +136,8 @@ const DynamicQuestionnaireForm = () => {
             value={progressPercentage} 
           />
           
-          <div className="min-h-[450px] flex items-center justify-center py-8 overflow-hidden">
-            <div className={`space-y-8 w-full transition-transform duration-300 ease-out ${
-              animationDirection === 'forward' ? 'animate-slide-out-left' : 
-              animationDirection === 'backward' ? 'animate-slide-out-right' : 
-              'animate-fade-in'
-            }`}>
+          <div className="min-h-[450px] flex items-center justify-center py-8">
+            <div className="space-y-8 w-full">
               <div className="text-center">
                 <h3 className="text-3xl font-bold text-berlin-blue mb-4">
                   {questionData.question}
