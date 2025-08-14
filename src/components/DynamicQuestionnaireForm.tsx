@@ -24,6 +24,9 @@ const DynamicQuestionnaireForm = () => {
   // Track loading state to prevent multiple clicks
   const [isProcessing, setIsProcessing] = useState(false);
   
+  // Track animation state
+  const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward' | null>(null);
+  
   // Get the current question data
   const questionData = getQuestionData(currentQuestionId);
 
@@ -38,13 +41,22 @@ const DynamicQuestionnaireForm = () => {
 
   // Handle going back to previous question or home
   const handleBack = () => {
-    if (questionHistory.length > 1) {
-      // Go to previous question if there are previous questions
-      goToPreviousQuestion();
-    } else {
-      // Navigate to home if it's the first question
-      navigate("/");
-    }
+    if (isProcessing) return;
+    
+    setIsProcessing(true);
+    setAnimationDirection('backward');
+    
+    setTimeout(() => {
+      if (questionHistory.length > 1) {
+        // Go to previous question if there are previous questions
+        goToPreviousQuestion();
+      } else {
+        // Navigate to home if it's the first question
+        navigate("/");
+      }
+      setAnimationDirection(null);
+      setIsProcessing(false);
+    }, 300);
   };
 
   // Handle the selection of an answer
@@ -54,19 +66,21 @@ const DynamicQuestionnaireForm = () => {
     }
     
     setIsProcessing(true);
+    setAnimationDirection('forward');
     
     // Update the answer
     updateAnswer(currentQuestionId, value);
     
-    // Use a single timeout to handle navigation
+    // Use a timeout to handle navigation with animation
     setTimeout(() => {
       if (isLastQuestion) {
         navigate("/results");
       } else {
         goToNextQuestion();
       }
+      setAnimationDirection(null);
       setIsProcessing(false);
-    }, 15);
+    }, 300);
   };
 
   // If no question data is found, provide option to reset the questionnaire
@@ -118,8 +132,12 @@ const DynamicQuestionnaireForm = () => {
             value={progressPercentage} 
           />
           
-          <div className="min-h-[450px] flex items-center justify-center py-8">
-            <div className="space-y-8 animate-fade-in-up w-full">
+          <div className="min-h-[450px] flex items-center justify-center py-8 overflow-hidden">
+            <div className={`space-y-8 w-full transition-transform duration-300 ease-out ${
+              animationDirection === 'forward' ? 'animate-slide-out-left' : 
+              animationDirection === 'backward' ? 'animate-slide-out-right' : 
+              'animate-fade-in'
+            }`}>
               <div className="text-center">
                 <h3 className="text-3xl font-bold text-berlin-blue mb-4">
                   {questionData.question}
