@@ -14,7 +14,7 @@ const DynamicQuestionnaireForm = () => {
   const {
     currentQuestionId,
     answers,
-    updateAnswer
+    updateAnswer,
     goToNextQuestion,
     goToPreviousQuestion,
     questionHistory,
