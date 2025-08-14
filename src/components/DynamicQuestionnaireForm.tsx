@@ -24,8 +24,9 @@ const DynamicQuestionnaireForm = () => {
   // Track loading state to prevent multiple clicks
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Track animation state
-  const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward' | null>(null);
+  // Track animation state for card transitions
+  const [animationState, setAnimationState] = useState<'idle' | 'slide-out' | 'slide-in'>('idle');
+  const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward'>('forward');
   
   // Get the current question data
   const questionData = getQuestionData(currentQuestionId);
@@ -45,18 +46,21 @@ const DynamicQuestionnaireForm = () => {
     
     setIsProcessing(true);
     setAnimationDirection('backward');
+    setAnimationState('slide-out');
     
     setTimeout(() => {
       if (questionHistory.length > 1) {
-        // Go to previous question if there are previous questions
         goToPreviousQuestion();
       } else {
-        // Navigate to home if it's the first question
         navigate("/");
       }
-      setAnimationDirection(null);
-      setIsProcessing(false);
-    }, 300);
+      setAnimationState('slide-in');
+      
+      setTimeout(() => {
+        setAnimationState('idle');
+        setIsProcessing(false);
+      }, 250);
+    }, 250);
   };
 
   // Handle the selection of an answer
@@ -74,29 +78,32 @@ const DynamicQuestionnaireForm = () => {
     // Update the answer first
     updateAnswer(currentQuestionId, value);
     
-    // Start animation
+    // Start card swipe out animation
     setAnimationDirection('forward');
+    setAnimationState('slide-out');
     
-    // Wait for animation to complete, then navigate
+    // Wait for slide-out animation, then change question and slide in
     setTimeout(() => {
-      console.log('Animation complete, navigating with value:', value);
+      console.log('Slide-out complete, navigating with value:', value);
       
       if (isLastQuestion) {
         console.log('Last question reached, going to results');
         navigate("/results");
       } else {
         console.log('Going to next question with answer:', value);
-        // Pass the answer directly to avoid state sync issues
         goToNextQuestion(value);
       }
       
-      // Reset animation state
+      // Start slide-in animation
+      setAnimationState('slide-in');
+      
+      // Complete the transition
       setTimeout(() => {
-        setAnimationDirection(null);
+        setAnimationState('idle');
         setIsProcessing(false);
-        console.log('Reset complete');
-      }, 50);
-    }, 300);
+        console.log('Card transition complete');
+      }, 250);
+    }, 250);
   };
 
   // If no question data is found, provide option to reset the questionnaire
@@ -140,9 +147,11 @@ const DynamicQuestionnaireForm = () => {
         </div>
       </div>
 
-      <div className={`bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100 transition-transform duration-300 ease-out ${
-        animationDirection === 'forward' ? 'animate-slide-out-left' : 
-        animationDirection === 'backward' ? 'animate-slide-out-right' : 
+      <div className={`bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100 transition-all duration-250 ease-out ${
+        animationState === 'slide-out' ? 
+          (animationDirection === 'forward' ? 'animate-slide-out-left' : 'animate-slide-out-right') :
+        animationState === 'slide-in' ? 
+          (animationDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left') :
         'animate-fade-in'
       }`}>
         <div className="p-8">
