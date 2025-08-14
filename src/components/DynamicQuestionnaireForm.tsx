@@ -14,7 +14,7 @@ const DynamicQuestionnaireForm = () => {
   const {
     currentQuestionId,
     answers,
-    updateAnswer,
+    updateAnswer
     goToNextQuestion,
     goToPreviousQuestion,
     questionHistory,
@@ -66,7 +66,7 @@ const DynamicQuestionnaireForm = () => {
         goToNextQuestion();
       }
       setIsProcessing(false);
-    }, 150);
+    }, 15);
   };
 
   // If no question data is found, provide option to reset the questionnaire
