@@ -56,7 +56,7 @@ const DynamicQuestionnaireForm = () => {
       }
       setAnimationDirection(null);
       setIsProcessing(false);
-    }, 300);
+    }, 600);
   };
 
   // Handle the selection of an answer
@@ -95,7 +95,7 @@ const DynamicQuestionnaireForm = () => {
         setIsProcessing(false);
         console.log('Reset complete');
       }, 50);
-    }, 300);
+    }, 600);
   };
 
   // If no question data is found, provide option to reset the questionnaire
