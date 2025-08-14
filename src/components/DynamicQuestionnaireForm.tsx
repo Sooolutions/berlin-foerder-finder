@@ -79,14 +79,15 @@ const DynamicQuestionnaireForm = () => {
     
     // Wait for animation to complete, then navigate
     setTimeout(() => {
-      console.log('Animation complete, navigating...');
+      console.log('Animation complete, navigating with value:', value);
       
       if (isLastQuestion) {
         console.log('Last question reached, going to results');
         navigate("/results");
       } else {
-        console.log('Going to next question');
-        goToNextQuestion();
+        console.log('Going to next question with answer:', value);
+        // Pass the answer directly to avoid state sync issues
+        goToNextQuestion(value);
       }
       
       // Reset animation state

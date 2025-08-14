@@ -9,7 +9,7 @@ interface QuestionnaireContextType {
   currentQuestionId: string;
   answers: Record<string, string>;
   updateAnswer: (questionId: string, answer: string) => void;
-  goToNextQuestion: () => void;
+  goToNextQuestion: (answerOverride?: string) => void;
   goToPreviousQuestion: () => void;
   resetQuestionnaire: () => void;
   questionHistory: string[];
@@ -413,8 +413,8 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     }));
   };
 
-  const goToNextQuestion = () => {
-    const currentAnswer = answers[currentQuestionId];
+  const goToNextQuestion = (answerOverride?: string) => {
+    const currentAnswer = answerOverride || answers[currentQuestionId];
     
     if (!currentAnswer) {
       console.warn("No answer provided for current question");
