@@ -129,8 +129,72 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
       case "Q9_U18":
         return "END"; // End of questionnaire
         
-      // Placeholder routes for other age groups
+      // 18-24 flow
       case "Q2_18-24":
+        return "Q3_18-24";
+        
+      case "Q3_18-24":
+        const activity = answer || "";
+        if (activity === "Schule") return "Q4_18-24_Schule";
+        if (activity === "Ausbildung") return "Q4_18-24_Ausbildung";
+        if (activity === "Studium") return "Q4_18-24_Studium";
+        if (activity === "FSJ oder FÖJ") return "Q4_18-24_FSJ";
+        if (activity === "Arbeiten (angestellt)") return "Q4_18-24_Arbeiten";
+        if (activity === "Gründung eines Unternehmens") return "Q4_18-24_Gründung";
+        if (activity === "Selbstständig/Unternehmer:in") return "Q4_18-24_Selbstständig";
+        if (activity === "Arbeitssuchend") return "Q4_18-24_Arbeitssuchend";
+        if (activity === "Orientierungs-/Überbrückungsphase (keine Ausbildung/Arbeit)") return "Q4_18-24_Übergangsphase";
+        if (activity === "Pflege von Angehörigen") return "Q4_18-24_Pflege";
+        if (activity === "Familienzeit oder Kinderbetreuung") return "Q4_18-24_Familie";
+        if (activity === "Sonstiges") return "Q4_18-24_Sonstiges";
+        return "Q5_18-24"; // Default
+        
+      case "Q4_18-24_Schule":
+      case "Q4_18-24_Ausbildung":
+      case "Q4_18-24_Studium":
+      case "Q4_18-24_FSJ":
+      case "Q4_18-24_Arbeiten":
+      case "Q4_18-24_Gründung":
+      case "Q4_18-24_Selbstständig":
+      case "Q4_18-24_Arbeitssuchend":
+      case "Q4_18-24_Weiterbildung":
+      case "Q4_18-24_Übergangsphase":
+      case "Q4_18-24_Pflege":
+      case "Q4_18-24_Familie":
+      case "Q4_18-24_Sonstiges":
+        return "Q5_18-24";
+        
+      case "Q5_18-24":
+        if (answer === "Ich habe aktuell keinen Wohnsitz") return "Q5A_18-24_Ohne";
+        return "Q6_18-24";
+        
+      case "Q5A_18-24_Ohne":
+        return "Q6_18-24";
+        
+      case "Q6_18-24":
+        return "Q8_18-24";
+        
+      case "Q8_18-24":
+        if (answer === "Keine Beeinträchtigungen") {
+          // Check if user is from abroad
+          const nationality = getAnswer("Q2_18-24");
+          if (nationality && nationality !== "Deutsch") {
+            return "Q9_18-24_Ausland_Nein";
+          }
+          return "Q9_18-24_Nein";
+        }
+        // Any health condition leads to the support question
+        return "Q9_18-24_Ja";
+        
+      case "Q9_18-24_Ja":
+      case "Q9_18-24_Nein":
+      case "Q9_18-24_Ausland_Nein":
+        return "Q10_18-24";
+        
+      case "Q10_18-24":
+        return "END"; // End of 18-24 questionnaire
+        
+      // Placeholder routes for other age groups
       case "Q2_25-34":
       case "Q2_35-49":
       case "Q2_50-64":
