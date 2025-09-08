@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserAnswers } from "@/context/QuestionnaireContext";
+import { extractTagsFromAnswers, groupTagsByCategory } from "@/utils/answerMappingUtils";
 
 export interface Funding {
   id: string;
@@ -18,107 +19,23 @@ export interface Funding {
   tags: string[];
 }
 
-// Maps Q1 answers to corresponding tags
-const getAgeTagFromAnswer = (ageAnswer: string): string | null => {
-  console.log("Mapping age answer to tag:", ageAnswer);
-  switch (ageAnswer) {
-    case "unter 18":
-      return "U18";
-    case "18-24":
-      return "18-24";
-    case "25-64":
-      return "25-64";
-    case "über 65":
-      return "65plus";
-    default:
-      console.log("No matching tag found for age answer:", ageAnswer);
-      return null;
-  }
-};
-
-// Maps Q2 answers to corresponding tags
-const getActivityTagFromAnswer = (activityAnswer: string): string | null => {
-  console.log("Mapping activity answer to tag:", activityAnswer);
-  switch (activityAnswer) {
-    case "Schule":
-      return "Schule";
-    case "Ausbildung":
-      return "Ausbildung";
-    case "Studium":
-      return "Studium";
-    case "Arbeit":
-    case "Arbeiten":
-    case "Berufstätig":
-      return "Arbeit";
-    case "Übergangsphase":
-      return "Übergangsphase";
-    case "Arbeitssuchend":
-      return "Arbeitssuchend";
-    case "Weiterbildung/Umschulung":
-      return "Weiterbildung";
-    case "Pflege von Angehörigen oder Familienzeit":
-      return "Familie";
-    case "Sonstiges":
-      return "Sonstiges";
-    case "Übergang in den Ruhestand":
-      return "Beratung";
-    case "In Rente":
-      return "Rente";
-    case "Pflege oder Betreuung (selbst betroffen oder Angehörige)":
-      return "Pflege";
-    default:
-      console.log("No matching tag found for activity answer:", activityAnswer);
-      return null;
-  }
-};
-
-// Helper function to get Q2 answer from all answers
-const getQ2Answer = (answers: UserAnswers): string | null => {
-  // Check all possible Q2 question IDs
-  const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
-  if (q2Keys.length > 0) {
-    const q2Key = q2Keys[0]; // Get the first Q2 answer
-    return answers[q2Key];
-  }
-  return null;
-};
-
 export const useFundingResults = (answers?: UserAnswers) => {
   return useQuery({
-    queryKey: ['funding', answers ? 'filtered' : 'all', answers?.Q1, getQ2Answer(answers)],
+    queryKey: ['funding', 'filtered', JSON.stringify(answers)],
     queryFn: async () => {
-      console.log("=== FUNDING QUERY DEBUG ===");
+      console.log("=== NEW FUNDING QUERY DEBUG ===");
       console.log("Full answers object:", answers);
-      console.log("Q1 answer:", answers?.Q1);
       
-      const q2Answer = getQ2Answer(answers);
-      console.log("Q2 answer:", q2Answer);
+      // Extract tags from answers using the new system
+      const userTags = answers ? extractTagsFromAnswers(answers) : [];
+      const groupedTags = groupTagsByCategory(userTags);
       
+      console.log("User tags:", userTags);
+      console.log("Grouped tags:", groupedTags);
+
+      // Start with all funding data
       let query = supabase.from('funding').select('*');
-
-      // Get filter tags
-      const ageTag = answers?.Q1 ? getAgeTagFromAnswer(answers.Q1) : null;
-      const activityTag = q2Answer ? getActivityTagFromAnswer(q2Answer) : null;
       
-      console.log("Mapped age tag:", ageTag);
-      console.log("Mapped activity tag:", activityTag);
-
-      // Apply database filters if we have tags
-      if (ageTag && !activityTag) {
-        // Only age filter
-        console.log("Applying age filter only:", ageTag);
-        query = query.contains('tags', [ageTag]);
-      } else if (!ageTag && activityTag) {
-        // Only activity filter  
-        console.log("Applying activity filter only:", activityTag);
-        query = query.contains('tags', [activityTag]);
-      } else if (ageTag && activityTag) {
-        // Both filters - we'll do this client-side since Supabase has limitations
-        console.log("Will apply both filters client-side");
-      } else {
-        console.log("No filters - showing all funding");
-      }
-
       const { data, error } = await query;
 
       if (error) {
@@ -126,36 +43,48 @@ export const useFundingResults = (answers?: UserAnswers) => {
         throw error;
       }
 
-      console.log("Raw data from Supabase:", data);
-      console.log("Number of entries returned:", data?.length || 0);
+      console.log("Raw data from Supabase:", data?.length, "entries");
       
-      // Client-side filtering for combined filters or as backup
+      // Client-side filtering based on extracted tags
       let filteredData = data;
       
-      if (ageTag || activityTag) {
+      if (userTags.length > 0) {
+        console.log("Filtering by tags:", userTags);
+        
         filteredData = data?.filter(funding => {
-          let hasAgeTag = true;
-          let hasActivityTag = true;
-          
-          if (ageTag) {
-            hasAgeTag = funding.tags && funding.tags.includes(ageTag);
-            console.log(`Funding "${funding.title}" has age tag "${ageTag}":`, hasAgeTag);
+          if (!funding.tags || !Array.isArray(funding.tags)) {
+            console.log(`Funding "${funding.title}" has no tags array`);
+            return false;
           }
           
-          if (activityTag) {
-            hasActivityTag = funding.tags && funding.tags.includes(activityTag);
-            console.log(`Funding "${funding.title}" has activity tag "${activityTag}":`, hasActivityTag);
-          }
+          // Check if funding has any of the user's tags
+          const hasMatchingTag = userTags.some(userTag => 
+            funding.tags.includes(userTag)
+          );
           
-          const result = hasAgeTag && hasActivityTag;
-          console.log(`Funding "${funding.title}" passes all filters:`, result, "Tags:", funding.tags);
-          return result;
+          console.log(`Funding "${funding.title}":`, {
+            fundingTags: funding.tags,
+            hasMatch: hasMatchingTag
+          });
+          
+          return hasMatchingTag;
         }) || [];
         
-        console.log("After client-side filtering:", filteredData.length, "entries remain");
+        console.log("After tag filtering:", filteredData.length, "entries remain");
+        
+        // Sort by relevance - funding with more matching tags comes first
+        filteredData.sort((a, b) => {
+          const aMatches = userTags.filter(tag => a.tags?.includes(tag)).length;
+          const bMatches = userTags.filter(tag => b.tags?.includes(tag)).length;
+          return bMatches - aMatches; // Descending order
+        });
+        
+        console.log("Results sorted by relevance");
+      } else {
+        console.log("No user tags - showing all funding");
       }
 
-      console.log("=== END FUNDING QUERY DEBUG ===");
+      console.log("=== END NEW FUNDING QUERY DEBUG ===");
       return filteredData as Funding[];
     },
   });
