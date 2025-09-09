@@ -312,7 +312,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         return "Q10_35-49";
         
       case "Q10_35-49":
-        return "results";
+        return "END";
 
       // 50-64 Age Group Navigation
       case "Q2_50-64":
@@ -389,7 +389,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         return "Q10_50-64";
 
       case "Q10_50-64":
-        return "results";
+        return "END";
         
       // Placeholder routes for other age groups
       case "Q2_65plus":

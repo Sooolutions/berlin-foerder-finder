@@ -254,13 +254,15 @@ const ResultsContent = () => {
 
 const Results = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header />
-      <main className="flex-grow container mx-auto px-4 py-12">
-        <ResultsContent />
-      </main>
-      <Footer />
-    </div>
+    <QuestionnaireProvider>
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <main className="flex-grow container mx-auto px-4 py-12">
+          <ResultsContent />
+        </main>
+        <Footer />
+      </div>
+    </QuestionnaireProvider>
   );
 };
 
