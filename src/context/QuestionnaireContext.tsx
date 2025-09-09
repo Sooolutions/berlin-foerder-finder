@@ -315,80 +315,80 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         return "results";
 
       // 50-64 Age Group Navigation
-      case "Q2_50_64":
-        return "Q3_50_64";
+      case "Q2_50-64":
+        return "Q3_50-64";
 
-      case "Q3_50_64":
+      case "Q3_50-64":
         const currentActivity_50_64 = answerValue || answers[currentQuestionId];
         switch (currentActivity_50_64) {
           case "Arbeiten (angestellt)":
-            return "Q4_50_64_Arbeiten";
+            return "Q4_50-64_Arbeiten";
           case "Gründung eines Unternehmens":
-            return "Q4_50_64_Gründung";
+            return "Q4_50-64_Gründung";
           case "Selbstständig/Unternehmer:in":
-            return "Q4_50_64_Selbstständig";
+            return "Q4_50-64_Selbstständig";
           case "Arbeitssuchend":
-            return "Q4_50_64_Arbeitssuchend";
+            return "Q4_50-64_Arbeitssuchend";
           case "Berufliche Weiterbildung/Umschulung":
-            return "Q4_50_64_Weiterbildung";
+            return "Q4_50-64_Weiterbildung";
           case "Orientierungs-/Überbrückungsphase (keine Ausbildung/Arbeit)":
-            return "Q4_50_64_Übergangsphase";
+            return "Q4_50-64_Übergangsphase";
           case "Pflege von Angehörigen":
-            return "Q4_50_64_Pflege";
+            return "Q4_50-64_Pflege";
           case "Familienzeit oder Kinderbetreuung":
-            return "Q4_50_64_Familie";
+            return "Q4_50-64_Familie";
           case "Sonstiges":
-            return "Q4_50_64_Sonstiges";
+            return "Q4_50-64_Sonstiges";
           default:
-            return "Q5_50_64";
+            return "Q5_50-64";
         }
 
-      case "Q4_50_64_Arbeiten":
-      case "Q4_50_64_Gründung":
-      case "Q4_50_64_Selbstständig":
-      case "Q4_50_64_Arbeitssuchend":
-      case "Q4_50_64_Weiterbildung":
-      case "Q4_50_64_Übergangsphase":
-      case "Q4_50_64_Pflege":
-      case "Q4_50_64_Familie":
-      case "Q4_50_64_Sonstiges":
-        return "Q5_50_64";
+      case "Q4_50-64_Arbeiten":
+      case "Q4_50-64_Gründung":
+      case "Q4_50-64_Selbstständig":
+      case "Q4_50-64_Arbeitssuchend":
+      case "Q4_50-64_Weiterbildung":
+      case "Q4_50-64_Übergangsphase":
+      case "Q4_50-64_Pflege":
+      case "Q4_50-64_Familie":
+      case "Q4_50-64_Sonstiges":
+        return "Q5_50-64";
 
-      case "Q5_50_64":
+      case "Q5_50-64":
         const housingSituation_50_64 = answerValue || answers[currentQuestionId];
         if (housingSituation_50_64 === "Ich habe aktuell keinen Wohnsitz") {
-          return "Q5A_50_64_Ohne";
+          return "Q5A_50-64_Ohne";
         }
-        return "Q6_50_64";
+        return "Q6_50-64";
 
-      case "Q5A_50_64_Ohne":
-        return "Q6_50_64";
+      case "Q5A_50-64_Ohne":
+        return "Q6_50-64";
 
-      case "Q6_50_64":
-        return "Q7_50_64";
+      case "Q6_50-64":
+        return "Q7_50-64";
 
-      case "Q7_50_64":
+      case "Q7_50-64":
         const healthCondition_50_64 = answerValue || answers[currentQuestionId];
         if (healthCondition_50_64 === "Keine Beeinträchtigungen") {
           // Check nationality for different question paths
-          const nationality_50_64 = answers["Q2_50_64"];
+          const nationality_50_64 = answers["Q2_50-64"];
           if (nationality_50_64 && ["Ukrainisch", "Türkisch", "Syrisch", "EU-Ausland", "Drittstaat"].includes(nationality_50_64)) {
-            return "Q9_50_64_Ausland_Nein";
+            return "Q9_50-64_Ausland_Nein";
           }
-          return "Q8_50_64_Nein";
+          return "Q8_50-64_Nein";
         }
-        return "Q8_50_64_Ja";
+        return "Q8_50-64_Ja";
 
-      case "Q8_50_64_Ja":
-        return "Q10_50_64";
+      case "Q8_50-64_Ja":
+        return "Q10_50-64";
 
-      case "Q8_50_64_Nein":
-        return "Q10_50_64";
+      case "Q8_50-64_Nein":
+        return "Q10_50-64";
 
-      case "Q9_50_64_Ausland_Nein":
-        return "Q10_50_64";
+      case "Q9_50-64_Ausland_Nein":
+        return "Q10_50-64";
 
-      case "Q10_50_64":
+      case "Q10_50-64":
         return "results";
         
       // Placeholder routes for other age groups
