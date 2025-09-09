@@ -488,6 +488,141 @@ const questionsMap: Record<string, QuestionData> = {
     options: ["Weiter"],
     tags: ["Placeholder"]
   },
+
+  // 50-64 Age Group Questions
+  Q2_50_64: {
+    id: "Q2_50_64",
+    question: "Welche Staatsangehörigkeit hast du?",
+    options: ["Deutsch", "Ukrainisch", "Türkisch", "Syrisch", "EU-Ausland", "Drittstaat"],
+    tags: ["Deutsch", "Ukrainisch", "Türkisch", "Syrisch", "EU", "Drittstaat"]
+  },
+
+  Q3_50_64: {
+    id: "Q3_50_64",
+    question: "Was machst du aktuell?",
+    options: ["Arbeiten (angestellt)", "Gründung eines Unternehmens", "Selbstständig/Unternehmer:in", "Arbeitssuchend", "Berufliche Weiterbildung/Umschulung", "Orientierungs-/Überbrückungsphase (keine Ausbildung/Arbeit)", "Pflege von Angehörigen", "Familienzeit oder Kinderbetreuung", "Sonstiges"],
+    tags: ["Arbeiten", "Gründung", "Selbstständig", "Arbeitssuchend", "Weiterbildung", "Übergang", "Pflege", "Familie", "Sonstiges"]
+  },
+
+  Q4_50_64_Arbeiten: {
+    id: "Q4_50_64_Arbeiten",
+    question: "Was würdest du dir für deine aktuelle Situation bei der Arbeit wünschen?",
+    options: ["Ein besseres Arbeitsklima", "Einen anderen Job", "Bessere Vereinbarkeit mit Gesundheit (körperliche Belastungen, Stress)", "Bessere Vergütung oder finanzielle Unterstützung", "Möglichkeiten zur Weiterbildung", "Unterstützung bei gesundheitlichen Belastungen (Stress, Krankheit)", "Perspektiven für den Übergang in die Rente"],
+    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung", "Arbeiten_Gesundheit", "Arbeiten_Rente"]
+  },
+
+  Q4_50_64_Gründung: {
+    id: "Q4_50_64_Gründung",
+    question: "Was benötigst du aktuell, um dein Vorhaben zu starten?",
+    options: ["Beratung/Coaching", "Finanzierung", "Mentoring/Netzwerk", "Unterstützung beim Businessplan", "Rechtliche/Steuerliche Beratung", "Marketing", "Vereinbarkeit mit Privatleben", "Erfahrungsaustausch"],
+    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing", "Gründung_Familie", "Gründung_Experience"]
+  },
+
+  Q4_50_64_Selbstständig: {
+    id: "Q4_50_64_Selbstständig",
+    question: "Was wäre hilfreich, um deine Unternehmung erfolgreich zu gestalten?",
+    options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Familie", "Internationalisierung", "Nachfolge- oder Ausstiegsplanung"],
+    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge"]
+  },
+
+  Q4_50_64_Arbeitssuchend: {
+    id: "Q4_50_64_Arbeitssuchend",
+    question: "Was würde dir im Moment am meisten helfen, einen passenden Job zu finden?",
+    options: ["Beratung oder Coaching mit Fokus auf berufliche Neuorientierung", "Qualifizierung oder Umschulung für neue Tätigkeiten", "Finanzielle Unterstützung während der Arbeitssuche", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Kontakte zu Arbeitgebern oder Unterstützung bei der Jobsuche ab 50+", "Psychologische Unterstützung bei Belastungen während der Arbeitssuche"],
+    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"]
+  },
+
+  Q4_50_64_Weiterbildung: {
+    id: "Q4_50_64_Weiterbildung",
+    question: "Was würde dir helfen, deine Weiterbildung erfolgreich abzuschließen?",
+    options: ["Bessere Vereinbarkeit mit Beruf und Familie", "Finanzielle Unterstützung", "Mehr Austausch mit anderen in einer ähnlichen Situation", "Gezielte Unterstützung für berufliche oder persönliche Weiterentwicklung"],
+    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Karriere"]
+  },
+
+  Q4_50_64_Übergangsphase: {
+    id: "Q4_50_64_Übergangsphase",
+    question: "Was würde dir in dieser Übergangsphase am meisten helfen, einen passenden Weg zu finden?",
+    options: ["Beratung für den beruflichen Wiedereinstieg", "Umschulung oder Weiterbildung für ältere Beschäftigte", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Austausch/Netzwerk für ältere Arbeitssuchende", "Finanzielle Unterstützung, um die Zeit zu überbrücken"],
+    tags: ["Übergang_Wiedereinstieg", "Übergang_Umschulung", "Übergang_Bewerbung", "Übergang_Netzwerk", "Übergang_Finanzen"]
+  },
+
+  Q4_50_64_Pflege: {
+    id: "Q4_50_64_Pflege",
+    question: "Was würde dir helfen, die Pflege besser mit deinem Alltag zu vereinbaren?",
+    options: ["Informationen über Entlastungsangebote", "Austausch mit anderen Pflegenden", "Beratung, wie ich die die aktuelle Situtation mit meinem Beruf vereinbaren kann", "Psychologische Unterstützung", "Beratung zu finanziellen und rechtlichen Fragen"],
+    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"]
+  },
+
+  Q4_50_64_Familie: {
+    id: "Q4_50_64_Familie",
+    question: "Was würde dir helfen, die Familienzeit besser mit deinem Alltag zu vereinbaren?",
+    options: ["Informationen über Betreuungsangebote", "Beratung zur Vereinbarkeit von Familie und Beruf", "Psychologische Unterstützung"],
+    tags: ["Familie_Angebote", "Familie_Vereinbarkeit", "Familie_Psych"]
+  },
+
+  Q4_50_64_Sonstiges: {
+    id: "Q4_50_64_Sonstiges",
+    question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+    options: ["Berufliche Perspektiven und Orientierung", "Vereinbarkeit von Beruf und Pflege/Familie", "Mehr soziale Kontakte und Freizeitgestaltung", "Finanzielle Absicherung", "Beratungs- und Unterstützungsangebote"],
+    tags: ["Sonstiges_Orientierung", "Sonstiges_Vereinbarkeit", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"]
+  },
+
+  Q5_50_64: {
+    id: "Q5_50_64",
+    question: "Was beschreibt deine Wohnsituation am besten?",
+    options: ["Ich wohne zur Miete", "Wohneigentum", "Bei meiner Familie", "Wohngemeinschaft", "Wohnheim", "Ich habe aktuell keinen Wohnsitz"],
+    tags: ["Miete", "Eigentum", "Familie", "WG", "Wohnheim", "Prekär"]
+  },
+
+  Q5A_50_64_Ohne: {
+    id: "Q5A_50_64_Ohne",
+    question: "Um die richtigen Hilfsangebote zu finden, brauchen wir etwas mehr Informationen. Wie wohnst du aktuell?",
+    options: ["Bei Freunden/Bekannten", "In einer Notunterkunft oder einem Obdachlosenheim", "Ich übernachte an öffentlichen Orten", "Ich wohne in einem Fahrzeug", "Nichts davon"],
+    tags: ["Ohne_Bekannte", "Ohne_Not", "Ohne_Öffentlich", "Ohne_Fahrzeug", "Ohne_Nichts"]
+  },
+
+  Q6_50_64: {
+    id: "Q6_50_64",
+    question: "Was beschreibt deine finanzielle Situation am besten?",
+    options: ["Ich habe ein regelmäßiges Einkommen und komme damit gut zurecht.", "Ich habe ein regelmäßiges Einkommen, aber es ist oft knapp.", "Ich habe kein regelmäßiges Einkommen und nutze Ersparnisse oder Unterstützung durch Familie.", "Ich habe kein regelmäßiges Einkommen und kann meine Ausgaben nicht decken.", "Ich erhalte eine Sozialleistung (BAföG, Bürgergeld, ALG, Pflegegeld etc.)."],
+    tags: ["Finanzen_regelmäßig-gut", "Finanzen_regelmäßig-knapp", "Finanzen_Ersparnisse", "Finanzen_Prekär", "Finanzen_Sozialleistung"]
+  },
+
+  Q7_50_64: {
+    id: "Q7_50_64",
+    question: "Gibt es gesundheitliche Besonderheiten, die deinen Alltag stark beeinflussen?",
+    options: ["Keine Beeinträchtigungen", "Körperliche Einschränkung (z. B. Mobilität, chronische Schmerzen)", "Psychische Einschränkung (z. B. Depression, Angststörung)", "Chronische Erkrankung (z. B. Diabetes, Epilepsie)", "Sinnesbeeinträchtigung (z. B. Seh- oder Hörbehinderung)"],
+    tags: ["Beeinträchtigung_Nein", "Beeinträchtigung_Körperlich", "Beeinträchtigung_Psychisch", "Beeinträchtigung_Chronisch", "Beeinträchtigung_Sinne"]
+  },
+
+  Q8_50_64_Ja: {
+    id: "Q8_50_64_Ja",
+    question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+    options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf/Alltag", "Mehr Austausch mit anderen Betroffenen"],
+    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
+  },
+
+  Q8_50_64_Nein: {
+    id: "Q8_50_64_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Belastungen durch Vereinbarkeit von Beruf und Familie", "Finanzielle Belastungen", "Psychische Belastungen (z. B. Stress, Burnout-Gefühl)", "Bürokratische Herausforderungen (z. B. Ämter, Anträge, Unterstützungssysteme)", "Ich kümmere mich um Angehörige"],
+    tags: ["Herausforderung_Vereinbarkeit", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"]
+  },
+
+  Q9_50_64_Ausland_Nein: {
+    id: "Q9_50_64_Ausland_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Schwierigkeiten in Deutschland anzukommen", "Psychische Belastungen", "Umgang mit Schulden/Finanzen", "Pflege von Angehörigen", "Schwierigkeiten im sozialen Umfeld"],
+    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Pflege", "Herausforderung_Sozial"]
+  },
+
+  Q10_50_64: {
+    id: "Q10_50_64",
+    question: "Was wünschst du dir?",
+    options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"],
+    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"]
+  },
+
   "Q2_65plus": {
     id: "Q2_65plus",
     question: "Placeholder für über 65 Jahre - wird später implementiert",
