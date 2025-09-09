@@ -391,9 +391,72 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
       case "Q10_50-64":
         return "END";
         
-      // Placeholder routes for other age groups
+      // 65+ Age Group Navigation
       case "Q2_65plus":
-        return "results"; // End for now, will be implemented later
+        return "Q3_65plus";
+
+      case "Q3_65plus":
+        const activity65plus = answer || answers["Q3_65plus"];
+        switch (activity65plus) {
+          case "Ich bin Rente":
+            return "Q4_65plus_Rente";
+          case "Arbeiten (Voll- oder Teilzeit)":
+            return "Q4_65plus_Arbeit";
+          case "Selbstständig":
+            return "Q4_65plus_Selbstständig";
+          case "Pflege von Angehörigen":
+            return "Q4_65plus_Pflege";
+          case "Ich bin erwerbsunfähig":
+            return "Q4_65plus_Erwerbsunfähig";
+          case "Sonstiges":
+            return "Q4_65plus_Sonstiges";
+          default:
+            return "Q5_65plus";
+        }
+
+      case "Q4_65plus_Rente":
+      case "Q4_65plus_Arbeit":
+      case "Q4_65plus_Selbstständig":
+      case "Q4_65plus_Pflege":
+      case "Q4_65plus_Erwerbsunfähig":
+      case "Q4_65plus_Sonstiges":
+        return "Q5_65plus";
+
+      case "Q5_65plus":
+        const housing65plus = answer || answers["Q5_65plus"];
+        if (housing65plus === "Ich habe aktuell keinen Wohnsitz") {
+          return "Q5A_65plus_Ohne";
+        }
+        return "Q6_65plus";
+
+      case "Q5A_65plus_Ohne":
+        return "Q6_65plus";
+
+      case "Q6_65plus":
+        return "Q8_65plus"; // Note: Skipping Q7 for 65+ path
+
+      case "Q8_65plus":
+        const health65plus = answer || answers["Q8_65plus"];
+        if (health65plus === "Keine Beeinträchtigungen") {
+          return "Q9_65plus_Nein";
+        }
+        return "Q9_65plus_Ja";
+
+      case "Q9_65plus_Ja":
+        return "Q10_65plus";
+
+      case "Q9_65plus_Nein":
+        const nationality65plus = answers["Q2_65plus"];
+        if (nationality65plus !== "Deutsch") {
+          return "Q9_65plus_Ausland_Nein";
+        }
+        return "Q10_65plus";
+
+      case "Q9_65plus_Ausland_Nein":
+        return "Q10_65plus";
+
+      case "Q10_65plus":
+        return "END";
         
       default:
         console.warn(`No next question defined for ${currentId}`);

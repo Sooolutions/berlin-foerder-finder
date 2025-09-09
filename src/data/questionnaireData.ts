@@ -618,9 +618,114 @@ const questionsMap: Record<string, QuestionData> = {
 
   "Q2_65plus": {
     id: "Q2_65plus",
-    question: "Placeholder für über 65 Jahre - wird später implementiert",
-    options: ["Weiter"],
-    tags: ["Placeholder"]
+    question: "Welche Staatsangehörigkeit hast du?",
+    options: ["Deutsch", "Ukrainisch", "Türkisch", "Syrisch", "EU-Ausland", "Drittstaat"],
+    tags: ["Deutsch", "Ukrainisch", "Türkisch", "Syrisch", "EU", "Drittstaat"]
+  },
+
+  "Q3_65plus": {
+    id: "Q3_65plus",
+    question: "Was machst du aktuell?",
+    options: ["Ich bin Rente", "Arbeiten (Voll- oder Teilzeit)", "Selbstständig", "Pflege von Angehörigen", "Ich bin erwerbsunfähig", "Sonstiges"],
+    tags: ["Rente", "Arbeiten", "Selbstständig", "Pflege", "Erwerbsunfähig", "Sonstiges"]
+  },
+
+  "Q4_65plus_Rente": {
+    id: "Q4_65plus_Rente",
+    question: "Was wünscht du dir für deinen Ruhestand?",
+    options: ["Mehr soziale Kontakte und Freizeitaktivitäten", "Unterstützung bei Alltagsaufgaben", "Persönliche Weiterentwicklung (z. B. Kurse, Hobbys)", "Mehr finanzielle Sicherheit", "Gesundheitliche Förderung", "Ehrenamtliches Engagement"],
+    tags: ["Rente_Sozial", "Rente_Alltag", "Rente_Weiterentwicklung", "Rente_Finanzen", "Rente_Gesundheit", "Rente_Ehrenamt"]
+  },
+
+  "Q4_65plus_Arbeit": {
+    id: "Q4_65plus_Arbeit",
+    question: "Was würde dir helfen, deine Arbeit noch besser mit deinem Alltag zu vereinbaren?",
+    options: ["Ein besseres Arbeitsklima", "Einen anderen Job", "Bessere Vereinbarkeit mit Gesundheit (körperliche Belastungen, Stress)", "Bessere Vergütung oder finanzielle Unterstützung", "Perspektiven für den Übergang in die Rente"],
+    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Gesundheit", "Arbeiten_Vergütung", "Arbeiten_Rente"]
+  },
+
+  "Q4_65plus_Selbstständig": {
+    id: "Q4_65plus_Selbstständig",
+    question: "Was wäre hilfreich, um deine Unternehmung erfolgreich zu gestalten?",
+    options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Familie", "Internationalisierung", "Nachfolge- oder Ausstiegsplanung", "Erfahrungsaustausch"],
+    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge", "Selbstständig_Experience"]
+  },
+
+  "Q4_65plus_Pflege": {
+    id: "Q4_65plus_Pflege",
+    question: "Was würde dir helfen, die Pflege von Angehörigen besser mit deinem Alltag zu vereinbaren?",
+    options: ["Informationen über Entlastungs- und Unterstützungsangebote", "Beratung zu rechtlichen und finanziellen Fragen (z. B. Pflegegeld, Sozialleistungen)", "Psychologische Unterstützung", "Austausch mit anderen Pflegenden"],
+    tags: ["Pflege_Informationen", "Pflege_Beratung", "Pflege_Psychisch", "Pflege_Austausch"]
+  },
+
+  "Q4_65plus_Erwerbsunfähig": {
+    id: "Q4_65plus_Erwerbsunfähig",
+    question: "Was würde dir helfen, deinen Alltag besser zu gestalten?",
+    options: ["Gesundheitliche Unterstützung", "Alltagsunterstützung", "Behörden- und Antragsunterstützung", "Mehr soziale Kontakte", "Möglichkeiten zur persönlichen Weiterentwicklung", "Finanzielle Sicherheit"],
+    tags: ["Erwerbsunfähig_Gesundheit", "Erwerbsunfähig_Alltag", "Erwerbsunfähig_Behörden", "Erwerbsunfähig_Sozial", "Erwerbsunfähig_Weiterbildung", "Erwerbsunfähig_Finanzen"]
+  },
+
+  "Q4_65plus_Sonstiges": {
+    id: "Q4_65plus_Sonstiges",
+    question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+    options: ["Mehr soziale Kontakte und Freizeitgestaltung", "Unterstützung bei Alltagsbewältigung und Behördenangelegenheiten", "Finanzielle Absicherung", "Persönliche Weiterentwicklung (Hobbys, Kurse)"],
+    tags: ["Sonstiges_Sozial", "Sonstiges_Beratung", "Sonstiges_Finanzen", "Sonstiges_Weiterentwicklung"]
+  },
+
+  "Q5_65plus": {
+    id: "Q5_65plus",
+    question: "Was beschreibt deine Wohnsituation am besten?",
+    options: ["Wohneigentum", "Miete", "Seniorenheim/Pflegeeinrichtung", "Ich habe aktuell keinen Wohnsitz"],
+    tags: ["Eigentum", "Miete", "Heim", "Prekär"]
+  },
+
+  "Q5A_65plus_Ohne": {
+    id: "Q5A_65plus_Ohne",
+    question: "Um die richtigen Hilfsangebote zu finden, brauchen wir etwas mehr Informationen. Wie wohnst du aktuell?",
+    options: ["Bei Freunden/Bekannten", "In einer Notunterkunft oder einem Obdachlosenheim", "Ich übernachte an öffentlichen Orten", "Ich wohne in einem Fahrzeug", "Nichts davon"],
+    tags: ["Ohne_Bekannte", "Ohne_Not", "Ohne_Öffentlich", "Ohne_Fahrzeug", "Ohne_Nichts"]
+  },
+
+  "Q6_65plus": {
+    id: "Q6_65plus",
+    question: "Was beschreibt deine finanzielle Situation am besten?",
+    options: ["Ich habe ein regelmäßiges Einkommen und komme damit gut zurecht.", "Ich habe ein regelmäßiges Einkommen, aber es ist oft knapp.", "Ich habe kein regelmäßiges Einkommen und nutze Ersparnisse oder Unterstützung durch Familie.", "Ich habe kein regelmäßiges Einkommen und kann meine Ausgaben nicht decken.", "Ich erhalte eine Sozialleistung (BAföG, Bürgergeld, ALG, Pflegegeld etc.)."],
+    tags: ["Finanzen_regelmäßig-gut", "Finanzen_regelmäßig-knapp", "Finanzen_Ersparnisse", "Finanzen_Prekär", "Finanzen_Sozialleistung"]
+  },
+
+  "Q8_65plus": {
+    id: "Q8_65plus",
+    question: "Gibt es gesundheitliche Besonderheiten, die deinen Alltag stark beeinflussen?",
+    options: ["Keine Beeinträchtigungen", "Körperliche Einschränkung (z. B. Mobilität, chronische Schmerzen)", "Psychische Einschränkung (z. B. Depression, Angststörung)", "Chronische Erkrankung (z. B. Diabetes, Epilepsie)", "Sinnesbeeinträchtigung (z. B. Seh- oder Hörbehinderung)"],
+    tags: ["Beeinträchtigung_Nein", "Beeinträchtigung_Körperlich", "Beeinträchtigung_Psychisch", "Beeinträchtigung_Chronisch", "Beeinträchtigung_Sinne"]
+  },
+
+  "Q9_65plus_Ja": {
+    id: "Q9_65plus_Ja",
+    question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+    options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf/Alltag", "Mehr Austausch mit anderen Betroffenen"],
+    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
+  },
+
+  "Q9_65plus_Nein": {
+    id: "Q9_65plus_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Gesundheitliche Einschränkungen oder Pflegebedarf", "Finanzielle Belastungen (z. B. steigende Kosten im Alltag)", "Einsamkeit oder wenige soziale Kontakte", "Orientierung im Hilfesystem (z. B. welche Angebote es für Senior:innen gibt)"],
+    tags: ["Herausforderung_Gesundheit", "Herausforderung_Finanzen", "Herausforderung_Einsam", "Herausforderung_Bürokratie"]
+  },
+
+  "Q9_65plus_Ausland_Nein": {
+    id: "Q9_65plus_Ausland_Nein",
+    question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+    options: ["Gesundheitliche Einschränkungen oder Pflegebedarf", "Umgang mit Schulden/Finanzen", "Schwierigkeiten in Deutschland anzukommen", "Einsamkeit oder wenige soziale Kontakte", "Orientierung im Hilfesystem (z. B. welche Angebote es für Senior:innen gibt)"],
+    tags: ["Herausforderung_Gesundheit", "Herausforderung_Finanzen", "Herausforderung_Deutschland", "Herausforderung_Einsam", "Herausforderung_Bürokratie"]
+  },
+
+  "Q10_65plus": {
+    id: "Q10_65plus",
+    question: "Was wünschst du dir?",
+    options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"],
+    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"]
   }
 };
 
