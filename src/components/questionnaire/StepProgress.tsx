@@ -37,14 +37,14 @@ const StepProgress = ({ currentStep, totalSteps, value }: StepProgressProps) => 
   }, [progressPercentage, currentStep]);
 
   return (
-    <div className="mb-6">
-      <div className="flex justify-between text-sm text-gray-500 mb-1">
+    <div className="mb-4">
+      <div className="flex justify-between text-xs md:text-sm text-gray-500 mb-1">
         <span>Schritt {currentStep} von {totalSteps}</span>
         <span>{Math.round(progressPercentage)}%</span>
       </div>
       <Progress 
         value={progressValue} 
-        className="h-2 transition-all duration-500" 
+        className="h-1.5 md:h-2 transition-all duration-500" 
         aria-label="Fragebogen-Fortschritt" 
       />
     </div>

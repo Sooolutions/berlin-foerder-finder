@@ -130,19 +130,22 @@ const DynamicQuestionnaireForm = () => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Trust header */}
-      <div className="bg-white shadow-sm border-b border-gray-100 p-4 mb-6 rounded-t-lg">
-        <div className="flex items-center justify-center space-x-6 text-sm text-gray-600">
-          <div className="flex items-center space-x-2">
-            <Shield className="w-4 h-4 text-green-600" />
-            <span>Sicher & Vertraulich</span>
+      <div className="bg-white shadow-sm border-b border-gray-100 p-3 mb-4 rounded-t-lg">
+        <div className="flex items-center justify-center space-x-4 md:space-x-6 text-xs md:text-sm text-gray-600">
+          <div className="flex items-center space-x-1 md:space-x-2">
+            <Shield className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
+            <span className="hidden sm:inline">Sicher & Vertraulich</span>
+            <span className="sm:hidden">Sicher</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <Users className="w-4 h-4 text-berlin-blue" />
-            <span>Von Berlinern für Berliner</span>
+          <div className="flex items-center space-x-1 md:space-x-2">
+            <Users className="w-3 h-3 md:w-4 md:h-4 text-berlin-blue" />
+            <span className="hidden sm:inline">Von Berlinern für Berliner</span>
+            <span className="sm:hidden">Berlin</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <CheckCircle className="w-4 h-4 text-berlin-orange" />
-            <span>Offiziell verifiziert</span>
+          <div className="flex items-center space-x-1 md:space-x-2">
+            <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-berlin-orange" />
+            <span className="hidden sm:inline">Offiziell verifiziert</span>
+            <span className="sm:hidden">Verifiziert</span>
           </div>
         </div>
       </div>
@@ -154,52 +157,56 @@ const DynamicQuestionnaireForm = () => {
           (animationDirection === 'forward' ? 'animate-slide-in-right' : 'animate-slide-in-left') :
         'animate-fade-in'
       }`}>
-        <div className="p-8">
+        <div className="p-6">
           <StepProgress 
             currentStep={questionHistory.length} 
             totalSteps={estimatedTotalSteps} 
             value={progressPercentage} 
           />
           
-          <div className="min-h-[450px] flex items-center justify-center py-8">
-            <div className="space-y-8 w-full">
+          <div className="py-6">
+            <div className="space-y-6 w-full">
               <div className="text-center">
-                <h3 className="text-3xl font-bold text-berlin-blue mb-4">
+                <h3 className="text-2xl md:text-3xl font-bold text-berlin-blue mb-3">
                   {questionData.question}
                 </h3>
-                <p className="text-gray-600 max-w-2xl mx-auto">
+                <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
                   Wähle die Option, die am besten zu deiner aktuellen Situation passt.
                 </p>
               </div>
 
               {Array.isArray(questionData.options) && questionData.options.length > 0 && (
-                <div className="max-w-2xl mx-auto grid grid-cols-1 gap-4">
+                <div className={`max-w-4xl mx-auto grid gap-3 ${
+                  questionData.options.length <= 3 ? 'grid-cols-1' :
+                  questionData.options.length <= 6 ? 'grid-cols-1 md:grid-cols-2' :
+                  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                }`}>
                   {questionData.options.map((option, index) => (
                     <div 
                       key={`${currentQuestionId}-${option}`}
-                      className={`flex items-center space-x-4 p-6 rounded-xl border-2 transition-all duration-300 hover:border-berlin-orange hover:shadow-md cursor-pointer ${
+                      className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-300 hover:border-berlin-orange hover:shadow-md cursor-pointer ${
                         answers[currentQuestionId] === option 
                           ? 'border-berlin-orange bg-berlin-orange/5 shadow-md' 
                           : 'border-gray-200 bg-white hover:bg-gray-50'
                       } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
-                      style={{ animationDelay: `${index * 0.1}s` }}
+                      style={{ animationDelay: `${index * 0.05}s` }}
                       onClick={() => handleSelect(option)}
                     >
                       <div className="flex items-center space-x-3 w-full">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                           answers[currentQuestionId] === option 
                             ? 'border-berlin-orange bg-berlin-orange' 
                             : 'border-gray-300'
                         }`}>
                           {answers[currentQuestionId] === option && (
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                           )}
                         </div>
-                        <span className="flex-1 text-lg font-medium text-gray-800">
+                        <span className="flex-1 text-sm md:text-base font-medium text-gray-800 leading-tight">
                           {option}
                         </span>
                         {answers[currentQuestionId] === option && (
-                          <CheckCircle className="h-6 w-6 text-berlin-orange animate-fade-in-up" />
+                          <CheckCircle className="h-5 w-5 text-berlin-orange animate-fade-in-up flex-shrink-0" />
                         )}
                       </div>
                     </div>
@@ -209,7 +216,7 @@ const DynamicQuestionnaireForm = () => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+          <div className="flex justify-between items-center pt-4 border-t border-gray-100">
             <Button
               variant="outline"
               onClick={handleBack}
@@ -220,7 +227,7 @@ const DynamicQuestionnaireForm = () => {
               <span>Zurück</span>
             </Button>
             
-            <div className="text-sm text-gray-500">
+            <div className="text-xs md:text-sm text-gray-500">
               Alle Angaben werden vertraulich behandelt
             </div>
           </div>

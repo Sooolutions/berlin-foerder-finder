@@ -22,9 +22,11 @@ const Questionnaire = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-grow bg-gradient-to-br from-berlin-blue/5 via-white to-berlin-orange/5 py-12">
-        <div className="max-w-4xl mx-auto px-4">
-          <DynamicQuestionnaireForm />
+      <main className="flex-grow bg-gradient-to-br from-berlin-blue/5 via-white to-berlin-orange/5 py-6 md:py-8">
+        <div className="max-w-4xl mx-auto px-4 h-full flex items-center">
+          <div className="w-full">
+            <DynamicQuestionnaireForm />
+          </div>
         </div>
       </main>
       
