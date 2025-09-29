@@ -79,55 +79,116 @@ const Blog = () => {
           </p>
         </div>
 
-        {/* Blog Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
-            <Card key={post.id} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+        {/* Featured Post */}
+        <div className="mb-12">
+          <Card className="group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden">
+            <div className="grid lg:grid-cols-2 gap-0">
+              <div className="aspect-[4/3] lg:aspect-auto bg-muted overflow-hidden">
                 <img 
-                  src={post.image} 
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  src={blogPosts[0].image} 
+                  alt={blogPosts[0].title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                  <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
-                    {post.category}
+              <div className="p-8 lg:p-12 flex flex-col justify-center">
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                  <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
+                    Neuester Artikel
                   </span>
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-1">
-                      <Calendar className="w-3 h-3" />
-                      <span>{new Date(post.date).toLocaleDateString('de-DE')}</span>
+                      <Calendar className="w-4 h-4" />
+                      <span>{new Date(blogPosts[0].date).toLocaleDateString('de-DE')}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Clock className="w-3 h-3" />
-                      <span>{post.readTime}</span>
+                      <Clock className="w-4 h-4" />
+                      <span>{blogPosts[0].readTime}</span>
                     </div>
                   </div>
                 </div>
                 
-                <CardTitle className="text-xl group-hover:text-primary transition-colors duration-200">
-                  {post.title}
+                <CardTitle className="text-3xl lg:text-4xl font-bold mb-4 group-hover:text-primary transition-colors duration-200">
+                  {blogPosts[0].title}
                 </CardTitle>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                <CardDescription className="text-muted-foreground mb-4 line-clamp-3">
-                  {post.description}
+                
+                <CardDescription className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                  {blogPosts[0].description}
                 </CardDescription>
                 
                 <Button 
-                  variant="ghost" 
-                  className="p-0 h-auto font-semibold text-primary hover:text-primary/80 group/btn"
+                  size="lg"
+                  className="self-start group/btn"
                 >
-                  Weiterlesen
-                  <ArrowRight className="ml-1 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  Jetzt lesen
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Pinterest-style Grid */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-foreground mb-8">Weitere Artikel</h2>
+          
+          <div className="columns-1 md:columns-2 xl:columns-3 gap-8 space-y-8">
+            {blogPosts.slice(1).map((post, index) => (
+              <Card 
+                key={post.id} 
+                className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 break-inside-avoid mb-8 ${
+                  index % 3 === 0 ? 'bg-gradient-to-br from-primary/5 to-secondary/5' : 
+                  index % 3 === 1 ? 'bg-gradient-to-br from-secondary/5 to-accent/5' : 
+                  'bg-card'
+                }`}
+              >
+                <div className={`${index % 4 === 0 ? 'aspect-[3/2]' : index % 4 === 1 ? 'aspect-square' : index % 4 === 2 ? 'aspect-[4/3]' : 'aspect-[3/4]'} bg-muted rounded-t-lg overflow-hidden`}>
+                  <img 
+                    src={post.image} 
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                    <span className="bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
+                      {post.category}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="w-3 h-3" />
+                        <span>{new Date(post.date).toLocaleDateString('de-DE')}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-3 h-3" />
+                        <span>{post.readTime}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors duration-200">
+                    {post.title}
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent className="pt-0">
+                  <CardDescription className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                    {post.description}
+                  </CardDescription>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="p-0 h-auto font-semibold text-primary hover:text-primary/80 group/btn"
+                  >
+                    Weiterlesen
+                    <ArrowRight className="ml-1 w-3 h-3 group-hover/btn:translate-x-1 transition-transform" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* Load More Section */}
