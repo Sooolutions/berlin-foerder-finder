@@ -16,6 +16,11 @@ const Header = () => {
               </Link>
             </li>
             <li>
+              <Link to="/blog" className="text-gray-600 hover:text-berlin-blue">
+                Blog
+              </Link>
+            </li>
+            <li>
               <Link to="/about" className="text-gray-600 hover:text-berlin-blue">
                 Über uns
               </Link>
