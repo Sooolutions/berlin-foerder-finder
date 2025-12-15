@@ -2,8 +2,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Eye, Heart, Users, HelpCircle, ChevronDown } from "lucide-react";
+import { ArrowRight, Eye, Heart, Users, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Accordion,
   AccordionContent,
@@ -11,20 +13,65 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+interface FundingTeaser {
+  id: string;
+  title: string;
+  description: string;
+  organization: string;
+  url: string;
+}
+
 const Index = () => {
   const navigate = useNavigate();
+  const [fundingTeasers, setFundingTeasers] = useState<FundingTeaser[]>([]);
+
+  useEffect(() => {
+    const fetchRandomFunding = async () => {
+      const { data, error } = await supabase
+        .from('funding')
+        .select('id, title, description, organization, url');
+      
+      if (data && !error) {
+        // Shuffle and take 5 random items
+        const shuffled = data.sort(() => 0.5 - Math.random());
+        setFundingTeasers(shuffled.slice(0, 5));
+      }
+    };
+
+    fetchRandomFunding();
+  }, []);
 
   const startQuestionnaire = () => {
     navigate("/questionnaire");
   };
 
+  // Community images - 16 images in 2 rows of 8
+  const communityImages = [
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
+    "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=100&h=100&fit=crop",
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header />
       
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="min-h-[80vh] flex items-center py-16 px-4 bg-secondary">
+        <section className="min-h-[80vh] flex items-center py-16 px-4 bg-white">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {/* Left: Text */}
@@ -85,7 +132,7 @@ const Index = () => {
         </section>
 
         {/* Überblick Section */}
-        <section className="py-20 px-4 bg-background">
+        <section className="py-20 px-4 bg-white">
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center gap-4 mb-6">
               <Eye className="w-10 h-10 text-primary" />
@@ -114,63 +161,80 @@ const Index = () => {
         </section>
 
         {/* Angebote Section */}
-        <section className="py-20 px-4 bg-accent/20">
+        <section className="py-20 px-4 bg-white">
           <div className="container mx-auto">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <Heart className="w-10 h-10 text-destructive" />
-              </div>
-              <h2 className="text-foreground mb-6">
-                Für alle Bedürfnisse die passende Unterstützung
-              </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Egal ob Bildung, Wohnen, Familie oder Gesundheit – finde Angebote, die zu dir passen.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              {["Bildung", "Wohnen", "Familie", "Gesundheit", "Arbeit", "Integration", "Kultur", "Soziales"].map((category) => (
-                <div 
-                  key={category}
-                  className="p-6 rounded-2xl bg-background shadow-sm hover:shadow-md transition-shadow text-center"
-                >
-                  <p className="font-medium text-foreground">{category}</p>
+            <div className="bg-primary rounded-[30px] p-12">
+              <div className="text-center mb-12">
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <Heart className="w-10 h-10 text-primary-foreground" />
                 </div>
-              ))}
+                <h2 className="text-primary-foreground mb-6">
+                  Für alle Bedürfnisse die passende Unterstützung
+                </h2>
+                <p className="text-primary-foreground/80 max-w-2xl mx-auto">
+                  Egal ob Bildung, Wohnen, Familie oder Gesundheit – finde Angebote, die zu dir passen.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                {fundingTeasers.map((funding) => (
+                  <a 
+                    key={funding.id}
+                    href={funding.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-6 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors text-primary-foreground"
+                  >
+                    <h3 className="font-semibold mb-2 line-clamp-2 text-lg">{funding.title}</h3>
+                    <p className="text-sm text-primary-foreground/70 mb-3">{funding.organization}</p>
+                    <p className="text-sm text-primary-foreground/80 line-clamp-3">{funding.description}</p>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
         {/* Community Section */}
-        <section className="py-20 px-4 bg-primary text-primary-foreground">
+        <section className="py-20 px-4 bg-white">
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center gap-4 mb-6">
-              <Users className="w-10 h-10" />
+              <Users className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="mb-6">
+            <h2 className="text-foreground mb-6">
               Werde Teil einer Community, die profitiert!
             </h2>
-            <p className="max-w-2xl mx-auto mb-12 opacity-90">
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
               Tausende haben bereits Förderungen gefunden, die ihr Leben verbessert haben.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="p-6 rounded-2xl bg-primary-foreground/10">
-                <p className="italic mb-4">"Dank MehrDrin habe ich endlich die Unterstützung gefunden, die ich brauchte."</p>
-                <p className="font-semibold">– Maria, 34</p>
+            <div className="space-y-4 max-w-5xl mx-auto">
+              {/* Row 1 - 8 images */}
+              <div className="flex justify-center gap-4">
+                {communityImages.slice(0, 8).map((img, index) => (
+                  <img 
+                    key={index}
+                    src={img}
+                    alt={`Community Mitglied ${index + 1}`}
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover"
+                  />
+                ))}
               </div>
-              <div className="p-6 rounded-2xl bg-primary-foreground/10">
-                <p className="italic mb-4">"So einfach war es noch nie, passende Förderungen zu finden."</p>
-                <p className="font-semibold">– Thomas, 28</p>
-              </div>
-              <div className="p-6 rounded-2xl bg-primary-foreground/10">
-                <p className="italic mb-4">"Ich hätte nie gedacht, dass es so viele Möglichkeiten gibt!"</p>
-                <p className="font-semibold">– Leyla, 42</p>
+              {/* Row 2 - 8 images */}
+              <div className="flex justify-center gap-4">
+                {communityImages.slice(8, 16).map((img, index) => (
+                  <img 
+                    key={index + 8}
+                    src={img}
+                    alt={`Community Mitglied ${index + 9}`}
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover"
+                  />
+                ))}
               </div>
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 px-4 bg-background">
+        <section className="py-20 px-4 bg-white">
           <div className="container mx-auto max-w-3xl">
             <div className="text-center mb-12">
               <div className="flex items-center justify-center gap-4 mb-6">
@@ -218,7 +282,7 @@ const Index = () => {
         </section>
 
         {/* Call to Action Section */}
-        <section className="py-20 px-4 bg-accent/30">
+        <section className="py-20 px-4 bg-white">
           <div className="container mx-auto text-center max-w-3xl">
             <h2 className="text-foreground mb-6">
               Es ist Mehr für dich drin. Finde jetzt heraus was dir zusteht!
