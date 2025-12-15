@@ -6,34 +6,40 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 13 100% 55%; /* Berlin Orange - warmer and more vibrant */
-    --primary-foreground: 210 40% 98%;
+    --primary: 212 67% 59%; /* Blue - #4F90DE */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 47% 35%; /* Berlin Blue - deeper and more trustworthy */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 213 71% 88%; /* Light Blue - #CADEF5 */
+    --secondary-foreground: 0 0% 0%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 39 100% 73%; /* Yellow - #FFCA76 */
+    --accent-foreground: 0 0% 0%;
 
-    --accent: 13 100% 55%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 356 76% 70%; /* Red - #EE7A82 */
+    --destructive-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --muted: 213 71% 95%;
+    --muted-foreground: 212 30% 40%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 13 100% 55%;
+    --border: 213 50% 85%;
+    --input: 213 50% 85%;
+    --ring: 212 67% 59%;
 
     --radius: 0.75rem;
+
+    /* Custom Colors */
+    --mehrdrin-blue: 212 67% 59%;
+    --mehrdrin-yellow: 39 100% 73%;
+    --mehrdrin-red: 356 76% 70%;
+    --mehrdrin-lightblue: 213 71% 88%;
   }
 }
 
@@ -44,7 +50,33 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  }
+
+  h1 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: 63px;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+  }
+
+  p, span, a, li {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
   }
 }
 
@@ -81,15 +113,6 @@
   }
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
@@ -115,82 +138,17 @@
   animation: float 3s ease-in-out infinite;
 }
 
-.animate-pulse-slow {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-/* Berlin-inspired gradient backgrounds */
-.bg-berlin-gradient {
-  background: linear-gradient(135deg, #0076BB 0%, #FF8500 100%);
-}
-
-.bg-berlin-subtle {
-  background: linear-gradient(135deg, rgba(0, 118, 187, 0.05) 0%, rgba(255, 133, 0, 0.05) 100%);
-}
-
-/* Enhanced card styles */
-.berlin-card {
-  @apply bg-white shadow-lg border border-gray-100 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105;
-}
-
-.berlin-card-header {
-  @apply bg-gradient-to-r from-berlin-blue to-berlin-orange text-white p-6;
-}
-
-/* Button enhancements */
-.btn-berlin-primary {
-  @apply bg-berlin-orange hover:bg-berlin-orange/90 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl;
-}
-
-.btn-berlin-secondary {
-  @apply bg-berlin-blue hover:bg-berlin-blue/90 text-white font-semibold px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl;
-}
-
-/* Trust indicators */
-.trust-badge {
-  @apply inline-flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-medium border border-green-200;
-}
-
-/* Progress bar enhancements */
-.progress-berlin {
-  @apply bg-gradient-to-r from-berlin-blue to-berlin-orange;
-}
-
-/* Form styling improvements */
-.form-berlin {
-  @apply space-y-6 bg-white p-8 rounded-xl shadow-lg border border-gray-100;
-}
-
-.form-berlin .form-group {
-  @apply space-y-2;
-}
-
-.form-berlin label {
-  @apply text-berlin-blue font-semibold text-sm;
-}
-
-.form-berlin input,
-.form-berlin select,
-.form-berlin textarea {
-  @apply border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-berlin-orange focus:ring-2 focus:ring-berlin-orange/20 transition-all duration-300;
-}
-
-/* Hero section styling */
-.hero-section {
-  @apply relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-orange-50;
-}
-
-.hero-content {
-  @apply text-center space-y-8 max-w-4xl mx-auto px-4;
-}
-
-/* Responsive text sizing */
+/* Responsive typography */
 @media (max-width: 768px) {
-  .hero-content h1 {
-    @apply text-3xl;
+  h1 {
+    font-size: 36px;
   }
   
-  .hero-content p {
-    @apply text-lg;
+  h2 {
+    font-size: 28px;
+  }
+
+  h3 {
+    font-size: 20px;
   }
 }

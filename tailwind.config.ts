@@ -18,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'outfit': ['Outfit', 'system-ui', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -52,13 +55,6 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-        berlin: {
-          blue: '#0076BB',
-          orange: '#FF8500',
-          lightGray: '#F1F1F1',
-          mediumGray: '#8A898C',
-          darkGray: '#333333',
-        },
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -68,7 +64,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// MehrDrin colors
+				'mehrdrin-blue': 'hsl(var(--mehrdrin-blue))',
+				'mehrdrin-yellow': 'hsl(var(--mehrdrin-yellow))',
+				'mehrdrin-red': 'hsl(var(--mehrdrin-red))',
+				'mehrdrin-lightblue': 'hsl(var(--mehrdrin-lightblue))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
