@@ -92,10 +92,10 @@ const Index = () => {
                 </Button>
               </div>
 
-              {/* Right: 6 Elements in 3 columns */}
-              <div className="grid grid-cols-3 gap-4">
-                {/* Column 1 */}
-                <div className="space-y-4">
+              {/* Right: 6 Elements in 3 columns - varying sizes */}
+              <div className="flex gap-4 items-start">
+                {/* Column 1 - Largest */}
+                <div className="space-y-4 w-[200px]">
                   <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
                       src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" 
@@ -103,14 +103,20 @@ const Index = () => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="rounded-2xl bg-primary aspect-square flex items-center justify-center p-4">
-                    <p className="text-primary-foreground font-semibold text-center text-sm">Finde was dir zusteht</p>
+                  <div className="rounded-2xl bg-primary aspect-square flex items-center justify-center p-6">
+                    <div className="text-center">
+                      <p className="text-white font-semibold text-[30px] leading-tight">Finde was dir zusteht</p>
+                      <p className="text-white/80 text-sm mt-2">Entdecke Fördermöglichkeiten, die zu dir passen.</p>
+                    </div>
                   </div>
                 </div>
-                {/* Column 2 */}
-                <div className="space-y-4 pt-6">
-                  <div className="rounded-2xl bg-accent aspect-square flex items-center justify-center p-4">
-                    <p className="text-foreground font-semibold text-center text-sm">Weniger Bürokratie</p>
+                {/* Column 2 - Medium */}
+                <div className="space-y-4 pt-6 w-[160px]">
+                  <div className="rounded-2xl bg-accent aspect-square flex items-center justify-center p-5">
+                    <div className="text-center">
+                      <p className="text-white font-semibold text-[30px] leading-tight">Weniger Bürokratie</p>
+                      <p className="text-white/80 text-sm mt-2">Einfache Anträge ohne komplizierte Formulare.</p>
+                    </div>
                   </div>
                   <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
@@ -120,8 +126,8 @@ const Index = () => {
                     />
                   </div>
                 </div>
-                {/* Column 3 */}
-                <div className="space-y-4">
+                {/* Column 3 - Smallest */}
+                <div className="space-y-4 w-[120px]">
                   <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
                       src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop" 
@@ -130,7 +136,10 @@ const Index = () => {
                     />
                   </div>
                   <div className="rounded-2xl bg-destructive aspect-square flex items-center justify-center p-4">
-                    <p className="text-destructive-foreground font-semibold text-center text-sm">Deine persönliche Übersicht</p>
+                    <div className="text-center">
+                      <p className="text-white font-semibold text-[30px] leading-tight">Deine persönliche Übersicht</p>
+                      <p className="text-white/80 text-sm mt-2">Alle Infos auf einen Blick.</p>
+                    </div>
                   </div>
                 </div>
               </div>
