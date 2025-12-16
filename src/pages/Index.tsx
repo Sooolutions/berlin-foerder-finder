@@ -92,11 +92,11 @@ const Index = () => {
 
         {/* Überblick Section */}
         <section className="py-20 px-4 bg-white">
-          <div className="container mx-auto">
-            <h2 className="text-foreground mb-4">
+          <div className="container mx-auto text-center">
+            <h1 className="text-foreground mb-4">
               Ein klarer Überblick, damit du keine Chance verpasst!
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mb-12">
+            </h1>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
               Wir bringen Ordnung ins Angebot - und du entscheidest den nächsten Schritt!
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
