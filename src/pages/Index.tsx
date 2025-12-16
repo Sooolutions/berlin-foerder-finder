@@ -92,55 +92,58 @@ const Index = () => {
                 </Button>
               </div>
 
-              {/* Right: 6 Elements in 3 columns - 3/5 */}
-              <div className="lg:col-span-3 flex gap-4 items-start justify-end">
-                {/* Column 1 - Largest */}
-                <div className="space-y-4 w-[260px]">
-                  <div className="rounded-2xl overflow-hidden aspect-square">
-                    <img 
-                      src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" 
-                      alt="Glückliche Menschen"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="rounded-2xl bg-primary aspect-square flex items-center justify-center p-6">
-                    <div className="text-center">
-                      <p className="text-white font-semibold text-[30px] leading-tight">Finde was dir zusteht</p>
-                      <p className="text-white/80 text-sm mt-2">Entdecke Fördermöglichkeiten, die zu dir passen.</p>
-                    </div>
+              {/* Right: Grid forming a rectangle */}
+              <div className="lg:col-span-3 grid grid-cols-3 gap-3 auto-rows-fr">
+                {/* Row 1 */}
+                <div className="row-span-2 rounded-2xl overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=600&fit=crop" 
+                    alt="Glückliche Menschen"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="rounded-2xl bg-primary flex items-center justify-center p-5">
+                  <div className="text-right w-full">
+                    <p className="text-white font-semibold text-[24px] leading-tight">Weniger Bürokratie</p>
+                    <p className="text-white/80 text-sm mt-2">Weil der Zugang zu Chancen für alle leichter sein sollte.</p>
                   </div>
                 </div>
-                {/* Column 2 - Medium */}
-                <div className="space-y-4 pt-6 w-[210px]">
-                  <div className="rounded-2xl bg-accent aspect-square flex items-center justify-center p-5">
-                    <div className="text-center">
-                      <p className="text-white font-semibold text-[30px] leading-tight">Weniger Bürokratie</p>
-                      <p className="text-white/80 text-sm mt-2">Einfache Anträge ohne komplizierte Formulare.</p>
-                    </div>
-                  </div>
-                  <div className="rounded-2xl overflow-hidden aspect-square">
-                    <img 
-                      src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" 
-                      alt="Team arbeitet zusammen"
-                      className="w-full h-full object-cover"
-                    />
+                <div className="rounded-2xl overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" 
+                    alt="Team arbeitet zusammen"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Row 2 */}
+                <div className="rounded-2xl overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop" 
+                    alt="Erfolgreiche Person"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="rounded-2xl bg-destructive flex items-center justify-center p-5">
+                  <div className="text-right w-full">
+                    <p className="text-white font-semibold text-[24px] leading-tight">Deine persönliche Übersicht</p>
+                    <p className="text-white/80 text-sm mt-2">Wir machen sichtbar, was dir offensteht. Entdecke, was drin ist!</p>
                   </div>
                 </div>
-                {/* Column 3 - Smallest */}
-                <div className="space-y-4 w-[160px]">
-                  <div className="rounded-2xl overflow-hidden aspect-square">
-                    <img 
-                      src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop" 
-                      alt="Erfolgreiche Person"
-                      className="w-full h-full object-cover"
-                    />
+
+                {/* Row 3 */}
+                <div className="rounded-2xl bg-accent flex items-center justify-center p-5">
+                  <div className="text-right w-full">
+                    <p className="text-white font-semibold text-[24px] leading-tight">Finde was dir zusteht!</p>
+                    <p className="text-white/80 text-sm mt-2">Schnell, direkt und unkompliziert zu deinen passenden Angeboten.</p>
                   </div>
-                  <div className="rounded-2xl bg-destructive aspect-square flex items-center justify-center p-4">
-                    <div className="text-center">
-                      <p className="text-white font-semibold text-[30px] leading-tight">Deine persönliche Übersicht</p>
-                      <p className="text-white/80 text-sm mt-2">Alle Infos auf einen Blick.</p>
-                    </div>
-                  </div>
+                </div>
+                <div className="col-span-2 rounded-2xl overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=600&h=300&fit=crop" 
+                    alt="Studierende"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
