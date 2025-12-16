@@ -58,41 +58,28 @@ const Index = () => {
                 </Button>
               </div>
 
-              {/* Right: Grid forming a rectangle - 6 elements with staggered columns */}
-              <div className="lg:col-span-3 flex gap-3">
+              {/* Right: Grid forming a rectangle - 4 elements with staggered columns */}
+              <div className="lg:col-span-3 flex gap-4">
                 {/* Column 1 - no offset */}
-                <div className="flex flex-col gap-3 flex-1">
-                  <div className="rounded-2xl overflow-hidden h-[160px]">
+                <div className="flex flex-col gap-4 flex-1">
+                  <div className="rounded-2xl overflow-hidden h-[200px]">
                     <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" alt="Glückliche Menschen" className="w-full h-full object-cover" />
                   </div>
-                  <div className="rounded-2xl overflow-hidden h-[200px]">
+                  <div className="rounded-2xl overflow-hidden h-[260px]">
                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" alt="Team arbeitet zusammen" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
                 {/* Column 2 - offset down */}
-                <div className="flex flex-col gap-3 flex-1 mt-8">
-                  <div className="rounded-2xl bg-primary flex items-center justify-center p-5 h-[160px]">
+                <div className="flex flex-col gap-4 flex-1 mt-12">
+                  <div className="rounded-2xl bg-primary flex items-center justify-center p-6 h-[200px]">
                     <div className="text-right w-full">
                       <p className="text-white font-semibold text-[24px] leading-tight">Weniger Bürokratie</p>
                       <p className="text-white/80 text-sm mt-2">Weil der Zugang zu Chancen für alle leichter sein sollte.</p>
                     </div>
                   </div>
-                  <div className="rounded-2xl overflow-hidden h-[220px]">
+                  <div className="rounded-2xl overflow-hidden h-[280px]">
                     <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=500&fit=crop" alt="Erfolgreiche Person" className="w-full h-full object-cover" />
-                  </div>
-                </div>
-
-                {/* Column 3 - offset more */}
-                <div className="flex flex-col gap-3 flex-1 mt-16">
-                  <div className="rounded-2xl overflow-hidden h-[140px]">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop" alt="Person lächelt" className="w-full h-full object-cover" />
-                  </div>
-                  <div className="rounded-2xl bg-destructive flex items-center justify-center p-5 h-[240px]">
-                    <div className="text-right w-full">
-                      <p className="text-white font-semibold text-[24px] leading-tight">Deine persönliche Übersicht</p>
-                      <p className="text-white/80 text-sm mt-2">Schnell, direkt und unkompliziert zu deinen passenden Angeboten und Chancen.</p>
-                    </div>
                   </div>
                 </div>
               </div>
