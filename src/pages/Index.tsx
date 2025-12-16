@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import heroFernsehturm from "@/assets/hero-fernsehturm.jpg";
+import heroSbahn from "@/assets/hero-sbahn.jpg";
+import heroPerson from "@/assets/hero-person.jpeg";
 interface FundingTeaser {
   id: string;
   title: string;
@@ -63,10 +66,10 @@ const Index = () => {
                 {/* Column 1 - no offset */}
                 <div className="flex flex-col gap-4 flex-1">
                   <div className="rounded-2xl overflow-hidden h-[200px]">
-                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" alt="Glückliche Menschen" className="w-full h-full object-cover" />
+                    <img src={heroFernsehturm} alt="Berliner Fernsehturm" className="w-full h-full object-cover" />
                   </div>
                   <div className="rounded-2xl overflow-hidden h-[260px]">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" alt="Team arbeitet zusammen" className="w-full h-full object-cover" />
+                    <img src={heroSbahn} alt="S-Bahn Berlin" className="w-full h-full object-cover" />
                   </div>
                 </div>
 
@@ -79,7 +82,7 @@ const Index = () => {
                     </div>
                   </div>
                   <div className="rounded-2xl overflow-hidden h-[280px]">
-                    <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=500&fit=crop" alt="Erfolgreiche Person" className="w-full h-full object-cover" />
+                    <img src={heroPerson} alt="Person" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>
