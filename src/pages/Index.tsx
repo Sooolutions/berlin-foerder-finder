@@ -67,20 +67,17 @@ const Index = () => {
                   <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" alt="Glückliche Menschen" className="w-full h-full object-cover" />
                 </div>
                 <div className="row-span-1 rounded-2xl bg-accent flex items-center justify-center p-5">
-                  <div className="text-right w-full">
-                    <p className="text-white font-semibold text-[24px] leading-tight">Finde was dir zusteht!</p>
-                    <p className="text-white/80 text-sm mt-2">Schnell, direkt und unkompliziert zu deinen passenden Angeboten.</p>
-                  </div>
+                  
                 </div>
 
                 {/* Column 2 */}
                 <div className="row-span-1 rounded-2xl bg-primary flex items-center justify-center p-5">
                   <div className="text-right w-full">
-                    <p className="text-white font-semibold text-[24px] leading-tight">Weniger Bürokratie</p>
+                    <p className="text-white font-semibold text-[24px] leading-tight bg-secondary">Weniger Bürokratie</p>
                     <p className="text-white/80 text-sm mt-2">Weil der Zugang zu Chancen für alle leichter sein sollte.</p>
                   </div>
                 </div>
-                <div className="row-span-1 rounded-2xl overflow-hidden">
+                <div className="row-span-1 rounded-2xl overflow-hidden bg-accent">
                   <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=500&fit=crop" alt="Erfolgreiche Person" className="w-full h-full object-cover" />
                 </div>
 
@@ -90,7 +87,7 @@ const Index = () => {
                 </div>
                 <div className="row-span-1 rounded-2xl bg-destructive flex items-center justify-center p-5">
                   <div className="text-right w-full">
-                    <p className="text-white font-semibold text-[24px] leading-tight">Deine persönliche Übersicht</p>
+                    
                     <p className="text-white/80 text-sm mt-2">Wir machen sichtbar, was dir offensteht.</p>
                   </div>
                 </div>
@@ -114,7 +111,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               <div className="p-6 rounded-2xl bg-secondary">
                 <div className="text-4xl font-bold text-primary mb-2">200+</div>
-                <p className="text-muted-foreground">Förderprogramme</p>
+                
               </div>
               <div className="p-6 rounded-2xl bg-secondary">
                 <div className="text-4xl font-bold text-primary mb-2">12</div>
