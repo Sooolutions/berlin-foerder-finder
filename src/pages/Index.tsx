@@ -84,46 +84,53 @@ const Index = () => {
                 </p>
                 <Button 
                   size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-full"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-[10px] shadow-lg"
                   onClick={startQuestionnaire}
                 >
-                  Jetzt starten
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  Jetzt Entdecken!
+                  <ArrowRight className="ml-2 w-6 h-6" strokeWidth={2.5} />
                 </Button>
               </div>
 
-              {/* Right: Images */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Right: 6 Elements in 3 columns */}
+              <div className="grid grid-cols-3 gap-4">
+                {/* Column 1 */}
                 <div className="space-y-4">
-                  <div className="rounded-2xl overflow-hidden bg-accent/30 aspect-square flex items-center justify-center">
+                  <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
                       src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" 
                       alt="Glückliche Menschen"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="rounded-2xl overflow-hidden bg-destructive/30 aspect-[4/3] flex items-center justify-center">
-                    <img 
-                      src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=300&fit=crop" 
-                      alt="Studierende"
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="rounded-2xl bg-primary aspect-square flex items-center justify-center p-4">
+                    <p className="text-primary-foreground font-semibold text-center text-sm">Finde was dir zusteht</p>
                   </div>
                 </div>
-                <div className="space-y-4 pt-8">
-                  <div className="rounded-2xl overflow-hidden bg-primary/30 aspect-[4/3] flex items-center justify-center">
+                {/* Column 2 */}
+                <div className="space-y-4 pt-6">
+                  <div className="rounded-2xl bg-accent aspect-square flex items-center justify-center p-4">
+                    <p className="text-foreground font-semibold text-center text-sm">Weniger Bürokratie</p>
+                  </div>
+                  <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
-                      src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop" 
+                      src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" 
                       alt="Team arbeitet zusammen"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="rounded-2xl overflow-hidden bg-accent/30 aspect-square flex items-center justify-center">
+                </div>
+                {/* Column 3 */}
+                <div className="space-y-4">
+                  <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
                       src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop" 
                       alt="Erfolgreiche Person"
                       className="w-full h-full object-cover"
                     />
+                  </div>
+                  <div className="rounded-2xl bg-destructive aspect-square flex items-center justify-center p-4">
+                    <p className="text-destructive-foreground font-semibold text-center text-sm">Deine persönliche Übersicht</p>
                   </div>
                 </div>
               </div>
