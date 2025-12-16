@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -6,13 +5,7 @@ import { ArrowRight, Eye, Heart, Users, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 interface FundingTeaser {
   id: string;
   title: string;
@@ -20,53 +13,30 @@ interface FundingTeaser {
   organization: string;
   url: string;
 }
-
 const Index = () => {
   const navigate = useNavigate();
   const [fundingTeasers, setFundingTeasers] = useState<FundingTeaser[]>([]);
-
   useEffect(() => {
     const fetchRandomFunding = async () => {
-      const { data, error } = await supabase
-        .from('funding')
-        .select('id, title, description, organization, url');
-      
+      const {
+        data,
+        error
+      } = await supabase.from('funding').select('id, title, description, organization, url');
       if (data && !error) {
         // Shuffle and take 5 random items
         const shuffled = data.sort(() => 0.5 - Math.random());
         setFundingTeasers(shuffled.slice(0, 5));
       }
     };
-
     fetchRandomFunding();
   }, []);
-
   const startQuestionnaire = () => {
     navigate("/questionnaire");
   };
 
   // Community images - 16 images in 2 rows of 8
-  const communityImages = [
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop",
-    "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=100&h=100&fit=crop",
-  ];
-
-  return (
-    <div className="min-h-screen flex flex-col bg-white">
+  const communityImages = ["https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=100&h=100&fit=crop"];
+  return <div className="min-h-screen flex flex-col bg-white">
       <Header />
       
       <main className="flex-grow">
@@ -82,25 +52,19 @@ const Index = () => {
                 <p className="text-muted-foreground max-w-lg">
                   Entdecke Förderungen, Angebote und Unterstützung, die zu deiner Lebenssituation passen.
                 </p>
-                <Button 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-[10px] shadow-lg"
-                  onClick={startQuestionnaire}
-                >
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-[10px] shadow-lg" onClick={startQuestionnaire}>
                   Jetzt Entdecken!
                   <ArrowRight className="ml-2 w-6 h-6" strokeWidth={2.5} />
                 </Button>
               </div>
 
               {/* Right: Grid forming a rectangle - 6 elements */}
-              <div className="lg:col-span-3 grid grid-cols-3 gap-3" style={{ gridTemplateRows: '1fr 1.4fr' }}>
+              <div className="lg:col-span-3 grid grid-cols-3 gap-3" style={{
+              gridTemplateRows: '1fr 1.4fr'
+            }}>
                 {/* Column 1 */}
                 <div className="row-span-1 rounded-2xl overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" 
-                    alt="Glückliche Menschen"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" alt="Glückliche Menschen" className="w-full h-full object-cover" />
                 </div>
                 <div className="row-span-1 rounded-2xl bg-accent flex items-center justify-center p-5">
                   <div className="text-right w-full">
@@ -117,20 +81,12 @@ const Index = () => {
                   </div>
                 </div>
                 <div className="row-span-1 rounded-2xl overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=500&fit=crop" 
-                    alt="Erfolgreiche Person"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=500&fit=crop" alt="Erfolgreiche Person" className="w-full h-full object-cover" />
                 </div>
 
                 {/* Column 3 */}
                 <div className="row-span-1 rounded-2xl overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" 
-                    alt="Team arbeitet zusammen"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=400&fit=crop" alt="Team arbeitet zusammen" className="w-full h-full object-cover" />
                 </div>
                 <div className="row-span-1 rounded-2xl bg-destructive flex items-center justify-center p-5">
                   <div className="text-right w-full">
@@ -188,19 +144,11 @@ const Index = () => {
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {fundingTeasers.map((funding) => (
-                  <a 
-                    key={funding.id}
-                    href={funding.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-6 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors text-primary-foreground"
-                  >
-                    <h3 className="font-semibold mb-2 line-clamp-2 text-lg">{funding.title}</h3>
-                    <p className="text-sm text-primary-foreground/70 mb-3">{funding.organization}</p>
-                    <p className="text-sm text-primary-foreground/80 line-clamp-3">{funding.description}</p>
-                  </a>
-                ))}
+                {fundingTeasers.map(funding => <a key={funding.id} href={funding.url} target="_blank" rel="noopener noreferrer" className="p-6 rounded-2xl transition-colors text-primary-foreground bg-primary-foreground">
+                    <h3 className="font-semibold mb-2 line-clamp-2 text-lg text-secondary-foreground">{funding.title}</h3>
+                    <p className="text-sm mb-3 bg-primary-foreground text-primary">{funding.organization}</p>
+                    <p className="text-sm line-clamp-3 text-secondary-foreground">{funding.description}</p>
+                  </a>)}
               </div>
             </div>
           </div>
@@ -221,25 +169,11 @@ const Index = () => {
             <div className="space-y-4 max-w-5xl mx-auto">
               {/* Row 1 - 8 images */}
               <div className="flex justify-center gap-4">
-                {communityImages.slice(0, 8).map((img, index) => (
-                  <img 
-                    key={index}
-                    src={img}
-                    alt={`Community Mitglied ${index + 1}`}
-                    className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover"
-                  />
-                ))}
+                {communityImages.slice(0, 8).map((img, index) => <img key={index} src={img} alt={`Community Mitglied ${index + 1}`} className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover" />)}
               </div>
               {/* Row 2 - 8 images */}
               <div className="flex justify-center gap-4">
-                {communityImages.slice(8, 16).map((img, index) => (
-                  <img 
-                    key={index + 8}
-                    src={img}
-                    alt={`Community Mitglied ${index + 9}`}
-                    className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover"
-                  />
-                ))}
+                {communityImages.slice(8, 16).map((img, index) => <img key={index + 8} src={img} alt={`Community Mitglied ${index + 9}`} className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover" />)}
               </div>
             </div>
           </div>
@@ -302,11 +236,7 @@ const Index = () => {
             <p className="text-muted-foreground mb-8">
               In nur wenigen Minuten zu deinen passenden Förderungen.
             </p>
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-6 text-xl rounded-full"
-              onClick={startQuestionnaire}
-            >
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-6 text-xl rounded-full" onClick={startQuestionnaire}>
               Jetzt starten
               <ArrowRight className="ml-2 w-6 h-6" />
             </Button>
@@ -315,8 +245,6 @@ const Index = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
