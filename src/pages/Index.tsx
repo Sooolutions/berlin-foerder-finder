@@ -92,28 +92,49 @@ const Index = () => {
 
         {/* Überblick Section */}
         <section className="py-20 px-4 bg-white">
-          <div className="container mx-auto text-center">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Eye className="w-10 h-10 text-primary" />
-            </div>
-            <h2 className="text-foreground mb-6">
+          <div className="container mx-auto">
+            <h2 className="text-foreground mb-4">
               Ein klarer Überblick, damit du keine Chance verpasst!
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-              Wir durchsuchen alle verfügbaren Förderprogramme und filtern die relevanten Angebote für dich heraus.
+            <p className="text-muted-foreground max-w-2xl mb-12">
+              Wir bringen Ordnung ins Angebot - und du entscheidest den nächsten Schritt!
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="p-6 rounded-2xl bg-secondary">
-                <div className="text-4xl font-bold text-primary mb-2">200+</div>
-                
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {/* Card 1 - Blue */}
+              <div className="p-8 rounded-2xl flex flex-col justify-between" style={{ backgroundColor: '#84B1E8', aspectRatio: '1 / 1.5' }}>
+                <h3 className="text-white font-semibold text-[30px] leading-tight text-left">
+                  Umfassend und Vollständig
+                </h3>
+                <div>
+                  <p className="text-white text-[100px] font-normal leading-none mb-4">1200+</p>
+                  <p className="text-white/90 text-base text-left">
+                    Staatliche und nicht-staatliche Angebote, Förderungen und Möglichkeiten
+                  </p>
+                </div>
               </div>
-              <div className="p-6 rounded-2xl bg-secondary">
-                <div className="text-4xl font-bold text-primary mb-2">12</div>
-                <p className="text-muted-foreground">Bezirke abgedeckt</p>
+              {/* Card 2 - Yellow */}
+              <div className="p-8 rounded-2xl flex flex-col justify-between bg-accent" style={{ aspectRatio: '1 / 1.5' }}>
+                <h3 className="text-white font-semibold text-[30px] leading-tight text-left">
+                  Passend und Persönlich
+                </h3>
+                <div>
+                  <p className="text-white text-[100px] font-normal leading-none mb-4">10</p>
+                  <p className="text-white/90 text-base text-left">
+                    Kurze Fragen bringen dich zu deiner individualisierten Übersichtsseite
+                  </p>
+                </div>
               </div>
-              <div className="p-6 rounded-2xl bg-secondary">
-                <div className="text-4xl font-bold text-primary mb-2">10+</div>
-                <p className="text-muted-foreground">Kategorien</p>
+              {/* Card 3 - Red */}
+              <div className="p-8 rounded-2xl flex flex-col justify-between bg-destructive" style={{ aspectRatio: '1 / 1.5' }}>
+                <h3 className="text-white font-semibold text-[30px] leading-tight text-left">
+                  Schnell und effizient
+                </h3>
+                <div>
+                  <p className="text-white text-[100px] font-normal leading-none mb-4">1-2</p>
+                  <p className="text-white/90 text-base text-left">
+                    Finde mit wenigen Klicks Angebote die dich wirklich weiterbringen
+                  </p>
+                </div>
               </div>
             </div>
           </div>
