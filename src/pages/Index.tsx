@@ -73,9 +73,9 @@ const Index = () => {
         {/* Hero Section */}
         <section className="min-h-[80vh] flex items-center py-16 px-4 bg-white">
           <div className="container mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left: Text */}
-              <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
+              {/* Left: Text - 2/5 */}
+              <div className="lg:col-span-2 space-y-8">
                 <h1 className="text-foreground">
                   Dein Zugang zu Chancen, die dich weiterbringen
                 </h1>
@@ -92,10 +92,10 @@ const Index = () => {
                 </Button>
               </div>
 
-              {/* Right: 6 Elements in 3 columns - varying sizes */}
-              <div className="flex gap-4 items-start">
+              {/* Right: 6 Elements in 3 columns - 3/5 */}
+              <div className="lg:col-span-3 flex gap-4 items-start justify-end">
                 {/* Column 1 - Largest */}
-                <div className="space-y-4 w-[200px]">
+                <div className="space-y-4 w-[260px]">
                   <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
                       src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=400&fit=crop" 
@@ -111,7 +111,7 @@ const Index = () => {
                   </div>
                 </div>
                 {/* Column 2 - Medium */}
-                <div className="space-y-4 pt-6 w-[160px]">
+                <div className="space-y-4 pt-6 w-[210px]">
                   <div className="rounded-2xl bg-accent aspect-square flex items-center justify-center p-5">
                     <div className="text-center">
                       <p className="text-white font-semibold text-[30px] leading-tight">Weniger Bürokratie</p>
@@ -127,7 +127,7 @@ const Index = () => {
                   </div>
                 </div>
                 {/* Column 3 - Smallest */}
-                <div className="space-y-4 w-[120px]">
+                <div className="space-y-4 w-[160px]">
                   <div className="rounded-2xl overflow-hidden aspect-square">
                     <img 
                       src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop" 
