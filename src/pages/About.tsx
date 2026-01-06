@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Sun, Share2, Users, SmilePlus, ArrowRight } from "lucide-react";
+import teamPortrait from "@/assets/team-portrait.jpg";
 
 const carouselCards = [
   {
@@ -35,20 +36,20 @@ const About = () => {
       <main className="flex-grow">
         {/* Section 1: Team Image + Intro Text */}
         <section className="container mx-auto px-4 py-16">
-          <div className="flex flex-col lg:flex-row gap-12 items-center">
-            {/* Team Image */}
-            <div className="lg:w-1/2">
+          <div className="flex flex-col lg:flex-row gap-8 items-center">
+            {/* Team Image - 75% width */}
+            <div className="lg:w-3/4">
               <div className="rounded-3xl overflow-hidden aspect-[4/3] bg-muted">
                 <img 
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" 
+                  src={teamPortrait} 
                   alt="Das MehrDrin Team" 
                   className="w-full h-full object-cover"
                 />
               </div>
             </div>
             
-            {/* Text Content */}
-            <div className="lg:w-1/2">
+            {/* Text Content - Right aligned */}
+            <div className="lg:w-1/4 lg:text-right">
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
                 Mehr drin für dich!
               </h1>
