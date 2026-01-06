@@ -3,7 +3,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sun, Share2, Users, SmilePlus } from "lucide-react";
 
 const carouselCards = [
   {
@@ -114,6 +114,78 @@ const About = () => {
                     }`}
                   />
                 ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: Vielfalt */}
+        <section className="container mx-auto px-4 py-16">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              Wir stehen für Vielfalt
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Wir wünschen uns Einfachheit, Fairness und echten Zugang zu Chancen für Alle!
+            </p>
+          </div>
+
+          {/* Values Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+            {/* Left Column */}
+            <div className="flex flex-col gap-6">
+              {/* Transparenz Card */}
+              <div className="bg-blue-100 rounded-3xl p-8 flex-1">
+                <div className="bg-foreground w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                  <Sun className="h-7 w-7 text-white" />
+                </div>
+                <p className="text-foreground text-lg">
+                  <span className="font-bold">Transparenz</span> bedeutet für uns eine offene, leicht zugängliche Datenbank ohne Hürden.
+                </p>
+              </div>
+              
+              {/* Partnerschaft Card */}
+              <div className="bg-rose-100 rounded-3xl p-8 flex-1">
+                <div className="bg-foreground w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                  <Share2 className="h-7 w-7 text-white" />
+                </div>
+                <p className="text-foreground text-lg">
+                  <span className="font-bold">Partnerschaft</span> verstehen wir als keine Alleingänge, sondern enge Zusammenarbeit mit Behörden.
+                </p>
+              </div>
+            </div>
+
+            {/* Center Image */}
+            <div className="flex items-center justify-center">
+              <div className="rounded-3xl overflow-hidden aspect-[3/4] w-full max-w-sm">
+                <img 
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop" 
+                  alt="Team Member" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="flex flex-col gap-6">
+              {/* Gemeinwohl Card */}
+              <div className="bg-amber-100 rounded-3xl p-8 flex-1">
+                <div className="bg-foreground w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                  <Users className="h-7 w-7 text-white" />
+                </div>
+                <p className="text-foreground text-lg">
+                  <span className="font-bold">Gemeinwohl</span> heißt für uns keine Gewinne, keine Werbung.
+                </p>
+              </div>
+              
+              {/* Selbstbestimmung Card */}
+              <div className="bg-blue-100 rounded-3xl p-8 flex-1">
+                <div className="bg-foreground w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                  <SmilePlus className="h-7 w-7 text-white" />
+                </div>
+                <p className="text-foreground text-lg">
+                  <span className="font-bold">Selbstbestimmung</span> bedeutet für uns, Menschen jeder Sprache und Herkunft zu befähigen.
+                </p>
               </div>
             </div>
           </div>
