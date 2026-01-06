@@ -3,7 +3,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Sun, Share2, Users, SmilePlus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sun, Share2, Users, SmilePlus, ArrowRight } from "lucide-react";
 
 const carouselCards = [
   {
@@ -188,6 +188,27 @@ const About = () => {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Section 4: CTA */}
+        <section className="py-20 px-4 bg-white">
+          <div className="container mx-auto text-center max-w-3xl">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              Es ist Mehr für dich drin.<br />
+              Finde jetzt heraus was dir zusteht!
+            </h1>
+            <p className="text-muted-foreground mb-8">
+              Kostenlos und anonym zum vollständigen Angebot!
+            </p>
+            <Button 
+              size="lg" 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-6 text-xl rounded-xl"
+              onClick={() => window.location.href = '/questionnaire'}
+            >
+              Jetzt Entdecken!
+              <ArrowRight className="ml-2 w-6 h-6" />
+            </Button>
           </div>
         </section>
       </main>
