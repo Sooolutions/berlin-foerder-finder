@@ -63,8 +63,8 @@ const Index = () => {
 
               {/* Right: Grid forming a rectangle - 4 elements with staggered columns */}
               <div className="lg:col-span-3 flex gap-4">
-                {/* Column 1 - no offset */}
-                <div className="flex flex-col gap-4 flex-1">
+                {/* Column 1 - no offset, wider */}
+                <div className="flex flex-col gap-4" style={{ flex: '1.4' }}>
                   <div className="rounded-2xl overflow-hidden h-[200px]">
                     <img src={heroFernsehturm} alt="Berliner Fernsehturm" className="w-full h-full object-cover" />
                   </div>
@@ -73,12 +73,12 @@ const Index = () => {
                   </div>
                 </div>
 
-                {/* Column 2 - offset down */}
-                <div className="flex flex-col gap-4 flex-1 mt-12">
+                {/* Column 2 - offset down, narrower */}
+                <div className="flex flex-col gap-4 mt-12" style={{ flex: '0.8' }}>
                   <div className="rounded-2xl bg-primary flex items-center justify-center p-6 h-[200px]">
                     <div className="text-right w-full">
-                      <p className="text-white font-semibold text-[24px] leading-tight">Weniger Bürokratie</p>
-                      <p className="text-white/80 text-sm mt-2">Weil der Zugang zu Chancen für alle leichter sein sollte.</p>
+                      <p className="text-white font-semibold text-[24px] leading-tight">Finde was dir zusteht!</p>
+                      <p className="text-white/80 text-sm mt-2">Wir machen sichtbar was dir offensteht. Entdecke wo mehr für dich drin ist!</p>
                     </div>
                   </div>
                   <div className="rounded-2xl overflow-hidden h-[280px]">
