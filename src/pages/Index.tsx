@@ -82,7 +82,7 @@ const Index = () => {
                     </div>
                   </div>
                   <div className="rounded-2xl overflow-hidden h-[280px]">
-                    <img src={heroPerson} alt="Person" className="w-full h-full object-cover" />
+                    <img alt="Person" className="w-full h-full object-cover" src="/lovable-uploads/6a406a45-8eda-4049-aef8-0067a8c3bac8.jpg" />
                   </div>
                 </div>
               </div>
@@ -162,7 +162,7 @@ const Index = () => {
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                {fundingTeasers.map(funding => <a key={funding.id} href={funding.url} target="_blank" rel="noopener noreferrer" className="p-6 rounded-2xl transition-colors text-primary-foreground bg-primary-foreground">
+                {fundingTeasers.map((funding) => <a key={funding.id} href={funding.url} target="_blank" rel="noopener noreferrer" className="p-6 rounded-2xl transition-colors text-primary-foreground bg-primary-foreground">
                     <h3 className="font-semibold mb-2 line-clamp-2 text-lg text-secondary-foreground">{funding.title}</h3>
                     <p className="text-sm mb-3 bg-primary-foreground text-primary">{funding.organization}</p>
                     <p className="text-sm line-clamp-3 text-secondary-foreground">{funding.description}</p>
