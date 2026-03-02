@@ -7,16 +7,16 @@ import { ChevronLeft, ChevronRight, Sun, Share2, Users, SmilePlus, ArrowRight } 
 import teamPortrait from "@/assets/team-portrait.jpg";
 
 const carouselCards = [
-  {
-    text: "Wusstest du, dass ca. 50% der staatlichen Hilfeleistungen nicht in Anspruch genommen werden?"
-  },
-  {
-    text: "Jährlich bleiben über 10 Milliarden Euro an Fördergeldern ungenutzt – weil Menschen nicht wissen, dass sie Anspruch haben."
-  },
-  {
-    text: "Besonders Familien, Studierende und Geringverdiener verpassen häufig wichtige Unterstützungsangebote."
-  }
-];
+{
+  text: "Wusstest du, dass ca. 50% der staatlichen Hilfeleistungen nicht in Anspruch genommen werden?"
+},
+{
+  text: "Jährlich bleiben über 10 Milliarden Euro an Fördergeldern ungenutzt – weil Menschen nicht wissen, dass sie Anspruch haben."
+},
+{
+  text: "Besonders Familien, Studierende und Geringverdiener verpassen häufig wichtige Unterstützungsangebote."
+}];
+
 
 const About = () => {
   const [currentCard, setCurrentCard] = useState(0);
@@ -40,11 +40,11 @@ const About = () => {
             {/* Team Image - 75% width */}
             <div className="lg:w-3/4">
               <div className="rounded-3xl overflow-hidden aspect-[4/3] bg-muted">
-                <img 
-                  src={teamPortrait} 
-                  alt="Das MehrDrin Team" 
-                  className="w-full h-full object-cover"
-                />
+                <img
+
+                  alt="Das MehrDrin Team"
+                  className="w-full h-full object-cover" src="/lovable-uploads/4578534a-313a-40ef-911f-6629001815f5.jpg" />
+                
               </div>
             </div>
             
@@ -64,10 +64,10 @@ const About = () => {
 
         {/* Section 2: Blue Box with Carousel */}
         <section className="px-4 py-16">
-          <div 
+          <div
             className="bg-primary w-full py-16 px-6 md:px-12"
-            style={{ borderRadius: '30px' }}
-          >
+            style={{ borderRadius: '30px' }}>
+            
             <div className="max-w-4xl mx-auto text-center">
               {/* Headers */}
               <h2 className="text-xl md:text-2xl font-medium text-white/80 mb-2">
@@ -90,31 +90,31 @@ const About = () => {
                   variant="outline"
                   size="icon"
                   onClick={prevCard}
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white rounded-full w-12 h-12"
-                >
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white rounded-full w-12 h-12">
+                  
                   <ChevronLeft className="h-6 w-6" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={nextCard}
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white rounded-full w-12 h-12"
-                >
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white rounded-full w-12 h-12">
+                  
                   <ChevronRight className="h-6 w-6" />
                 </Button>
               </div>
 
               {/* Dots indicator */}
               <div className="flex justify-center gap-2 mt-6">
-                {carouselCards.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentCard(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentCard ? 'bg-white w-6' : 'bg-white/40'
-                    }`}
-                  />
-                ))}
+                {carouselCards.map((_, index) =>
+                <button
+                  key={index}
+                  onClick={() => setCurrentCard(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                  index === currentCard ? 'bg-white w-6' : 'bg-white/40'}`
+                  } />
+
+                )}
               </div>
             </div>
           </div>
@@ -159,11 +159,11 @@ const About = () => {
             {/* Center Image */}
             <div className="flex items-center justify-center">
               <div className="rounded-3xl overflow-hidden aspect-[3/4] w-full max-w-sm">
-                <img 
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop" 
-                  alt="Team Member" 
-                  className="w-full h-full object-cover"
-                />
+                <img
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop"
+                  alt="Team Member"
+                  className="w-full h-full object-cover" />
+                
               </div>
             </div>
 
@@ -202,11 +202,11 @@ const About = () => {
             <p className="text-muted-foreground mb-8">
               Kostenlos und anonym zum vollständigen Angebot!
             </p>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-6 text-xl rounded-xl"
-              onClick={() => window.location.href = '/questionnaire'}
-            >
+              onClick={() => window.location.href = '/questionnaire'}>
+              
               Jetzt Entdecken!
               <ArrowRight className="ml-2 w-6 h-6" />
             </Button>
@@ -215,8 +215,8 @@ const About = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>);
+
 };
 
 export default About;
