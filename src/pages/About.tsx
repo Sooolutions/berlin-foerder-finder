@@ -160,9 +160,9 @@ const About = () => {
             <div className="flex items-center justify-center">
               <div className="rounded-3xl overflow-hidden aspect-[3/4] w-full max-w-sm">
                 <img
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=800&fit=crop"
+
                   alt="Team Member"
-                  className="w-full h-full object-cover" />
+                  className="w-full h-full object-cover" src="/lovable-uploads/d137245e-cec6-4146-be28-7a3e0e7bfea1.jpg" />
                 
               </div>
             </div>
