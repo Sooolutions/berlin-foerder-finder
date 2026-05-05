@@ -270,6 +270,7 @@ const Index = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+            </div>
           </div>
         </section>
 
