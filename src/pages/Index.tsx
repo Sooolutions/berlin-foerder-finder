@@ -9,6 +9,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import heroFernsehturm from "@/assets/hero-fernsehturm.jpg";
 import heroSbahn from "@/assets/hero-sbahn.jpg";
 import heroPerson from "@/assets/hero-person.jpeg";
+import community1 from "@/assets/community-1.jpg";
+import community2 from "@/assets/community-2.jpg";
+import community3 from "@/assets/community-3.jpg";
+import community4 from "@/assets/community-4.jpg";
+import community5 from "@/assets/community-5.jpg";
+import community6 from "@/assets/community-6.jpg";
+import community7 from "@/assets/community-7.jpg";
+import community8 from "@/assets/community-8.jpg";
 interface FundingTeaser {
   id: string;
   title: string;
