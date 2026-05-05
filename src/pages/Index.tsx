@@ -9,6 +9,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import heroFernsehturm from "@/assets/hero-fernsehturm.jpg";
 import heroSbahn from "@/assets/hero-sbahn.jpg";
 import heroPerson from "@/assets/hero-person.jpeg";
+import community1 from "@/assets/community-1.jpg";
+import community2 from "@/assets/community-2.jpg";
+import community3 from "@/assets/community-3.jpg";
+import community4 from "@/assets/community-4.jpg";
+import community5 from "@/assets/community-5.jpg";
+import community6 from "@/assets/community-6.jpg";
+import community7 from "@/assets/community-7.jpg";
+import community8 from "@/assets/community-8.jpg";
 interface FundingTeaser {
   id: string;
   title: string;
@@ -37,8 +45,8 @@ const Index = () => {
     navigate("/questionnaire");
   };
 
-  // Community images - 16 images in 2 rows of 8
-  const communityImages = ["https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop", "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=100&h=100&fit=crop"];
+  // Community images - 16 portraits in 8 columns of 2 (U-shape arrangement)
+  const communityImages = [community1, community2, community3, community4, community5, community6, community7, community8, community4, community7, community5, community2, community1, community6, community3, community8];
   return <div className="min-h-screen flex flex-col bg-white">
       <Header />
       
@@ -173,8 +181,8 @@ const Index = () => {
         </section>
 
         {/* Community Section */}
-        <section className="py-20 px-4 bg-white">
-          <div className="container mx-auto text-center">
+        <section className="py-20 bg-white overflow-hidden">
+          <div className="container mx-auto text-center px-4">
             <div className="flex items-center justify-center gap-4 mb-6">
               <Users className="w-10 h-10 text-primary" />
             </div>
@@ -182,33 +190,53 @@ const Index = () => {
               Werde Teil einer Community, die profitiert!
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-              Tausende haben bereits Förderungen gefunden, die ihr Leben verbessert haben.
+              Weil die richtige Unterstützung dein Leben leichter macht!
             </p>
-            <div className="space-y-4 max-w-5xl mx-auto">
-              {/* Row 1 - 8 images */}
-              <div className="flex justify-center gap-4">
-                {communityImages.slice(0, 8).map((img, index) => <img key={index} src={img} alt={`Community Mitglied ${index + 1}`} className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover" />)}
-              </div>
-              {/* Row 2 - 8 images */}
-              <div className="flex justify-center gap-4">
-                {communityImages.slice(8, 16).map((img, index) => <img key={index + 8} src={img} alt={`Community Mitglied ${index + 9}`} className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover" />)}
-              </div>
+          </div>
+          {/* U-shape grid - 8 columns of 2 portraits, slight overflow on edges */}
+          <div className="w-screen relative left-1/2 -translate-x-1/2 px-0">
+            <div className="flex justify-center items-center gap-3 md:gap-4 -mx-8 md:-mx-12">
+              {communityImages.reduce<string[][]>((cols, img, i) => {
+                const c = i % 8;
+                cols[c] = cols[c] || [];
+                cols[c].push(img);
+                return cols;
+              }, []).map((col, colIdx) => {
+                // U-shape vertical offsets (px): outer columns up, middle down
+                const offsets = [0, 24, 48, 72, 72, 48, 24, 0];
+                return (
+                  <div key={colIdx} className="flex flex-col gap-3 md:gap-4 flex-shrink-0" style={{ transform: `translateY(${offsets[colIdx]}px)` }}>
+                    {col.map((img, i) => (
+                      <img
+                        key={i}
+                        src={img}
+                        alt={`Community Mitglied ${colIdx * 2 + i + 1}`}
+                        loading="lazy"
+                        className="w-[110px] h-[150px] md:w-[140px] md:h-[190px] lg:w-[160px] lg:h-[220px] rounded-2xl object-cover"
+                      />
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
         <section className="py-20 px-4 bg-white">
-          <div className="container mx-auto max-w-3xl">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <HelpCircle className="w-10 h-10 text-primary" />
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-secondary px-4 py-2 rounded-lg mb-6">
+                  <HelpCircle className="w-5 h-5 text-primary" />
+                  <span className="text-sm font-medium">Frequently Asked Questions</span>
+                </div>
+                <h2 className="text-foreground">
+                  Antworten auf die häufig gestellten Fragen.
+                </h2>
               </div>
-              <h2 className="text-foreground mb-6">
-                Antworten auf die häufig gestellten Fragen
-              </h2>
-            </div>
-            <Accordion type="single" collapsible className="space-y-4">
+              <Accordion type="single" collapsible className="space-y-4">
+
               <AccordionItem value="item-1" className="border rounded-xl px-6 bg-secondary">
                 <AccordionTrigger className="text-lg font-medium">
                   Was ist MehrDrin?
@@ -242,6 +270,7 @@ const Index = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+            </div>
           </div>
         </section>
 
