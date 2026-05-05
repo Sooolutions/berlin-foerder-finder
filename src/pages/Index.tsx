@@ -181,8 +181,8 @@ const Index = () => {
         </section>
 
         {/* Community Section */}
-        <section className="py-20 px-4 bg-white">
-          <div className="container mx-auto text-center">
+        <section className="py-20 bg-white overflow-hidden">
+          <div className="container mx-auto text-center px-4">
             <div className="flex items-center justify-center gap-4 mb-6">
               <Users className="w-10 h-10 text-primary" />
             </div>
@@ -190,33 +190,53 @@ const Index = () => {
               Werde Teil einer Community, die profitiert!
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-              Tausende haben bereits Förderungen gefunden, die ihr Leben verbessert haben.
+              Weil die richtige Unterstützung dein Leben leichter macht!
             </p>
-            <div className="space-y-4 max-w-5xl mx-auto">
-              {/* Row 1 - 8 images */}
-              <div className="flex justify-center gap-4">
-                {communityImages.slice(0, 8).map((img, index) => <img key={index} src={img} alt={`Community Mitglied ${index + 1}`} className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover" />)}
-              </div>
-              {/* Row 2 - 8 images */}
-              <div className="flex justify-center gap-4">
-                {communityImages.slice(8, 16).map((img, index) => <img key={index + 8} src={img} alt={`Community Mitglied ${index + 9}`} className="w-16 h-16 md:w-20 md:h-20 rounded-[7px] object-cover" />)}
-              </div>
+          </div>
+          {/* U-shape grid - 8 columns of 2 portraits, slight overflow on edges */}
+          <div className="w-screen relative left-1/2 -translate-x-1/2 px-0">
+            <div className="flex justify-center items-center gap-3 md:gap-4 -mx-8 md:-mx-12">
+              {communityImages.reduce<string[][]>((cols, img, i) => {
+                const c = i % 8;
+                cols[c] = cols[c] || [];
+                cols[c].push(img);
+                return cols;
+              }, []).map((col, colIdx) => {
+                // U-shape vertical offsets (px): outer columns up, middle down
+                const offsets = [0, 24, 48, 72, 72, 48, 24, 0];
+                return (
+                  <div key={colIdx} className="flex flex-col gap-3 md:gap-4 flex-shrink-0" style={{ transform: `translateY(${offsets[colIdx]}px)` }}>
+                    {col.map((img, i) => (
+                      <img
+                        key={i}
+                        src={img}
+                        alt={`Community Mitglied ${colIdx * 2 + i + 1}`}
+                        loading="lazy"
+                        className="w-[110px] h-[150px] md:w-[140px] md:h-[190px] lg:w-[160px] lg:h-[220px] rounded-2xl object-cover"
+                      />
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
         <section className="py-20 px-4 bg-white">
-          <div className="container mx-auto max-w-3xl">
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <HelpCircle className="w-10 h-10 text-primary" />
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
+              <div>
+                <div className="inline-flex items-center gap-2 bg-secondary px-4 py-2 rounded-lg mb-6">
+                  <HelpCircle className="w-5 h-5 text-primary" />
+                  <span className="text-sm font-medium">Frequently Asked Questions</span>
+                </div>
+                <h2 className="text-foreground">
+                  Antworten auf die häufig gestellten Fragen.
+                </h2>
               </div>
-              <h2 className="text-foreground mb-6">
-                Antworten auf die häufig gestellten Fragen
-              </h2>
-            </div>
-            <Accordion type="single" collapsible className="space-y-4">
+              <Accordion type="single" collapsible className="space-y-4">
+
               <AccordionItem value="item-1" className="border rounded-xl px-6 bg-secondary">
                 <AccordionTrigger className="text-lg font-medium">
                   Was ist MehrDrin?
