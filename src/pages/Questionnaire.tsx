@@ -12,7 +12,6 @@ const Questionnaire = () => {
   // Reset questionnaire only once when component mounts
   useEffect(() => {
     if (!hasReset.current) {
-      console.log("Resetting questionnaire on mount");
       resetQuestionnaire();
       hasReset.current = true;
     }

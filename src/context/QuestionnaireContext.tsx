@@ -71,8 +71,6 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   const getNextQuestionId = (currentId: string, answerValue?: string): string => {
     const answer = answerValue || getAnswer(currentId);
     
-    console.log(`Getting next question for ${currentId} with answer: ${answer}`);
-    
     switch (currentId) {
       case "Q1":
         // Age-based routing
@@ -462,14 +460,12 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         return "END";
         
       default:
-        console.warn(`No next question defined for ${currentId}`);
         return "END";
     }
   };
 
   // Update answer (string for single-select, string[] for multi-select)
   const updateAnswer = (questionId: string, answer: string | string[]) => {
-    console.log(`Updating answer for ${questionId}:`, answer);
     setAnswers(prev => ({
       ...prev,
       [questionId]: answer
@@ -478,13 +474,9 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
 
   // Go to next question with optional answer override
   const goToNextQuestion = (answerOverride?: string) => {
-    console.log(`goToNextQuestion called with override: ${answerOverride}`);
-    
     const nextQuestionId = getNextQuestionId(currentQuestionId, answerOverride);
-    console.log(`Next question ID: ${nextQuestionId}`);
-    
+
     if (nextQuestionId === "END") {
-      console.log("Reached end of questionnaire");
       setIsLastQuestion(true);
       return;
     }
@@ -496,7 +488,6 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
 
   // Go back to previous question
   const goToPreviousQuestion = () => {
-    console.log("Going to previous question");
     if (questionHistory.length > 1) {
       const newHistory = questionHistory.slice(0, -1);
       setQuestionHistory(newHistory);
@@ -507,7 +498,6 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
 
   // Reset questionnaire to beginning
   const resetQuestionnaire = () => {
-    console.log("Resetting questionnaire");
     setCurrentQuestionId("Q1");
     setAnswers({});
     setQuestionHistory(["Q1"]);

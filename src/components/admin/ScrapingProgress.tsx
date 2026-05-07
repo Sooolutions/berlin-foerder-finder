@@ -29,8 +29,6 @@ export function ScrapingProgress() {
     for (const source of FUNDING_SOURCES) {
       try {
         setCurrentSource(source.name);
-        console.log(`Starting to scrape ${source.name}...`);
-        
         const result = await scrapeFundingSource(source.url);
         
         if (result.success) {
