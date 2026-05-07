@@ -114,9 +114,9 @@ const Index = () => {
                   Umfassend und Vollständig
                 </h3>
                 <div className="mt-auto">
-                  <p className="text-white text-[100px] font-normal leading-none mb-4">1200+</p>
+                  <p className="text-white text-[100px] font-normal leading-none mb-4">280+</p>
                   <p className="text-white/90 text-base text-left">
-                    Staatliche und nicht-staatliche Angebote, Förderungen und Möglichkeiten
+                    Staatliche und nicht-staatliche Angebote — und es werden täglich mehr
                   </p>
                 </div>
               </div>
