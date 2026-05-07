@@ -663,7 +663,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q4_50-64_Pflege",
     question: "Was würde dir helfen, die Pflege besser mit deinem Alltag zu vereinbaren?",
     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen Pflegenden", "Beratung, wie ich die die aktuelle Situtation mit meinem Beruf vereinbaren kann", "Psychologische Unterstützung", "Beratung zu finanziellen und rechtlichen Fragen"],
-    tags: ["Pflege_Beratung", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"],
+    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"],
     multiSelect: true,
     maxSelections: 3
   },
