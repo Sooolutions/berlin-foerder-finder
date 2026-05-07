@@ -3,126 +3,123 @@ import { UserAnswers } from "@/context/QuestionnaireContext";
 import { getQuestionData } from "@/data/questionnaireData";
 
 /**
- * Extracts all relevant tags from user answers based on questionnaire data.
- * @param answers User's answers from the questionnaire
- * @returns Array of tags that match the user's answers
+ * Maps an age-range answer to numeric min/max for DB filtering.
+ */
+export const getAgeRange = (ageAnswer: string): { minAge: number; maxAge: number } | null => {
+  switch (ageAnswer) {
+    case "unter 18": return { minAge: 0, maxAge: 17 };
+    case "18-24": return { minAge: 18, maxAge: 24 };
+    case "25-34": return { minAge: 25, maxAge: 34 };
+    case "35-49": return { minAge: 35, maxAge: 49 };
+    case "50-64": return { minAge: 50, maxAge: 64 };
+    case "über 65": return { minAge: 65, maxAge: 120 };
+    default: return null;
+  }
+};
+
+/**
+ * Extracts all relevant tags from user answers.
+ * Handles both single-select (string) and multi-select (string[]) answers.
  */
 export const extractTagsFromAnswers = (answers: UserAnswers): string[] => {
   const collectedTags: string[] = [];
   
-  console.log("=== EXTRACTING TAGS FROM ANSWERS ===");
-  console.log("User answers:", answers);
-  
-  // Iterate through all answers
   Object.entries(answers).forEach(([questionId, selectedAnswer]) => {
-    console.log(`Processing question ${questionId} with answer: ${selectedAnswer}`);
-    
-    // Get question data
     const questionData = getQuestionData(questionId);
+    if (!questionData?.tags || !questionData?.options) return;
     
-    if (!questionData) {
-      console.log(`No question data found for ${questionId}`);
-      return;
-    }
+    // Normalize to array for uniform processing
+    const selectedValues = Array.isArray(selectedAnswer) ? selectedAnswer : [selectedAnswer];
     
-    if (!questionData.tags || !questionData.options) {
-      console.log(`Question ${questionId} has no tags or options`);
-      return;
-    }
-    
-    // Find the index of the selected answer in the options array
-    const answerIndex = questionData.options.indexOf(selectedAnswer);
-    
-    if (answerIndex === -1) {
-      console.log(`Answer "${selectedAnswer}" not found in options for ${questionId}`);
-      return;
-    }
-    
-    // Get the corresponding tag
-    const correspondingTag = questionData.tags[answerIndex];
-    
-    if (correspondingTag) {
-      console.log(`Found tag "${correspondingTag}" for answer "${selectedAnswer}" in ${questionId}`);
-      collectedTags.push(correspondingTag);
-    } else {
-      console.log(`No tag found for answer index ${answerIndex} in ${questionId}`);
-    }
+    selectedValues.forEach(val => {
+      const answerIndex = questionData.options.indexOf(val);
+      if (answerIndex !== -1 && questionData.tags![answerIndex]) {
+        collectedTags.push(questionData.tags![answerIndex]);
+      }
+    });
   });
   
-  // Remove duplicates
-  const uniqueTags = Array.from(new Set(collectedTags));
-  
-  console.log("Collected tags:", uniqueTags);
-  console.log("=== END TAG EXTRACTION ===");
-  
-  return uniqueTags;
+  return Array.from(new Set(collectedTags));
 };
 
 /**
- * Groups tags by category for better organization
- * @param tags Array of tags
- * @returns Object with tags grouped by category
+ * Tag priority weights — tags from different question types have different
+ * importance for matching. Activity and specific-need tags are most important.
  */
-export const groupTagsByCategory = (tags: string[]): { [category: string]: string[] } => {
-  const grouped: { [category: string]: string[] } = {};
-  
-  tags.forEach(tag => {
-    const parts = tag.split('_');
-    const category = parts[0] || 'general';
-    
-    if (!grouped[category]) {
-      grouped[category] = [];
-    }
-    
-    grouped[category].push(tag);
-  });
-  
-  return grouped;
+const TAG_WEIGHTS: Record<string, number> = {
+  // Age group tags (already filtered by DB, low extra weight)
+  "U18": 0.5, "18-24": 0.5, "25-34": 0.5, "35-49": 0.5, "50-64": 0.5, "65plus": 0.5,
+  // Nationality tags (medium weight)
+  "Deutsch": 1, "EU": 1, "Ukrainisch": 1.5, "Türkisch": 1.5, "Syrisch": 1.5, "Drittstaat": 1.5,
 };
 
-interface DatabaseFilters {
-  minAge?: number;
-  maxAge?: number;
-  incomeMin?: number;
-  incomeMax?: number;
-  district?: string[];
-  requiresChildren?: boolean;
-  requiresMarriage?: boolean;
-  educationLevel?: string[];
-  employmentStatus?: string[];
-  categories?: string[];
-  tags?: string[];
+function getTagWeight(tag: string): number {
+  if (TAG_WEIGHTS[tag]) return TAG_WEIGHTS[tag];
+  
+  // Activity-specific tags (Q4) get highest weight
+  const prefix = tag.split('_')[0];
+  if (['Schule', 'Ausbildung', 'Studium', 'Arbeiten', 'Gründung', 'Selbstständig',
+       'Arbeitssuche', 'Weiterbildung', 'Übergang', 'Pflege', 'Familie', 'FSJ',
+       'Rente', 'Erwerbsunfähig', 'Sonstiges'].includes(prefix)) {
+    return 3;
+  }
+  
+  // Need-specific tags (challenges, health, wishes)
+  if (['Herausforderung', 'Gesundheit', 'Wunsch'].includes(prefix)) return 2;
+  
+  // Financial/housing tags
+  if (['Finanzen', 'Miete', 'Eigentum', 'Prekär', 'Ohne'].includes(prefix)) return 2;
+  
+  // Health status tags
+  if (prefix === 'Beeinträchtigung') return 1.5;
+  
+  return 1;
 }
 
 /**
- * Maps user questionnaire answers to database filter parameters.
- * @param answers User's answers from the questionnaire
- * @returns Filter parameters that can be used with the Supabase query
+ * Compute a relevance score for a funding item against user tags.
+ * Returns a number 0-100. Higher = more relevant.
  */
-export const mapAnswersToFilters = (answers: UserAnswers): DatabaseFilters => {
-  const extractedTags = extractTagsFromAnswers(answers);
+export const computeRelevanceScore = (
+  fundingTags: string[],
+  userTags: string[]
+): number => {
+  if (!fundingTags || fundingTags.length === 0 || userTags.length === 0) return 0;
   
-  const filters: DatabaseFilters = {
-    tags: extractedTags
-  };
+  let matchedWeight = 0;
+  let totalWeight = 0;
+  let matchCount = 0;
   
-  console.log("Mapped filters:", filters);
+  userTags.forEach(userTag => {
+    const weight = getTagWeight(userTag);
+    totalWeight += weight;
+    
+    if (fundingTags.includes(userTag)) {
+      matchedWeight += weight;
+      matchCount++;
+    }
+  });
   
-  return filters;
+  if (totalWeight === 0) return 0;
+  
+  // Weighted match ratio (0-1)
+  const weightedRatio = matchedWeight / totalWeight;
+  
+  // Bonus for absolute number of matches (rewards breadth)
+  const matchBonus = Math.min(matchCount / 3, 1) * 0.2;
+  
+  return Math.round((weightedRatio + matchBonus) * 100);
 };
 
 /**
- * Applies the database filters to a Supabase query builder.
- * @param query The Supabase query builder
- * @param filters The database filters
- * @returns The updated query with filters applied
+ * Groups tags by category for debugging/display.
  */
-export const applyFiltersToQuery = (query: any, filters: DatabaseFilters): any => {
-  if (filters.tags && filters.tags.length > 0) {
-    console.log("Applying tag filters to query:", filters.tags);
-    // Apply tag filters - we'll use client-side filtering for multiple tags
-    // as Supabase has limitations with complex array filtering
-  }
-  
-  return query;
+export const groupTagsByCategory = (tags: string[]): Record<string, string[]> => {
+  const grouped: Record<string, string[]> = {};
+  tags.forEach(tag => {
+    const category = tag.split('_')[0] || 'general';
+    if (!grouped[category]) grouped[category] = [];
+    grouped[category].push(tag);
+  });
+  return grouped;
 };

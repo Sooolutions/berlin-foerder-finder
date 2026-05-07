@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserAnswers } from "@/context/QuestionnaireContext";
-import { extractTagsFromAnswers, groupTagsByCategory } from "@/utils/answerMappingUtils";
+import { extractTagsFromAnswers, getAgeRange, computeRelevanceScore } from "@/utils/answerMappingUtils";
 
 export interface Funding {
   id: string;
@@ -17,75 +17,69 @@ export interface Funding {
   contact_phone: string | null;
   categories: string[];
   tags: string[];
+  min_age: number | null;
+  max_age: number | null;
+  relevanceScore?: number;
 }
+
+const MIN_RESULTS = 5;
 
 export const useFundingResults = (answers?: UserAnswers) => {
   return useQuery({
     queryKey: ['funding', 'filtered', JSON.stringify(answers)],
     queryFn: async () => {
-      console.log("=== NEW FUNDING QUERY DEBUG ===");
-      console.log("Full answers object:", answers);
-      
-      // Extract tags from answers using the new system
+      // 1. Extract user tags from all answers
       const userTags = answers ? extractTagsFromAnswers(answers) : [];
-      const groupedTags = groupTagsByCategory(userTags);
       
-      console.log("User tags:", userTags);
-      console.log("Grouped tags:", groupedTags);
-
-      // Start with all funding data
+      // 2. Build Supabase query with HARD age filter
       let query = supabase.from('funding').select('*');
       
+      const ageAnswer = answers?.Q1;
+      const ageRange = typeof ageAnswer === 'string' ? getAgeRange(ageAnswer) : null;
+      
+      if (ageRange) {
+        // Server-side: only fetch fundings where the age range overlaps
+        // A funding matches if: funding.min_age <= user.maxAge AND funding.max_age >= user.minAge
+        // Also include fundings with null age fields (universal offers)
+        query = query.or(
+          `min_age.is.null,min_age.lte.${ageRange.maxAge}`
+        ).or(
+          `max_age.is.null,max_age.gte.${ageRange.minAge}`
+        );
+      }
+      
       const { data, error } = await query;
-
-      if (error) {
-        console.error("Supabase query error:", error);
-        throw error;
-      }
-
-      console.log("Raw data from Supabase:", data?.length, "entries");
+      if (error) throw error;
       
-      // Client-side filtering based on extracted tags
-      let filteredData = data;
+      if (!data || data.length === 0) return [];
       
-      if (userTags.length > 0) {
-        console.log("Filtering by tags:", userTags);
+      // 3. Score each funding by tag relevance
+      let scoredData: Funding[] = data.map(funding => ({
+        ...funding,
+        relevanceScore: computeRelevanceScore(
+          funding.tags || [],
+          userTags
+        )
+      })) as Funding[];
+      
+      // 4. Primary results: score > 0 (at least one tag match), sorted by score
+      let results = scoredData
+        .filter(f => (f.relevanceScore ?? 0) > 0)
+        .sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
+      
+      // 5. Fallback: if too few results, add age-appropriate offers without tag match
+      if (results.length < MIN_RESULTS) {
+        const existingIds = new Set(results.map(r => r.id));
+        const fallbacks = scoredData
+          .filter(f => !existingIds.has(f.id) && (f.relevanceScore ?? 0) === 0)
+          .slice(0, MIN_RESULTS - results.length);
         
-        filteredData = data?.filter(funding => {
-          if (!funding.tags || !Array.isArray(funding.tags)) {
-            console.log(`Funding "${funding.title}" has no tags array`);
-            return false;
-          }
-          
-          // Check if funding has any of the user's tags
-          const hasMatchingTag = userTags.some(userTag => 
-            funding.tags.includes(userTag)
-          );
-          
-          console.log(`Funding "${funding.title}":`, {
-            fundingTags: funding.tags,
-            hasMatch: hasMatchingTag
-          });
-          
-          return hasMatchingTag;
-        }) || [];
-        
-        console.log("After tag filtering:", filteredData.length, "entries remain");
-        
-        // Sort by relevance - funding with more matching tags comes first
-        filteredData.sort((a, b) => {
-          const aMatches = userTags.filter(tag => a.tags?.includes(tag)).length;
-          const bMatches = userTags.filter(tag => b.tags?.includes(tag)).length;
-          return bMatches - aMatches; // Descending order
-        });
-        
-        console.log("Results sorted by relevance");
-      } else {
-        console.log("No user tags - showing all funding");
+        // Mark fallbacks so UI can differentiate if needed
+        fallbacks.forEach(f => { f.relevanceScore = 0; });
+        results = [...results, ...fallbacks];
       }
-
-      console.log("=== END NEW FUNDING QUERY DEBUG ===");
-      return filteredData as Funding[];
+      
+      return results;
     },
   });
 };

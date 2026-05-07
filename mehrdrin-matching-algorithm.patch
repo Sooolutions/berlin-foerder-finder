@@ -1,0 +1,1914 @@
+diff --git a/src/components/DynamicQuestionnaireForm.tsx b/src/components/DynamicQuestionnaireForm.tsx
+index da899d2..b895cfb 100644
+--- a/src/components/DynamicQuestionnaireForm.tsx
++++ b/src/components/DynamicQuestionnaireForm.tsx
+@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom";
+ import { useQuestionnaire } from "@/context/QuestionnaireContext";
+ import StepProgress from "./questionnaire/StepProgress";
+ import { Button } from "@/components/ui/button";
+-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+-import { Label } from "@/components/ui/label";
+-import { QuestionData, getQuestionData } from "@/data/questionnaireData";
+-import { useState } from "react";
+-import { CheckCircle, ArrowLeft, Shield, Users } from "lucide-react";
++import { getQuestionData } from "@/data/questionnaireData";
++import { useState, useEffect } from "react";
++import { CheckCircle, ArrowLeft, Shield, Users, ArrowRight } from "lucide-react";
+ 
+ const DynamicQuestionnaireForm = () => {
+   const navigate = useNavigate();
+@@ -21,33 +19,38 @@ const DynamicQuestionnaireForm = () => {
+     isLastQuestion,
+   } = useQuestionnaire();
+ 
+-  // Track loading state to prevent multiple clicks
+   const [isProcessing, setIsProcessing] = useState(false);
+-  
+-  // Track animation state for card transitions
+   const [animationState, setAnimationState] = useState<'idle' | 'slide-out' | 'slide-in'>('idle');
+   const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward'>('forward');
+   
+-  // Get the current question data
++  // Multi-select: track currently checked items
++  const [multiSelections, setMultiSelections] = useState<string[]>([]);
++  
+   const questionData = getQuestionData(currentQuestionId);
++  const isMultiSelect = questionData?.multiSelect === true;
++  const maxSelections = questionData?.maxSelections || 3;
+ 
+-  // Constant total steps to make progress more predictable
+-  const estimatedTotalSteps = 6;
+-  
+-  // Calculate progress based on how far we are in our question history
++  // Reset multi-selections when question changes
++  useEffect(() => {
++    const existing = answers[currentQuestionId];
++    if (Array.isArray(existing)) {
++      setMultiSelections(existing);
++    } else {
++      setMultiSelections([]);
++    }
++  }, [currentQuestionId]);
++
++  const estimatedTotalSteps = 10;
+   const progressPercentage = Math.min(
+     ((questionHistory.length) / estimatedTotalSteps) * 100,
+-    100
++    95
+   );
+ 
+-  // Handle going back to previous question or home
+   const handleBack = () => {
+     if (isProcessing) return;
+-    
+     setIsProcessing(true);
+     setAnimationDirection('backward');
+     setAnimationState('slide-out');
+-    
+     setTimeout(() => {
+       if (questionHistory.length > 1) {
+         goToPreviousQuestion();
+@@ -55,7 +58,6 @@ const DynamicQuestionnaireForm = () => {
+         navigate("/");
+       }
+       setAnimationState('slide-in');
+-      
+       setTimeout(() => {
+         setAnimationState('idle');
+         setIsProcessing(false);
+@@ -63,56 +65,54 @@ const DynamicQuestionnaireForm = () => {
+     }, 250);
+   };
+ 
+-  // Handle the selection of an answer
+-  const handleSelect = (value: string) => {
+-    console.log('handleSelect called:', { value, isProcessing, currentQuestionId });
+-    
+-    if (isProcessing) {
+-      console.log('Already processing, ignoring click');
+-      return;
+-    }
+-    
+-    console.log('Processing answer selection...');
+-    setIsProcessing(true);
+-    
+-    // Update the answer first
+-    updateAnswer(currentQuestionId, value);
+-    
+-    // Start card swipe out animation
++  const animateForward = (answerValue?: string) => {
+     setAnimationDirection('forward');
+     setAnimationState('slide-out');
+-    
+-    // Wait for slide-out animation, then change question and slide in
+     setTimeout(() => {
+-      console.log('Slide-out complete, navigating with value:', value);
+-      
+       if (isLastQuestion) {
+-        console.log('Last question reached, going to results');
+         navigate("/results");
+       } else {
+-        console.log('Going to next question with answer:', value);
+-        goToNextQuestion(value);
++        goToNextQuestion(answerValue);
+       }
+-      
+-      // Start slide-in animation
+       setAnimationState('slide-in');
+-      
+-      // Complete the transition
+       setTimeout(() => {
+         setAnimationState('idle');
+         setIsProcessing(false);
+-        console.log('Card transition complete');
+       }, 250);
+     }, 250);
+   };
+ 
+-  // If no question data is found, provide option to reset the questionnaire
++  const handleSingleSelect = (value: string) => {
++    if (isProcessing) return;
++    setIsProcessing(true);
++    updateAnswer(currentQuestionId, value);
++    animateForward(value);
++  };
++
++  const handleMultiToggle = (value: string) => {
++    if (isProcessing) return;
++    setMultiSelections(prev => {
++      if (prev.includes(value)) {
++        return prev.filter(v => v !== value);
++      }
++      if (prev.length >= maxSelections) return prev;
++      return [...prev, value];
++    });
++  };
++
++  const handleMultiConfirm = () => {
++    if (isProcessing || multiSelections.length === 0) return;
++    setIsProcessing(true);
++    updateAnswer(currentQuestionId, multiSelections);
++    animateForward();
++  };
++
+   if (!questionData) {
+     return (
+       <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
+         <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+           <h3 className="text-2xl font-medium mb-4 text-red-800">Frage nicht gefunden</h3>
+-          <p className="text-red-600 mb-6">Die Frage mit der ID "{currentQuestionId}" konnte nicht gefunden werden.</p>
++          <p className="text-red-600 mb-6">Die Frage mit der ID &quot;{currentQuestionId}&quot; konnte nicht gefunden werden.</p>
+           <Button onClick={() => navigate("/")} className="bg-berlin-orange hover:bg-berlin-orange/90">
+             Fragebogen neu starten
+           </Button>
+@@ -121,15 +121,8 @@ const DynamicQuestionnaireForm = () => {
+     );
+   }
+ 
+-  // Add debug info
+-  console.log("Current question ID:", currentQuestionId);
+-  console.log("Question data:", questionData);
+-  console.log("Current answers:", answers);
+-
+-  // Render the current question
+   return (
+     <div className="max-w-4xl mx-auto">
+-      {/* Trust header */}
+       <div className="bg-white shadow-sm border-b border-gray-100 p-3 mb-4 rounded-t-lg">
+         <div className="flex items-center justify-center space-x-4 md:space-x-6 text-xs md:text-sm text-gray-600">
+           <div className="flex items-center space-x-1 md:space-x-2">
+@@ -142,11 +135,6 @@ const DynamicQuestionnaireForm = () => {
+             <span className="hidden sm:inline">Von Berlinern für Berliner</span>
+             <span className="sm:hidden">Berlin</span>
+           </div>
+-          <div className="flex items-center space-x-1 md:space-x-2">
+-            <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-berlin-orange" />
+-            <span className="hidden sm:inline">Offiziell verifiziert</span>
+-            <span className="sm:hidden">Verifiziert</span>
+-          </div>
+         </div>
+       </div>
+ 
+@@ -171,7 +159,10 @@ const DynamicQuestionnaireForm = () => {
+                   {questionData.question}
+                 </h3>
+                 <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
+-                  Wähle die Option, die am besten zu deiner aktuellen Situation passt.
++                  {isMultiSelect 
++                    ? `Wähle bis zu ${maxSelections} Optionen, die auf dich zutreffen.`
++                    : "Wähle die Option, die am besten zu deiner aktuellen Situation passt."
++                  }
+                 </p>
+               </div>
+ 
+@@ -181,36 +172,67 @@ const DynamicQuestionnaireForm = () => {
+                   questionData.options.length <= 6 ? 'grid-cols-1 md:grid-cols-2' :
+                   'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                 }`}>
+-                  {questionData.options.map((option, index) => (
+-                    <div 
+-                      key={`${currentQuestionId}-${option}`}
+-                      className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-300 hover:border-berlin-orange hover:shadow-md cursor-pointer ${
+-                        answers[currentQuestionId] === option 
+-                          ? 'border-berlin-orange bg-berlin-orange/5 shadow-md' 
+-                          : 'border-gray-200 bg-white hover:bg-gray-50'
+-                      } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+-                      style={{ animationDelay: `${index * 0.05}s` }}
+-                      onClick={() => handleSelect(option)}
+-                    >
+-                      <div className="flex items-center space-x-3 w-full">
+-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+-                          answers[currentQuestionId] === option 
+-                            ? 'border-berlin-orange bg-berlin-orange' 
+-                            : 'border-gray-300'
+-                        }`}>
+-                          {answers[currentQuestionId] === option && (
+-                            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
++                  {questionData.options.map((option, index) => {
++                    const isSelected = isMultiSelect
++                      ? multiSelections.includes(option)
++                      : answers[currentQuestionId] === option;
++                    
++                    const isDisabled = isMultiSelect && !isSelected && multiSelections.length >= maxSelections;
++
++                    return (
++                      <div 
++                        key={`${currentQuestionId}-${option}`}
++                        className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
++                          isSelected 
++                            ? 'border-berlin-orange bg-berlin-orange/5 shadow-md' 
++                            : isDisabled
++                              ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
++                              : 'border-gray-200 bg-white hover:border-berlin-orange hover:shadow-md hover:bg-gray-50'
++                        } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
++                        style={{ animationDelay: `${index * 0.05}s` }}
++                        onClick={() => {
++                          if (isDisabled) return;
++                          if (isMultiSelect) {
++                            handleMultiToggle(option);
++                          } else {
++                            handleSingleSelect(option);
++                          }
++                        }}
++                      >
++                        <div className="flex items-center space-x-3 w-full">
++                          {isMultiSelect ? (
++                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
++                              isSelected 
++                                ? 'border-berlin-orange bg-berlin-orange' 
++                                : 'border-gray-300'
++                            }`}>
++                              {isSelected && (
++                                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
++                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
++                                </svg>
++                              )}
++                            </div>
++                          ) : (
++                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
++                              isSelected 
++                                ? 'border-berlin-orange bg-berlin-orange' 
++                                : 'border-gray-300'
++                            }`}>
++                              {isSelected && (
++                                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
++                              )}
++                            </div>
++                          )}
++                          <span className="flex-1 text-sm md:text-base font-medium text-gray-800 leading-tight">
++                            {option}
++                          </span>
++                          {isSelected && (
++                            <CheckCircle className="h-5 w-5 text-berlin-orange animate-fade-in-up flex-shrink-0" />
+                           )}
+                         </div>
+-                        <span className="flex-1 text-sm md:text-base font-medium text-gray-800 leading-tight">
+-                          {option}
+-                        </span>
+-                        {answers[currentQuestionId] === option && (
+-                          <CheckCircle className="h-5 w-5 text-berlin-orange animate-fade-in-up flex-shrink-0" />
+-                        )}
+                       </div>
+-                    </div>
+-                  ))}
++                    );
++                  })}
+                 </div>
+               )}
+             </div>
+@@ -227,9 +249,20 @@ const DynamicQuestionnaireForm = () => {
+               <span>Zurück</span>
+             </Button>
+             
+-            <div className="text-xs md:text-sm text-gray-500">
+-              Alle Angaben werden vertraulich behandelt
+-            </div>
++            {isMultiSelect ? (
++              <Button
++                onClick={handleMultiConfirm}
++                disabled={isProcessing || multiSelections.length === 0}
++                className="flex items-center space-x-2 bg-berlin-orange hover:bg-berlin-orange/90 text-white"
++              >
++                <span>Weiter ({multiSelections.length}/{maxSelections})</span>
++                <ArrowRight className="w-4 h-4" />
++              </Button>
++            ) : (
++              <div className="text-xs md:text-sm text-gray-500">
++                Alle Angaben werden vertraulich behandelt
++              </div>
++            )}
+           </div>
+         </div>
+       </div>
+diff --git a/src/context/QuestionnaireContext.tsx b/src/context/QuestionnaireContext.tsx
+index dae6f9f..e57b0cf 100644
+--- a/src/context/QuestionnaireContext.tsx
++++ b/src/context/QuestionnaireContext.tsx
+@@ -3,12 +3,12 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
+ const QUESTIONNAIRE_ANSWERS_KEY = "questionnaireAnswers";
+ const QUESTIONNAIRE_HISTORY_KEY = "questionnaireHistory";
+ 
+-export type UserAnswers = Record<string, string>;
++export type UserAnswers = Record<string, string | string[]>;
+ 
+ interface QuestionnaireContextType {
+   currentQuestionId: string;
+-  answers: Record<string, string>;
+-  updateAnswer: (questionId: string, answer: string) => void;
++  answers: Record<string, string | string[]>;
++  updateAnswer: (questionId: string, answer: string | string[]) => void;
+   goToNextQuestion: (answerOverride?: string) => void;
+   goToPreviousQuestion: () => void;
+   resetQuestionnaire: () => void;
+@@ -19,11 +19,11 @@ interface QuestionnaireContextType {
+ const QuestionnaireContext = createContext<QuestionnaireContextType | undefined>(undefined);
+ 
+ // Initial answers state
+-const initialAnswers: Record<string, string> = {};
++const initialAnswers: Record<string, string | string[]> = {};
+ 
+ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+   const [currentQuestionId, setCurrentQuestionId] = useState<string>("Q1");
+-  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers);
++  const [answers, setAnswers] = useState<Record<string, string | string[]>>(initialAnswers);
+   const [questionHistory, setQuestionHistory] = useState<string[]>(["Q1"]);
+   const [isLastQuestion, setIsLastQuestion] = useState<boolean>(false);
+ 
+@@ -61,7 +61,10 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
+   }, [answers, questionHistory]);
+ 
+   const getAnswer = (questionId: string): string | undefined => {
+-    return answers[questionId];
++    const val = answers[questionId];
++    if (!val) return undefined;
++    if (Array.isArray(val)) return val[0]; // For routing, use first selection
++    return val;
+   };
+ 
+   // Navigation logic for the new questionnaire structure
+@@ -464,9 +467,9 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
+     }
+   };
+ 
+-  // Update answer and move to next question
+-  const updateAnswer = (questionId: string, answer: string) => {
+-    console.log(`Updating answer for ${questionId}: ${answer}`);
++  // Update answer (string for single-select, string[] for multi-select)
++  const updateAnswer = (questionId: string, answer: string | string[]) => {
++    console.log(`Updating answer for ${questionId}:`, answer);
+     setAnswers(prev => ({
+       ...prev,
+       [questionId]: answer
+diff --git a/src/data/questionnaireData.ts b/src/data/questionnaireData.ts
+index 03b98ba..b9fc3a9 100644
+--- a/src/data/questionnaireData.ts
++++ b/src/data/questionnaireData.ts
+@@ -3,6 +3,8 @@ export interface QuestionData {
+   question: string;
+   options: string[];
+   tags?: string[];
++  multiSelect?: boolean;
++  maxSelections?: number;
+ }
+ 
+ // Map of all questions and their options
+@@ -32,25 +34,33 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q4_U18_Schule",
+     question: "Hast du Probleme in der Schule?",
+     options: ["Lernschwierigkeiten", "Mobbing", "Mittagessen", "Schulmaterial", "Psychische Belastungen"],
+-    tags: ["Schule_Lernschwierigkeit", "Schule_Mobbing", "Schule_Mittagessen", "Schule_Material", "Schule_Psyche"]
++    tags: ["Schule_Lernschwierigkeit", "Schule_Mobbing", "Schule_Mittagessen", "Schule_Material", "Schule_Psyche"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_U18_Ausbildung": {
+     id: "Q4_U18_Ausbildung",
+     question: "Was würdest du dir für deine Ausbildung wünschen?",
+     options: ["Mehr Unterstützung beim Lernen", "Besseres Miteinander mit Ausbilder:in/Kolleg:innen", "Karriereperspektiven oder Mentoring", "Mehr Zeit für persönliche Projekte/Hobbys", "Finanzielle Unterstützung"],
+-    tags: ["Ausbildung_Berufsschule", "Ausbildung_Miteinander", "Ausbildung_Perspektive", "Ausbildung_Vereinbarkeit", "Ausbildung_Finanzen"]
++    tags: ["Ausbildung_Berufsschule", "Ausbildung_Miteinander", "Ausbildung_Perspektive", "Ausbildung_Vereinbarkeit", "Ausbildung_Finanzen"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_U18_FSJ": {
+     id: "Q4_U18_FSJ",
+     question: "Was würde dir helfen dein FSJ, FÖJ, oder ähnliches besser zu gestalten?",
+     options: ["Spezifische Weiterbildungen/Kurse", "Mehr Anerkennung für meine Arbeit", "Finanzielle Unterstützung", "Mehr Austausch mit anderen Freiwilligen"],
+-    tags: ["FSJ_Weiterbildung", "FSJ_Anerkennung", "FSJ_Finanzen", "FSJ_Austausch"]
++    tags: ["FSJ_Weiterbildung", "FSJ_Anerkennung", "FSJ_Finanzen", "FSJ_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_U18_Sonstiges": {
+     id: "Q4_U18_Sonstiges",
+     question: "Was wünschst du dir für deine aktuelle Situation?",
+     options: ["Schnell einen passenden Schul-/Ausbildungsplatz finden", "Eine Ansprechperson, die mich berät und unterstützt", "Neue Freunde finden und coole Aktivitäten", "Finanziell unabhängiger sein", "Psychische Unterstützung"],
+-    tags: ["Sonstiges_Orientierung", "Sonstiges_Beratung", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Psyche"]
++    tags: ["Sonstiges_Orientierung", "Sonstiges_Beratung", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Psyche"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q5_U18": {
+     id: "Q5_U18",
+@@ -80,25 +90,33 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q8_U18_Ja",
+     question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+     options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung in der Schule/Ausbildung", "Mehr Austausch mit anderen Betroffenen"],
+-    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
++    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q8_U18_Nein": {
+     id: "Q8_U18_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Schwierigkeiten in der Schule oder Ausbildung", "Konflikte im sozialen Umfeld (z. B. Freundeskreis, Mobbing)", "Psychische Belastungen (z. B. Stress, Ängste)", "Fehlende Freizeit- und Teilhabemöglichkeiten (z. B. Sport, Jugendangebote)", "Ich kümmere mich um Angehörige"],
+-    tags: ["Herausforderung_Schule", "Herausforderung_Sozial", "Herausforderung_Psyche", "Herausforderung_Freizeit", "Herausforderung_Pflege"]
++    tags: ["Herausforderung_Schule", "Herausforderung_Sozial", "Herausforderung_Psyche", "Herausforderung_Freizeit", "Herausforderung_Pflege"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q8_U18_Ausland_Nein": {
+     id: "Q8_U18_Ausland_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Schwierigkeiten in Deutschland anzukommen", "Psychische Belastungen", "Umgang mit Schulden/Finanzen", "Kinderbetreuung", "Pflege von Angehörigen", "Schwierigkeiten im sozialen Umfeld"],
+-    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Kinder", "Herausforderung_Pflege", "Herausforderung_Sozial"]
++    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Kinder", "Herausforderung_Pflege", "Herausforderung_Sozial"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q9_U18": {
+     id: "Q9_U18",
+     question: "Was wünschst du dir?",
+     options: ["Neue Freunde finden", "Beratung und Orientierung", "Spaß- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Ehrenamtliches Engagement"],
+-    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Ehrenamt"]
++    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Ehrenamt"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   // 18-24 age group path
+@@ -118,79 +136,105 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q4_18-24_Schule",
+     question: "Hast du Probleme in der Schule?",
+     options: ["Lernschwierigkeiten", "Mobbing", "Schulmaterial und Verpflegungskosten", "Psychische Belastungen"],
+-    tags: ["Schule_Lernschwierigkeit", "Schule_Mobbing", "Schule_Material", "Schule_Psyche"]
++    tags: ["Schule_Lernschwierigkeit", "Schule_Mobbing", "Schule_Material", "Schule_Psyche"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Ausbildung": {
+     id: "Q4_18-24_Ausbildung",
+     question: "Was würdest du dir für deine Ausbildung wünschen?",
+     options: ["Mehr Unterstützung in der Berufsschule (z. B. Nachhilfe, Prüfungsvorbereitung)", "Besseres Miteinander mit Ausbilder:innen/Kolleg:innen", "Mehr Verantwortung und Vertrauen", "Klare Perspektiven für die Zeit nach der Ausbildung (z. B. Übernahme, Weiterbildung)", "Bessere Vereinbarkeit mit Privatleben", "Finanzielle Unterstützung"],
+-    tags: ["Ausbildung_Berufsschule", "Ausbildung_Miteinander", "Ausbildung_Verantwortung", "Ausbildung_Perspektive", "Ausbildung_Vereinbarkeit", "Ausbildung_Finanzen"]
++    tags: ["Ausbildung_Berufsschule", "Ausbildung_Miteinander", "Ausbildung_Verantwortung", "Ausbildung_Perspektive", "Ausbildung_Vereinbarkeit", "Ausbildung_Finanzen"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Studium": {
+     id: "Q4_18-24_Studium",
+     question: "Was würdest du dir für dein Studium wünschen, um es erfolgreich abzuschließen und dich optimal auf nächste Schritte vorzubereiten?",
+     options: ["Mehr Unterstützung im Studium", "Bessere Anbindung an Professor:innen/Dozent:innen", "Mehr Austausch mit Kommiliton:innen", "Finanzielle Unterstützung", "Psychische Beratung"],
+-    tags: ["Studium_Unterstützung", "Studium_Anbindung", "Studium_Austausch", "Studium_Finanzen", "Studium_Psyche"]
++    tags: ["Studium_Unterstützung", "Studium_Anbindung", "Studium_Austausch", "Studium_Finanzen", "Studium_Psyche"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Arbeiten": {
+     id: "Q4_18-24_Arbeiten",
+     question: "Was würdest du dir für deine aktuelle Situation bei der Arbeit wünschen?",
+     options: ["Ein besseres Arbeitsklima", "Einen anderen Job", "Mehr Verantwortung oder Aufstiegsmöglichkeiten", "Bessere Vereinbarkeit mit Privatleben", "Bessere Vergütung oder finanzielle Unterstützung", "Optionen für Weiterbildung"],
+-    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Karriere", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung"]
++    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Karriere", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Gründung": {
+     id: "Q4_18-24_Gründung",
+     question: "Was benötigst du aktuell, um dein Vorhaben zu starten?",
+     options: ["Beratung/Coaching", "Finanzierung", "Mentoring/Netzwerk", "Unterstützung beim Businessplan", "Rechtliche/Steuerliche Beratung", "Marketing"],
+-    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing"]
++    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Selbstständig": {
+     id: "Q4_18-24_Selbstständig",
+     question: "Was wäre hilfreich, um dein bisheriges Unternehmen erfolgreicher zu machen?",
+     options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Alltag/Familie"],
+-    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit"]
++    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Arbeitssuchend": {
+     id: "Q4_18-24_Arbeitssuchend",
+     question: "Was würde dir im Moment am meisten helfen, einen passenden Job zu finden?",
+     options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Gezielte Trainings/Kurse, die mich fit für den Arbeitsmarkt machen", "Finanzielle Unterstützung, um die Zeit der Arbeitssuche zu überbrücken", "Hilfe bei Bewerbungen und Vorstellungsgesprächen", "Kontakte zu Arbeitgebern oder Prakitka", "Psychologische Unterstützung"],
+-    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"]
++    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Weiterbildung": {
+     id: "Q4_18-24_Weiterbildung",
+     question: "Was würde dir helfen, deine Weiterbildung erfolgreich abzuschließen?",
+     options: ["Bessere Vereinbarkeit mit meinem Alltag", "Finanzielle Unterstützung", "Mehr Austausch mit anderen in einer ähnlichen Situation", "Gezielte Unterstützung für meine Lernziele oder Prüfungen", "Beratung oder Mentoring zur Orientierung und Planung"],
+-    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Lernen", "Weiterbildung_Karriere"]
++    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Lernen", "Weiterbildung_Karriere"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Übergangsphase": {
+     id: "Q4_18-24_Übergangsphase",
+     question: "Was würde dir in dieser Übergangsphase am meisten helfen, einen passenden Weg zu finden?",
+     options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Möglichkeiten, praktische Erfahrungen zu sammeln (z. B. durch Praktika)", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Finanzielle Unterstützung", "Berufs- oder Studienorientierung"],
+-    tags: ["Übergang_Beratung", "Übergang_Praxis", "Übergang_Bewerbung", "Übergang_Finanzen", "Übergang_Orientierung"]
++    tags: ["Übergang_Beratung", "Übergang_Praxis", "Übergang_Bewerbung", "Übergang_Finanzen", "Übergang_Orientierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Pflege": {
+     id: "Q4_18-24_Pflege",
+     question: "Was würde dir helfen, die Pflege besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen jungen Pflegenden", "Beratung, wie ich die Pflege mit meinem Beruf/Ausbildung vereinbaren kann", "Psychologische Unterstützung", "Finanzielle Unterstützung"],
+-    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"]
++    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Familie": {
+     id: "Q4_18-24_Familie",
+     question: "Was würde dir helfen, die Familienzeit besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen in meiner Lage", "Beratung, wie ich die Zeit mit meinem Beruf/Ausbildung vereinbaren kann", "Psychologische Unterstützung", "Finanzielle Unterstützung"],
+-    tags: ["Familie_Angebote", "Familie_Austausch", "Familie_Vereinbarkeit", "Familie_Psych", "Familie_Finanzierung"]
++    tags: ["Familie_Angebote", "Familie_Austausch", "Familie_Vereinbarkeit", "Familie_Psych", "Familie_Finanzierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_Sonstiges": {
+     id: "Q4_18-24_Sonstiges",
+     question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+     options: ["Orientierung und Perspektiven für Ausbildung/Arbeit", "Mehr soziale Kontakte und Freizeitgestaltung", "Finanzielle Absicherung", "Beratungs- und Unterstützungsangebote"],
+-    tags: ["Sonstiges_Orientierung", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"]
++    tags: ["Sonstiges_Orientierung", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_18-24_FSJ": {
+     id: "Q4_18-24_FSJ",
+     question: "Was würde dir helfen dein FSJ, FÖJ, oder ähnliches besser zu gestalten?",
+     options: ["Spezifische Weiterbildungen/Kurse", "Mehr Anerkennung für meine Arbeit", "Finanzielle Unterstützung", "Mehr Austausch mit anderen Freiwilligen"],
+-    tags: ["FSJ_Weiterbildung", "FSJ_Anerkennung", "FSJ_Finanzen", "FSJ_Austausch"]
++    tags: ["FSJ_Weiterbildung", "FSJ_Anerkennung", "FSJ_Finanzen", "FSJ_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q5_18-24": {
+     id: "Q5_18-24",
+@@ -220,25 +264,33 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q9_18-24_Ja",
+     question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+     options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf oder Ausbildung", "Mehr Austausch mit anderen Betroffenen"],
+-    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
++    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q9_18-24_Nein": {
+     id: "Q9_18-24_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Unsicherheit bei beruflicher oder privater Orientierung", "Finanzielle Belastungen (z. B. hohe Lebenshaltungskosten)", "Psychische Belastungen (z. B. Stress, Einsamkeit)", "Hürden beim Zugang zu Unterstützungsangeboten (z. B. lange Wartezeiten, fehlende Infos)", "Ich kümmere mich um Angehörige"],
+-    tags: ["Herausforderung_Orientierung", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"]
++    tags: ["Herausforderung_Orientierung", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q9_18-24_Ausland_Nein": {
+     id: "Q9_18-24_Ausland_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Schwierigkeiten in Deutschland anzukommen", "Psychische Belastungen", "Umgang mit Schulden/Finanzen", "Kinderbetreuung", "Pflege von Angehörigen", "Schwierigkeiten im sozialen Umfeld"],
+-    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Kinder", "Herausforderung_Pflege", "Herausforderung_Sozial"]
++    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Kinder", "Herausforderung_Pflege", "Herausforderung_Sozial"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q10_18-24": {
+     id: "Q10_18-24",
+     question: "Was wünschst du dir?",
+     options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"],
+-    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"]
++    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   // 25-34 age group path
+   "Q2_25-34": {
+@@ -257,67 +309,89 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q4_25-34_Ausbildung",
+     question: "Was würdest du dir für deine Ausbildung wünschen?",
+     options: ["Mehr Unterstützung in der Berufsschule (z. B. Nachhilfe, Prüfungsvorbereitung)", "Besseres Miteinander mit Ausbilder:innen/Kolleg:innen", "Mehr Verantwortung und Vertrauen", "Klare Perspektiven für die Zeit nach der Ausbildung (z. B. Übernahme, Weiterbildung)", "Bessere Vereinbarkeit mit Privatleben", "Finanzielle Unterstützung"],
+-    tags: ["Ausbildung_Berufsschule", "Ausbildung_Miteinander", "Ausbildung_Verantwortung", "Ausbildung_Perspektive", "Ausbildung_Vereinbarkeit", "Ausbildung_Finanzen"]
++    tags: ["Ausbildung_Berufsschule", "Ausbildung_Miteinander", "Ausbildung_Verantwortung", "Ausbildung_Perspektive", "Ausbildung_Vereinbarkeit", "Ausbildung_Finanzen"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Studium": {
+     id: "Q4_25-34_Studium",
+     question: "Was würdest du dir für dein Studium wünschen, um es erfolgreich abzuschließen und dich optimal auf nächste Schritte vorzubereiten?",
+     options: ["Mehr Unterstützung im Studium", "Bessere Anbindung an Professor:innen/Dozent:innen", "Mehr Austausch mit Kommiliton:innen", "Finanzielle Unterstützung", "Psychische Beratung"],
+-    tags: ["Studium_Unterstützung", "Studium_Anbindung", "Studium_Austausch", "Studium_Finanzen", "Studium_Psyche"]
++    tags: ["Studium_Unterstützung", "Studium_Anbindung", "Studium_Austausch", "Studium_Finanzen", "Studium_Psyche"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Arbeiten": {
+     id: "Q4_25-34_Arbeiten",
+     question: "Was würdest du dir für deine aktuelle Situation bei der Arbeit wünschen?",
+     options: ["Ein besseres Arbeitsklima", "Einen anderen Job", "Mehr Verantwortung oder Aufstiegsmöglichkeiten", "Bessere Vereinbarkeit mit Privatleben", "Bessere Vergütung oder finanzielle Unterstützung", "Optionen für Weiterbildung oder Umschulung"],
+-    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Karriere", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung"]
++    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Karriere", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Gründung": {
+     id: "Q4_25-34_Gründung",
+     question: "Was benötigst du aktuell, um dein Vorhaben zu starten?",
+     options: ["Beratung/Coaching", "Finanzierung", "Mentoring/Netzwerk", "Unterstützung beim Businessplan", "Rechtliche/Steuerliche Beratung", "Marketing"],
+-    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing"]
++    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Selbstständigkeit": {
+     id: "Q4_25-34_Selbstständigkeit",
+     question: "Was wäre hilfreich, um dein bisheriges Unternehmen erfolgreicher zu machen?",
+     options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Familie", "Internationalisierung"],
+-    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International"]
++    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Arbeitssuchend": {
+     id: "Q4_25-34_Arbeitssuchend",
+     question: "Was würde dir im Moment am meisten helfen, einen passenden Job zu finden?",
+     options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Gezielte Trainings/Kurse, die mich fit für den Arbeitsmarkt machen", "Finanzielle Unterstützung, um die Zeit der Arbeitssuche zu überbrücken", "Hilfe bei Bewerbungen und Vorstellungsgesprächen", "Kontakte zu Arbeitgebern oder Prakitka", "Psychologische Unterstützung"],
+-    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"]
++    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Weiterbildung": {
+     id: "Q4_25-34_Weiterbildung",
+     question: "Was würde dir helfen, deine Weiterbildung erfolgreich abzuschließen?",
+     options: ["Bessere Vereinbarkeit mit Beruf und Familie", "Finanzielle Unterstützung (z. B. Kursgebühren, Material)", "Mehr Austausch mit anderen Teilnehmer:innen", "Gezielte Förderung für meine Lernziele oder beruflichen Kompetenzen", "Mentoring oder Beratung zur beruflichen Orientierung"],
+-    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Lernen", "Weiterbildung_Karriere"]
++    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Lernen", "Weiterbildung_Karriere"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Übergangsphase": {
+     id: "Q4_25-34_Übergangsphase",
+     question: "Was würde dir in dieser Übergangsphase am meisten helfen, einen passenden Weg zu finden?",
+     options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Möglichkeiten, praktische Erfahrungen zu sammeln (z. B. durch Praktika)", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Finanzielle Unterstützung"],
+-    tags: ["Übergang_Beratung", "Übergang_Praxis", "Übergang_Bewerbung", "Übergang_Finanzen"]
++    tags: ["Übergang_Beratung", "Übergang_Praxis", "Übergang_Bewerbung", "Übergang_Finanzen"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Pflege": {
+     id: "Q4_25-34_Pflege",
+     question: "Was würde dir helfen, die Pflege besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen jungen Pflegenden", "Beratung, wie ich die Pflege mit meinem Beruf/Ausbildung vereinbaren kann", "Psychologische Unterstützung", "Finanzielle Unterstützung"],
+-    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"]
++    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Familie": {
+     id: "Q4_25-34_Familie",
+     question: "Was würde dir helfen, die Familienzeit besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen in meiner Lage", "Beratung, wie ich die Zeit mit meinem Beruf/Ausbildung vereinbaren kann", "Psychologische Unterstützung", "Finanzielle Unterstützung"],
+-    tags: ["Familie_Angebote", "Familie_Austausch", "Familie_Vereinbarkeit", "Familie_Psych", "Familie_Finanzierung"]
++    tags: ["Familie_Angebote", "Familie_Austausch", "Familie_Vereinbarkeit", "Familie_Psych", "Familie_Finanzierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_25-34_Sonstiges": {
+     id: "Q4_25-34_Sonstiges",
+     question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+     options: ["Karriere- und Weiterentwicklungsmöglichkeiten", "Vereinbarkeit von Beruf, Familie und Freizeit", "Mehr soziale Kontakte und Freizeitgestaltung", "Finanzielle Absicherung", "Beratungs- und Unterstützungsangebote"],
+-    tags: ["Sonstiges_Karriere", "Sonstiges_Vereinbarkeit", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"]
++    tags: ["Sonstiges_Karriere", "Sonstiges_Vereinbarkeit", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q5_25-34": {
+     id: "Q5_25-34",
+@@ -347,25 +421,33 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q9_25-34_Ja",
+     question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+     options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf oder Ausbildung", "Mehr Austausch mit anderen Betroffenen"],
+-    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
++    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q9_25-34_Nein": {
+     id: "Q9_25-34_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Belastungen durch Vereinbarkeit von Beruf und Familie", "Finanzielle Belastungen", "Psychische Belastungen (z. B. Stress, Burnout-Gefühl)", "Bürokratische Herausforderungen (z. B. Ämter, Anträge, Unterstützungssysteme)", "Ich kümmere mich um Angehörige"],
+-    tags: ["Herausforderung_Vereinbarkeit", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"]
++    tags: ["Herausforderung_Vereinbarkeit", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q9_25-34_Ausland_Nein": {
+     id: "Q9_25-34_Ausland_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Schwierigkeiten in Deutschland anzukommen", "Psychische Belastungen", "Umgang mit Schulden/Finanzen", "Kinderbetreuung", "Pflege von Angehörigen", "Schwierigkeiten im sozialen Umfeld"],
+-    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Kinder", "Herausforderung_Pflege", "Herausforderung_Sozial"]
++    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Kinder", "Herausforderung_Pflege", "Herausforderung_Sozial"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q10_25-34": {
+     id: "Q10_25-34",
+     question: "Was wünschst du dir?",
+     options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"],
+-    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"]
++    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   // 35-49 age group path
+   "Q2_35-49": {
+@@ -384,55 +466,73 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q4_35-49_Arbeiten",
+     question: "Was würdest du dir für deine aktuelle Situation bei der Arbeit wünschen?",
+     options: ["Ein besseres Arbeitsklima", "Einen anderen Job", "Mehr Verantwortung oder Aufstiegsmöglichkeiten", "Bessere Vereinbarkeit mit Privatleben", "Bessere Vergütung oder finanzielle Unterstützung", "Optionen für Weiterbildung oder Umschulung", "Unterstützung bei gesundheitlichen Belastungen (Stress, Krankheit)"],
+-    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Karriere", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung", "Arbeiten_Gesundheit"]
++    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Karriere", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung", "Arbeiten_Gesundheit"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Gründung": {
+     id: "Q4_35-49_Gründung",
+     question: "Was benötigst du aktuell, um dein Vorhaben zu starten?",
+     options: ["Beratung/Coaching", "Finanzierung", "Mentoring/Netzwerk", "Unterstützung beim Businessplan", "Rechtliche/Steuerliche Beratung", "Marketing", "Vereinbarkeit mit Privatleben"],
+-    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing", "Gründung_Familie"]
++    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing", "Gründung_Familie"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Selbstständigkeit": {
+     id: "Q4_35-49_Selbstständigkeit",
+     question: "Was wäre hilfreich, um dein bisheriges Unternehmen erfolgreicher zu machen?",
+     options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Familie", "Internationalisierung"],
+-    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International"]
++    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Arbeitssuchend": {
+     id: "Q4_35-49_Arbeitssuchend",
+     question: "Was würde dir im Moment am meisten helfen, einen passenden Job zu finden?",
+     options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Gezielte Trainings/Kurse, die mich fit für den Arbeitsmarkt machen", "Finanzielle Unterstützung, um die Zeit der Arbeitssuche zu überbrücken", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Kontakte zu Arbeitgebern oder Prakitka", "Psychologische Unterstützung"],
+-    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"]
++    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Weiterbildung": {
+     id: "Q4_35-49_Weiterbildung",
+     question: "Was würde dir helfen, deine Weiterbildung erfolgreich abzuschließen?",
+     options: ["Bessere Vereinbarkeit mit Beruf und Familie", "Finanzielle Unterstützung", "Mehr Austausch mit anderen Teilnehmer:innen", "Beratung zu Karriereoptionen oder Weiterbildungspfaden"],
+-    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Karriere"]
++    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Karriere"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Übergangsphase": {
+     id: "Q4_35-49_Übergangsphase",
+     question: "Was würde dir in dieser Übergangsphase am meisten helfen, einen passenden Weg zu finden?",
+     options: ["Eine Ansprechperson, die mich bei der Suche berät und begleitet", "Möglichkeiten für Umschulung", "Vereinbarkeit mit der Familie", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Finanzielle Unterstützung"],
+-    tags: ["Übergang_Beratung", "Übergang_Umschulung", "Übergang_Vereinbarkeit", "Übergang_Bewerbung", "Übergang_Finanzen"]
++    tags: ["Übergang_Beratung", "Übergang_Umschulung", "Übergang_Vereinbarkeit", "Übergang_Bewerbung", "Übergang_Finanzen"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Pflege": {
+     id: "Q4_35-49_Pflege",
+     question: "Was würde dir helfen, die Pflege besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen jungen Pflegenden", "Beratung, wie ich die Pflege mit meinem Beruf/Ausbildung vereinbaren kann", "Psychologische Unterstützung", "Finanzielle Unterstützung"],
+-    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"]
++    tags: ["Pflege_Informationen", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Familie": {
+     id: "Q4_35-49_Familie",
+     question: "Was würde dir helfen, die Familienzeit besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen in meiner Lage", "Beratung, wie ich die Zeit mit meinem Beruf/Ausbildung vereinbaren kann", "Psychologische Unterstützung", "Finanzielle Unterstützung"],
+-    tags: ["Familie_Angebote", "Familie_Austausch", "Familie_Vereinbarkeit", "Familie_Psych", "Familie_Finanzierung"]
++    tags: ["Familie_Angebote", "Familie_Austausch", "Familie_Vereinbarkeit", "Familie_Psych", "Familie_Finanzierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q4_35-49_Sonstiges": {
+     id: "Q4_35-49_Sonstiges",
+     question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+     options: ["Karriere- und Weiterentwicklungsmöglichkeiten", "Vereinbarkeit von Beruf, Familie und Freizeit", "Mehr soziale Kontakte und Freizeitgestaltung", "Finanzielle Absicherung", "Beratungs- und Unterstützungsangebote"],
+-    tags: ["Sonstiges_Karriere", "Sonstiges_Vereinbarkeit", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"]
++    tags: ["Sonstiges_Karriere", "Sonstiges_Vereinbarkeit", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q5_35-49": {
+     id: "Q5_35-49",
+@@ -462,25 +562,33 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q9_35-49_Ja",
+     question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+     options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf oder Ausbildung", "Mehr Austausch mit anderen Betroffenen"],
+-    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
++    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q9_35-49_Nein": {
+     id: "Q9_35-49_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Belastungen durch Vereinbarkeit von Beruf und Familie", "Finanzielle Belastungen", "Psychische Belastungen (z. B. Stress, Burnout-Gefühl)", "Bürokratische Herausforderungen (z. B. Ämter, Anträge, Unterstützungssysteme)", "Ich kümmere mich um Angehörige"],
+-    tags: ["Herausforderung_Vereinbarkeit", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"]
++    tags: ["Herausforderung_Vereinbarkeit", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q9_35-49_Ausland_Nein": {
+     id: "Q9_35-49_Ausland_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Schwierigkeiten in Deutschland anzukommen", "Psychische Belastungen", "Umgang mit Schulden/Finanzen", "Pflege von Angehörigen", "Schwierigkeiten im sozialen Umfeld"],
+-    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Pflege", "Herausforderung_Sozial"]
++    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Pflege", "Herausforderung_Sozial"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   "Q10_35-49": {
+     id: "Q10_35-49",
+     question: "Was wünschst du dir?",
+     options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"],
+-    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"]
++    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+   // 50-64 age group path
+   "Q2_50-64": {
+@@ -501,63 +609,81 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q4_50-64_Arbeiten",
+     question: "Was würdest du dir für deine aktuelle Situation bei der Arbeit wünschen?",
+     options: ["Ein besseres Arbeitsklima", "Einen anderen Job", "Bessere Vereinbarkeit mit Gesundheit (körperliche Belastungen, Stress)", "Bessere Vergütung oder finanzielle Unterstützung", "Möglichkeiten zur Weiterbildung", "Unterstützung bei gesundheitlichen Belastungen (Stress, Krankheit)", "Perspektiven für den Übergang in die Rente"],
+-    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung", "Arbeiten_Gesundheit", "Arbeiten_Rente"]
++    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Vereinbarkeit", "Arbeiten_Vergütung", "Arbeiten_Umschulung", "Arbeiten_Gesundheit", "Arbeiten_Rente"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Gründung": {
+     id: "Q4_50-64_Gründung",
+     question: "Was benötigst du aktuell, um dein Vorhaben zu starten?",
+     options: ["Beratung/Coaching", "Finanzierung", "Mentoring/Netzwerk", "Unterstützung beim Businessplan", "Rechtliche/Steuerliche Beratung", "Marketing", "Vereinbarkeit mit Privatleben", "Erfahrungsaustausch"],
+-    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing", "Gründung_Familie", "Gründung_Experience"]
++    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing", "Gründung_Familie", "Gründung_Experience"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Selbstständig": {
+     id: "Q4_50-64_Selbstständig",
+     question: "Was wäre hilfreich, um deine Unternehmung erfolgreich zu gestalten?",
+     options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Familie", "Internationalisierung", "Nachfolge- oder Ausstiegsplanung"],
+-    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge"]
++    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Arbeitssuchend": {
+     id: "Q4_50-64_Arbeitssuchend",
+     question: "Was würde dir im Moment am meisten helfen, einen passenden Job zu finden?",
+     options: ["Beratung oder Coaching mit Fokus auf berufliche Neuorientierung", "Qualifizierung oder Umschulung für neue Tätigkeiten", "Finanzielle Unterstützung während der Arbeitssuche", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Kontakte zu Arbeitgebern oder Unterstützung bei der Jobsuche ab 50+", "Psychologische Unterstützung bei Belastungen während der Arbeitssuche"],
+-    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"]
++    tags: ["Arbeitssuche_Beratung", "Arbeitssuche_Qualifizierung", "Arbeitssuche_Finanzen", "Arbeitssuche_Bewerbung", "Arbeitssuche_Netzwerk", "Arbeitssuche_Psychisch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Weiterbildung": {
+     id: "Q4_50-64_Weiterbildung",
+     question: "Was würde dir helfen, deine Weiterbildung erfolgreich abzuschließen?",
+     options: ["Bessere Vereinbarkeit mit Beruf und Familie", "Finanzielle Unterstützung", "Mehr Austausch mit anderen in einer ähnlichen Situation", "Gezielte Unterstützung für berufliche oder persönliche Weiterentwicklung"],
+-    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Karriere"]
++    tags: ["Weiterbildung_Vereinbarkeit", "Weiterbildung_Finanzen", "Weiterbildung_Austausch", "Weiterbildung_Karriere"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Übergangsphase": {
+     id: "Q4_50-64_Übergangsphase",
+     question: "Was würde dir in dieser Übergangsphase am meisten helfen, einen passenden Weg zu finden?",
+     options: ["Beratung für den beruflichen Wiedereinstieg", "Umschulung oder Weiterbildung für ältere Beschäftigte", "Unterstützung bei Bewerbungen und Vorstellungsgesprächen", "Austausch/Netzwerk für ältere Arbeitssuchende", "Finanzielle Unterstützung, um die Zeit zu überbrücken"],
+-    tags: ["Übergang_Wiedereinstieg", "Übergang_Umschulung", "Übergang_Bewerbung", "Übergang_Netzwerk", "Übergang_Finanzen"]
++    tags: ["Übergang_Wiedereinstieg", "Übergang_Umschulung", "Übergang_Bewerbung", "Übergang_Netzwerk", "Übergang_Finanzen"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Pflege": {
+     id: "Q4_50-64_Pflege",
+     question: "Was würde dir helfen, die Pflege besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungsangebote", "Austausch mit anderen Pflegenden", "Beratung, wie ich die die aktuelle Situtation mit meinem Beruf vereinbaren kann", "Psychologische Unterstützung", "Beratung zu finanziellen und rechtlichen Fragen"],
+-    tags: ["Pflege_Beratung", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"]
++    tags: ["Pflege_Beratung", "Pflege_Austausch", "Pflege_Vereinbarkeit", "Pflege_Psychisch", "Pflege_Finanzierung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Familie": {
+     id: "Q4_50-64_Familie",
+     question: "Was würde dir helfen, die Familienzeit besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Betreuungsangebote", "Beratung zur Vereinbarkeit von Familie und Beruf", "Psychologische Unterstützung"],
+-    tags: ["Familie_Angebote", "Familie_Vereinbarkeit", "Familie_Psych"]
++    tags: ["Familie_Angebote", "Familie_Vereinbarkeit", "Familie_Psych"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_50-64_Sonstiges": {
+     id: "Q4_50-64_Sonstiges",
+     question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+     options: ["Berufliche Perspektiven und Orientierung", "Vereinbarkeit von Beruf und Pflege/Familie", "Mehr soziale Kontakte und Freizeitgestaltung", "Finanzielle Absicherung", "Beratungs- und Unterstützungsangebote"],
+-    tags: ["Sonstiges_Orientierung", "Sonstiges_Vereinbarkeit", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"]
++    tags: ["Sonstiges_Orientierung", "Sonstiges_Vereinbarkeit", "Sonstiges_Sozial", "Sonstiges_Finanzen", "Sonstiges_Beratung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q5_50-64": {
+@@ -592,28 +718,36 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q8_50-64_Ja",
+     question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+     options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf/Alltag", "Mehr Austausch mit anderen Betroffenen"],
+-    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
++    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q8_50-64_Nein": {
+     id: "Q8_50-64_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Belastungen durch Vereinbarkeit von Beruf und Familie", "Finanzielle Belastungen", "Psychische Belastungen (z. B. Stress, Burnout-Gefühl)", "Bürokratische Herausforderungen (z. B. Ämter, Anträge, Unterstützungssysteme)", "Ich kümmere mich um Angehörige"],
+-    tags: ["Herausforderung_Vereinbarkeit", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"]
++    tags: ["Herausforderung_Vereinbarkeit", "Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Bürokratie", "Herausforderung_Pflege"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q9_50-64_Ausland_Nein": {
+     id: "Q9_50-64_Ausland_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Schwierigkeiten in Deutschland anzukommen", "Psychische Belastungen", "Umgang mit Schulden/Finanzen", "Pflege von Angehörigen", "Schwierigkeiten im sozialen Umfeld"],
+-    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Pflege", "Herausforderung_Sozial"]
++    tags: ["Herausforderung_Deutschland", "Herausforderung_Psyche", "Herausforderung_Finanzen", "Herausforderung_Pflege", "Herausforderung_Sozial"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q10_50-64": {
+     id: "Q10_50-64",
+     question: "Was wünschst du dir?",
+     options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"],
+-    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"]
++    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q2_65plus": {
+@@ -634,42 +768,54 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q4_65plus_Rente",
+     question: "Was wünscht du dir für deinen Ruhestand?",
+     options: ["Mehr soziale Kontakte und Freizeitaktivitäten", "Unterstützung bei Alltagsaufgaben", "Persönliche Weiterentwicklung (z. B. Kurse, Hobbys)", "Mehr finanzielle Sicherheit", "Gesundheitliche Förderung", "Ehrenamtliches Engagement"],
+-    tags: ["Rente_Sozial", "Rente_Alltag", "Rente_Weiterentwicklung", "Rente_Finanzen", "Rente_Gesundheit", "Rente_Ehrenamt"]
++    tags: ["Rente_Sozial", "Rente_Alltag", "Rente_Weiterentwicklung", "Rente_Finanzen", "Rente_Gesundheit", "Rente_Ehrenamt"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_65plus_Arbeit": {
+     id: "Q4_65plus_Arbeit",
+     question: "Was würde dir helfen, deine Arbeit noch besser mit deinem Alltag zu vereinbaren?",
+     options: ["Ein besseres Arbeitsklima", "Einen anderen Job", "Bessere Vereinbarkeit mit Gesundheit (körperliche Belastungen, Stress)", "Bessere Vergütung oder finanzielle Unterstützung", "Perspektiven für den Übergang in die Rente"],
+-    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Gesundheit", "Arbeiten_Vergütung", "Arbeiten_Rente"]
++    tags: ["Arbeiten_Arbeitsklima", "Arbeiten_Jobwechsel", "Arbeiten_Gesundheit", "Arbeiten_Vergütung", "Arbeiten_Rente"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_65plus_Selbstständig": {
+     id: "Q4_65plus_Selbstständig",
+     question: "Was wäre hilfreich, um deine Unternehmung erfolgreich zu gestalten?",
+     options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Familie", "Internationalisierung", "Nachfolge- oder Ausstiegsplanung", "Erfahrungsaustausch"],
+-    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge", "Selbstständig_Experience"]
++    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge", "Selbstständig_Experience"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_65plus_Pflege": {
+     id: "Q4_65plus_Pflege",
+     question: "Was würde dir helfen, die Pflege von Angehörigen besser mit deinem Alltag zu vereinbaren?",
+     options: ["Informationen über Entlastungs- und Unterstützungsangebote", "Beratung zu rechtlichen und finanziellen Fragen (z. B. Pflegegeld, Sozialleistungen)", "Psychologische Unterstützung", "Austausch mit anderen Pflegenden"],
+-    tags: ["Pflege_Informationen", "Pflege_Beratung", "Pflege_Psychisch", "Pflege_Austausch"]
++    tags: ["Pflege_Informationen", "Pflege_Beratung", "Pflege_Psychisch", "Pflege_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_65plus_Erwerbsunfähig": {
+     id: "Q4_65plus_Erwerbsunfähig",
+     question: "Was würde dir helfen, deinen Alltag besser zu gestalten?",
+     options: ["Gesundheitliche Unterstützung", "Alltagsunterstützung", "Behörden- und Antragsunterstützung", "Mehr soziale Kontakte", "Möglichkeiten zur persönlichen Weiterentwicklung", "Finanzielle Sicherheit"],
+-    tags: ["Erwerbsunfähig_Gesundheit", "Erwerbsunfähig_Alltag", "Erwerbsunfähig_Behörden", "Erwerbsunfähig_Sozial", "Erwerbsunfähig_Weiterbildung", "Erwerbsunfähig_Finanzen"]
++    tags: ["Erwerbsunfähig_Gesundheit", "Erwerbsunfähig_Alltag", "Erwerbsunfähig_Behörden", "Erwerbsunfähig_Sozial", "Erwerbsunfähig_Weiterbildung", "Erwerbsunfähig_Finanzen"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q4_65plus_Sonstiges": {
+     id: "Q4_65plus_Sonstiges",
+     question: "Was würdest du dir für deine aktuelle Situation am meisten wünschen?",
+     options: ["Mehr soziale Kontakte und Freizeitgestaltung", "Unterstützung bei Alltagsbewältigung und Behördenangelegenheiten", "Finanzielle Absicherung", "Persönliche Weiterentwicklung (Hobbys, Kurse)"],
+-    tags: ["Sonstiges_Sozial", "Sonstiges_Beratung", "Sonstiges_Finanzen", "Sonstiges_Weiterentwicklung"]
++    tags: ["Sonstiges_Sozial", "Sonstiges_Beratung", "Sonstiges_Finanzen", "Sonstiges_Weiterentwicklung"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q5_65plus": {
+@@ -704,28 +850,36 @@ const questionsMap: Record<string, QuestionData> = {
+     id: "Q9_65plus_Ja",
+     question: "Welche Unterstützung wünschst du dir im Umgang mit deinen gesundheitlichen Besonderheiten?",
+     options: ["Hilfe beim Umgang mit der Erkrankung", "Bessere Anbindung an Ärzt:innen oder Therapeut:innen", "Unterstützung im Beruf/Alltag", "Mehr Austausch mit anderen Betroffenen"],
+-    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"]
++    tags: ["Gesundheit_Umgang", "Gesundheit_Anbindung", "Gesundheit_Unterstützung", "Gesundheit_Austausch"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q9_65plus_Nein": {
+     id: "Q9_65plus_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Gesundheitliche Einschränkungen oder Pflegebedarf", "Finanzielle Belastungen (z. B. steigende Kosten im Alltag)", "Einsamkeit oder wenige soziale Kontakte", "Orientierung im Hilfesystem (z. B. welche Angebote es für Senior:innen gibt)"],
+-    tags: ["Herausforderung_Gesundheit", "Herausforderung_Finanzen", "Herausforderung_Einsam", "Herausforderung_Bürokratie"]
++    tags: ["Herausforderung_Gesundheit", "Herausforderung_Finanzen", "Herausforderung_Einsam", "Herausforderung_Bürokratie"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q9_65plus_Ausland_Nein": {
+     id: "Q9_65plus_Ausland_Nein",
+     question: "Gibt es aktuell besondere Herausforderungen, bei denen du dir Unterstützung wünschen würdest?",
+     options: ["Gesundheitliche Einschränkungen oder Pflegebedarf", "Umgang mit Schulden/Finanzen", "Schwierigkeiten in Deutschland anzukommen", "Einsamkeit oder wenige soziale Kontakte", "Orientierung im Hilfesystem (z. B. welche Angebote es für Senior:innen gibt)"],
+-    tags: ["Herausforderung_Gesundheit", "Herausforderung_Finanzen", "Herausforderung_Deutschland", "Herausforderung_Einsam", "Herausforderung_Bürokratie"]
++    tags: ["Herausforderung_Gesundheit", "Herausforderung_Finanzen", "Herausforderung_Deutschland", "Herausforderung_Einsam", "Herausforderung_Bürokratie"],
++    multiSelect: true,
++    maxSelections: 3
+   },
+ 
+   "Q10_65plus": {
+     id: "Q10_65plus",
+     question: "Was wünschst du dir?",
+     options: ["Neue Leute kennenlernen und Kontakte knüpfen", "Beratung und Orientierung", "Freizeit- und Kulturangebote", "Lern- und Weiterbildungsmöglichkeiten", "Einstieg in die Selbstständigkeit oder Gründung", "Ehrenamtliches Engagement"],
+-    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"]
++    tags: ["Wunsch_Sozial", "Wunsch_Beratung", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Gründung", "Wunsch_Ehrenamt"],
++    multiSelect: true,
++    maxSelections: 3
+   }
+ };
+ 
+diff --git a/src/hooks/useFundingResults.ts b/src/hooks/useFundingResults.ts
+index d6298da..4e07a3c 100644
+--- a/src/hooks/useFundingResults.ts
++++ b/src/hooks/useFundingResults.ts
+@@ -2,7 +2,7 @@
+ import { useQuery } from "@tanstack/react-query";
+ import { supabase } from "@/integrations/supabase/client";
+ import { UserAnswers } from "@/context/QuestionnaireContext";
+-import { extractTagsFromAnswers, groupTagsByCategory } from "@/utils/answerMappingUtils";
++import { extractTagsFromAnswers, getAgeRange, computeRelevanceScore } from "@/utils/answerMappingUtils";
+ 
+ export interface Funding {
+   id: string;
+@@ -17,75 +17,69 @@ export interface Funding {
+   contact_phone: string | null;
+   categories: string[];
+   tags: string[];
++  min_age: number | null;
++  max_age: number | null;
++  relevanceScore?: number;
+ }
+ 
++const MIN_RESULTS = 5;
++
+ export const useFundingResults = (answers?: UserAnswers) => {
+   return useQuery({
+     queryKey: ['funding', 'filtered', JSON.stringify(answers)],
+     queryFn: async () => {
+-      console.log("=== NEW FUNDING QUERY DEBUG ===");
+-      console.log("Full answers object:", answers);
+-      
+-      // Extract tags from answers using the new system
++      // 1. Extract user tags from all answers
+       const userTags = answers ? extractTagsFromAnswers(answers) : [];
+-      const groupedTags = groupTagsByCategory(userTags);
+       
+-      console.log("User tags:", userTags);
+-      console.log("Grouped tags:", groupedTags);
+-
+-      // Start with all funding data
++      // 2. Build Supabase query with HARD age filter
+       let query = supabase.from('funding').select('*');
+       
+-      const { data, error } = await query;
+-
+-      if (error) {
+-        console.error("Supabase query error:", error);
+-        throw error;
++      const ageAnswer = answers?.Q1;
++      const ageRange = typeof ageAnswer === 'string' ? getAgeRange(ageAnswer) : null;
++      
++      if (ageRange) {
++        // Server-side: only fetch fundings where the age range overlaps
++        // A funding matches if: funding.min_age <= user.maxAge AND funding.max_age >= user.minAge
++        // Also include fundings with null age fields (universal offers)
++        query = query.or(
++          `min_age.is.null,min_age.lte.${ageRange.maxAge}`
++        ).or(
++          `max_age.is.null,max_age.gte.${ageRange.minAge}`
++        );
+       }
+-
+-      console.log("Raw data from Supabase:", data?.length, "entries");
+       
+-      // Client-side filtering based on extracted tags
+-      let filteredData = data;
++      const { data, error } = await query;
++      if (error) throw error;
++      
++      if (!data || data.length === 0) return [];
+       
+-      if (userTags.length > 0) {
+-        console.log("Filtering by tags:", userTags);
+-        
+-        filteredData = data?.filter(funding => {
+-          if (!funding.tags || !Array.isArray(funding.tags)) {
+-            console.log(`Funding "${funding.title}" has no tags array`);
+-            return false;
+-          }
+-          
+-          // Check if funding has any of the user's tags
+-          const hasMatchingTag = userTags.some(userTag => 
+-            funding.tags.includes(userTag)
+-          );
+-          
+-          console.log(`Funding "${funding.title}":`, {
+-            fundingTags: funding.tags,
+-            hasMatch: hasMatchingTag
+-          });
+-          
+-          return hasMatchingTag;
+-        }) || [];
+-        
+-        console.log("After tag filtering:", filteredData.length, "entries remain");
+-        
+-        // Sort by relevance - funding with more matching tags comes first
+-        filteredData.sort((a, b) => {
+-          const aMatches = userTags.filter(tag => a.tags?.includes(tag)).length;
+-          const bMatches = userTags.filter(tag => b.tags?.includes(tag)).length;
+-          return bMatches - aMatches; // Descending order
+-        });
++      // 3. Score each funding by tag relevance
++      let scoredData: Funding[] = data.map(funding => ({
++        ...funding,
++        relevanceScore: computeRelevanceScore(
++          funding.tags || [],
++          userTags
++        )
++      })) as Funding[];
++      
++      // 4. Primary results: score > 0 (at least one tag match), sorted by score
++      let results = scoredData
++        .filter(f => (f.relevanceScore ?? 0) > 0)
++        .sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
++      
++      // 5. Fallback: if too few results, add age-appropriate offers without tag match
++      if (results.length < MIN_RESULTS) {
++        const existingIds = new Set(results.map(r => r.id));
++        const fallbacks = scoredData
++          .filter(f => !existingIds.has(f.id) && (f.relevanceScore ?? 0) === 0)
++          .slice(0, MIN_RESULTS - results.length);
+         
+-        console.log("Results sorted by relevance");
+-      } else {
+-        console.log("No user tags - showing all funding");
++        // Mark fallbacks so UI can differentiate if needed
++        fallbacks.forEach(f => { f.relevanceScore = 0; });
++        results = [...results, ...fallbacks];
+       }
+-
+-      console.log("=== END NEW FUNDING QUERY DEBUG ===");
+-      return filteredData as Funding[];
++      
++      return results;
+     },
+   });
+ };
+diff --git a/src/pages/Results.tsx b/src/pages/Results.tsx
+index a5f60da..ea7d35e 100644
+--- a/src/pages/Results.tsx
++++ b/src/pages/Results.tsx
+@@ -2,268 +2,203 @@
+ import Header from "@/components/Header";
+ import Footer from "@/components/Footer";
+ import { useFundingResults } from "@/hooks/useFundingResults";
+-import { useQuestionnaire, QuestionnaireProvider } from "@/context/QuestionnaireContext";
++import { useQuestionnaire } from "@/context/QuestionnaireContext";
+ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+ import { Badge } from "@/components/ui/badge";
+ import { Button } from "@/components/ui/button";
+-import { Loader2, MapPin, Euro, Calendar, ExternalLink } from "lucide-react";
++import { Loader2, Euro, Calendar, ExternalLink, Star } from "lucide-react";
+ 
+-const ResultsContent = () => {
++const Results = () => {
+   const { answers } = useQuestionnaire();
+-  
+-  console.log("=== RESULTS PAGE DEBUG ===");
+-  console.log("Current answers object:", answers);
+-  console.log("Q1 answer specifically:", answers.Q1);
+-  console.log("Answers keys:", Object.keys(answers || {}));
+-  console.log("=== END RESULTS PAGE DEBUG ===");
+-  
+-  // Pass the user's answers to get filtered results based on age
+   const { data: fundings, isLoading, error } = useFundingResults(answers);
+ 
++  const getAgeGroupDisplay = (ageAnswer: string | string[]) => {
++    const age = Array.isArray(ageAnswer) ? ageAnswer[0] : ageAnswer;
++    switch (age) {
++      case "unter 18": return "unter 18 Jahren";
++      case "18-24": return "18–24 Jahren";
++      case "25-34": return "25–34 Jahren";
++      case "35-49": return "35–49 Jahren";
++      case "50-64": return "50–64 Jahren";
++      case "über 65": return "über 65 Jahren";
++      default: return "";
++    }
++  };
++
++  const ageDisplay = answers.Q1 ? getAgeGroupDisplay(answers.Q1) : "";
++
+   if (isLoading) {
+     return (
+-      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+-        <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+-        <p className="text-lg text-gray-600">Wir durchsuchen alle verfügbaren Förderungen für dich...</p>
+-        <p className="text-sm text-gray-500">Das kann einen Moment dauern</p>
++      <div className="min-h-screen flex flex-col bg-gray-50">
++        <Header />
++        <main className="flex-grow container mx-auto px-4 py-12">
++          <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
++            <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
++            <p className="text-lg text-gray-600">Wir durchsuchen alle verfügbaren Angebote für dich...</p>
++            <p className="text-sm text-gray-500">Das dauert nur einen Moment</p>
++          </div>
++        </main>
++        <Footer />
+       </div>
+     );
+   }
+ 
+   if (error) {
+     return (
+-      <div className="text-center my-12 max-w-md mx-auto">
+-        <div className="bg-red-50 border border-red-200 rounded-lg p-8">
+-          <h2 className="text-2xl font-bold mb-4 text-red-800">
+-            Es ist ein Fehler aufgetreten
+-          </h2>
+-          <p className="text-red-600 mb-6">
+-            Bitte versuche es später erneut oder kontaktiere den Support.
+-          </p>
+-          <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
+-            Neue Suche starten
+-          </Button>
+-        </div>
++      <div className="min-h-screen flex flex-col bg-gray-50">
++        <Header />
++        <main className="flex-grow container mx-auto px-4 py-12">
++          <div className="text-center my-12 max-w-md mx-auto">
++            <div className="bg-red-50 border border-red-200 rounded-lg p-8">
++              <h2 className="text-2xl font-bold mb-4 text-red-800">Es ist ein Fehler aufgetreten</h2>
++              <p className="text-red-600 mb-6">Bitte versuche es später erneut.</p>
++              <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
++                Neue Suche starten
++              </Button>
++            </div>
++          </div>
++        </main>
++        <Footer />
+       </div>
+     );
+   }
+ 
+   if (!fundings || fundings.length === 0) {
+     return (
+-      <div className="text-center my-12 max-w-2xl mx-auto">
+-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
+-          <h2 className="text-2xl font-bold mb-4 text-blue-800">
+-            Keine passenden Förderungen gefunden
+-          </h2>
+-          <p className="text-gray-600 mb-6">
+-            Leider konnten wir keine Förderungen finden, die zu deinen Angaben passen.
+-            {answers.Q1 && (
+-              <span className="block mt-2 text-sm">
+-                Filterkriterium: Altersgruppe "{answers.Q1}"
+-              </span>
+-            )}
+-            Versuche es mit anderen Kriterien oder kontaktiere direkt die Beratungsstellen.
+-          </p>
+-          <div className="space-x-4">
+-            <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
+-              Neue Suche starten
+-            </Button>
+-            <Button variant="outline" asChild>
+-              <a href="https://berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
+-                Beratung finden
+-              </a>
+-            </Button>
++      <div className="min-h-screen flex flex-col bg-gray-50">
++        <Header />
++        <main className="flex-grow container mx-auto px-4 py-12">
++          <div className="text-center my-12 max-w-2xl mx-auto">
++            <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
++              <h2 className="text-2xl font-bold mb-4 text-blue-800">Keine passenden Angebote gefunden</h2>
++              <p className="text-gray-600 mb-6">
++                Versuche es mit anderen Kriterien oder kontaktiere direkt die Beratungsstellen.
++              </p>
++              <div className="space-x-4">
++                <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
++                  Neue Suche starten
++                </Button>
++                <Button variant="outline" asChild>
++                  <a href="https://berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
++                    Beratung finden
++                  </a>
++                </Button>
++              </div>
++            </div>
+           </div>
+-        </div>
++        </main>
++        <Footer />
+       </div>
+     );
+   }
+ 
+-  // Sort fundings to show "Berufsausbildungsbeihilfe (BAB)" first
+-  const sortedFundings = fundings ? [...fundings].sort((a, b) => {
+-    if (a.title.includes("Berufsausbildungsbeihilfe") || a.title.includes("BAB")) return -1;
+-    if (b.title.includes("Berufsausbildungsbeihilfe") || b.title.includes("BAB")) return 1;
+-    return 0;
+-  }) : [];
+-
+-  // Get age group for display
+-  const getAgeGroupDisplay = (ageAnswer: string) => {
+-    switch (ageAnswer) {
+-      case "unter 18":
+-        return "unter 18 Jahren";
+-      case "18-24":
+-        return "18-24 Jahren";
+-      case "25-64":
+-        return "25-64 Jahren";
+-      case "über 65":
+-        return "über 65 Jahren";
+-      default:
+-        return "";
+-    }
+-  };
+-
+-  const ageDisplay = answers.Q1 ? getAgeGroupDisplay(answers.Q1) : "";
+-
+   return (
+-    <div className="space-y-6 max-w-4xl mx-auto">
+-      {/* Header with personalized message */}
+-      <div className="text-center mb-8">
+-        <h2 className="text-2xl font-bold mb-2 text-gray-900">
+-          Förderungsmöglichkeiten {ageDisplay && `für ${ageDisplay}`}
+-        </h2>
+-        <p className="text-gray-600">
+-          {fundings.length} {fundings.length === 1 ? 'Förderung gefunden' : 'Förderungen gefunden'}
+-          {ageDisplay && ` für deine Altersgruppe`}
+-        </p>
+-        {answers.Q1 && (
+-          <p className="text-sm text-gray-500 mt-1">
+-            Gefiltert nach: {answers.Q1}
+-            {(() => {
+-              const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
+-              const q2Answer = q2Keys.length > 0 ? answers[q2Keys[0]] : null;
+-              return q2Answer ? ` + ${q2Answer}` : '';
+-            })()}
+-          </p>
+-        )}
+-      </div>
+-
+-      {/* Debug info - will be visible to help diagnose */}
+-      {(answers.Q1 || (() => {
+-        const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
+-        return q2Keys.length > 0;
+-      })()) && (
+-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
+-          <p><strong>Debug Info:</strong></p>
+-          <p>Q1 Antwort: {answers.Q1}</p>
+-          {(() => {
+-            const q2Keys = Object.keys(answers).filter(key => key.startsWith('Q2_'));
+-            const q2Answer = q2Keys.length > 0 ? answers[q2Keys[0]] : null;
+-            return q2Answer ? <p>Q2 Antwort: {q2Answer}</p> : null;
+-          })()}
+-          <p>Anzahl gefundener Förderungen: {fundings.length}</p>
+-          <p>Filter aktiv: Ja</p>
+-        </div>
+-      )}
++    <div className="min-h-screen flex flex-col bg-gray-50">
++      <Header />
++      <main className="flex-grow container mx-auto px-4 py-12">
++        <div className="space-y-6 max-w-4xl mx-auto">
++          {/* Header */}
++          <div className="text-center mb-8">
++            <h2 className="text-2xl font-bold mb-2 text-gray-900">
++              Deine Ergebnisse {ageDisplay && `für ${ageDisplay}`}
++            </h2>
++            <p className="text-gray-600">
++              {fundings.length} {fundings.length === 1 ? 'Angebot gefunden' : 'Angebote gefunden'}
++            </p>
++          </div>
+ 
+-      {/* Funding Cards */}
+-      {sortedFundings.map((funding) => (
+-        <Card key={funding.id} className="hover:shadow-lg transition-shadow duration-300">
+-          <CardHeader>
+-            <div className="flex justify-between items-start">
+-              <div className="flex-1">
+-                <CardTitle className="text-xl mb-1 text-gray-900">{funding.title}</CardTitle>
+-                <CardDescription className="text-lg text-blue-600">
+-                  {funding.organization}
+-                </CardDescription>
+-              </div>
+-              <div className="flex flex-wrap gap-2">
+-                {funding.categories && funding.categories.slice(0, 2).map((category) => (
+-                  <Badge key={category} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+-                    {category}
+-                  </Badge>
+-                ))}
+-              </div>
+-            </div>
+-          </CardHeader>
+-          <CardContent>
+-            <p className="text-gray-700 mb-4 leading-relaxed">{funding.description}</p>
+-            
+-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+-              {funding.amount && (
+-                <div className="flex items-start space-x-2 text-sm">
+-                  <Euro className="w-4 h-4 text-green-600 mt-0.5" />
+-                  <div>
+-                    <span className="font-medium block">Förderhöhe:</span>
+-                    <span className="text-green-700">{funding.amount}</span>
++          {/* Funding Cards */}
++          {fundings.map((funding) => (
++            <Card key={funding.id} className="hover:shadow-lg transition-shadow duration-300">
++              <CardHeader>
++                <div className="flex justify-between items-start">
++                  <div className="flex-1">
++                    <CardTitle className="text-xl mb-1 text-gray-900">{funding.title}</CardTitle>
++                    <CardDescription className="text-lg text-blue-600">
++                      {funding.organization}
++                    </CardDescription>
++                  </div>
++                  <div className="flex flex-wrap gap-2 items-center">
++                    {(funding.relevanceScore ?? 0) > 50 && (
++                      <Badge className="bg-green-100 text-green-800 border-green-200">
++                        <Star className="w-3 h-3 mr-1" />
++                        Top-Treffer
++                      </Badge>
++                    )}
++                    {funding.categories && funding.categories.slice(0, 2).map((category) => (
++                      <Badge key={category} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
++                        {category}
++                      </Badge>
++                    ))}
+                   </div>
+                 </div>
+-              )}
+-              
+-              {funding.application_deadline && (
+-                <div className="flex items-center space-x-2 text-sm">
+-                  <Calendar className="w-4 h-4 text-orange-600" />
+-                  <span className="font-medium">Bewerbungsfrist:</span>
+-                  <span className="text-orange-700">{funding.application_deadline}</span>
++              </CardHeader>
++              <CardContent>
++                <p className="text-gray-700 mb-4 leading-relaxed">{funding.description}</p>
++                
++                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
++                  {funding.amount && (
++                    <div className="flex items-start space-x-2 text-sm">
++                      <Euro className="w-4 h-4 text-green-600 mt-0.5" />
++                      <div>
++                        <span className="font-medium block">Förderhöhe:</span>
++                        <span className="text-green-700">{funding.amount}</span>
++                      </div>
++                    </div>
++                  )}
++                  {funding.application_deadline && (
++                    <div className="flex items-center space-x-2 text-sm">
++                      <Calendar className="w-4 h-4 text-orange-600" />
++                      <span className="font-medium">Frist:</span>
++                      <span className="text-orange-700">{funding.application_deadline}</span>
++                    </div>
++                  )}
+                 </div>
+-              )}
+-            </div>
+-            
+-            {funding.application_process && (
+-              <div className="bg-gray-50 p-3 rounded-lg border mb-4">
+-                <h4 className="font-medium mb-1 text-gray-800 text-sm">Antragsprozess</h4>
+-                <p className="text-gray-600 text-sm">{funding.application_process}</p>
+-              </div>
+-            )}
+-            
+-            {funding.tags && funding.tags.length > 0 && (
+-              <div className="flex flex-wrap gap-1">
+-                {funding.tags.slice(0, 4).map((tag) => (
+-                  <Badge key={tag} variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+-                    {tag}
+-                  </Badge>
+-                ))}
+-                {funding.tags.length > 4 && (
+-                  <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+-                    +{funding.tags.length - 4} weitere
+-                  </Badge>
++                
++                {funding.application_process && (
++                  <div className="bg-gray-50 p-3 rounded-lg border mb-4">
++                    <h4 className="font-medium mb-1 text-gray-800 text-sm">Antragsprozess</h4>
++                    <p className="text-gray-600 text-sm">{funding.application_process}</p>
++                  </div>
+                 )}
+-              </div>
+-            )}
+-          </CardContent>
+-          <CardFooter className="justify-between bg-gray-50 border-t pt-4">
+-            <div className="text-sm text-gray-600">
+-              {funding.contact_email && (
+-                <div className="flex items-center space-x-1">
+-                  <span className="font-medium">Kontakt:</span>
+-                  <span className="text-blue-600">{funding.contact_email}</span>
++              </CardContent>
++              <CardFooter className="justify-between bg-gray-50 border-t pt-4">
++                <div className="text-sm text-gray-600">
++                  {funding.contact_email && (
++                    <div><span className="font-medium">Kontakt:</span> <span className="text-blue-600">{funding.contact_email}</span></div>
++                  )}
++                  {funding.contact_phone && (
++                    <div className="text-blue-600 text-xs">Tel: {funding.contact_phone}</div>
++                  )}
+                 </div>
+-              )}
+-              {funding.contact_phone && (
+-                <div className="text-blue-600 text-xs">Tel: {funding.contact_phone}</div>
+-              )}
++                <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700">
++                  <a href={funding.url} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
++                    <span>Mehr Details</span>
++                    <ExternalLink className="w-4 h-4" />
++                  </a>
++                </Button>
++              </CardFooter>
++            </Card>
++          ))}
++          
++          {/* Action buttons */}
++          <div className="text-center bg-white p-6 rounded-lg shadow-sm border border-gray-100 mt-8">
++            <div className="space-x-4">
++              <Button onClick={() => window.location.href = "/"} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
++                Neue Suche starten
++              </Button>
++              <Button asChild className="bg-blue-600 hover:bg-blue-700">
++                <a href="https://www.berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
++                  Beratungsstellen finden
++                </a>
++              </Button>
+             </div>
+-            <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700">
+-              <a href={funding.url} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
+-                <span>Mehr Details</span>
+-                <ExternalLink className="w-4 h-4" />
+-              </a>
+-            </Button>
+-          </CardFooter>
+-        </Card>
+-      ))}
+-      
+-      {/* Action buttons */}
+-      <div className="text-center bg-white p-6 rounded-lg shadow-sm border border-gray-100 mt-8">
+-        <div className="space-x-4">
+-          <Button onClick={() => window.location.href = "/"} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
+-            Neue Suche starten
+-          </Button>
+-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
+-            <a href="https://www.berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
+-              Beratungsstellen finden
+-            </a>
+-          </Button>
++          </div>
+         </div>
+-        <p className="text-sm text-gray-500 mt-4">
+-          Bei Fragen stehen dir die Berliner Beratungsstellen gerne zur Verfügung.
+-        </p>
+-      </div>
++      </main>
++      <Footer />
+     </div>
+   );
+ };
+ 
+-const Results = () => {
+-  return (
+-    <QuestionnaireProvider>
+-      <div className="min-h-screen flex flex-col bg-gray-50">
+-        <Header />
+-        <main className="flex-grow container mx-auto px-4 py-12">
+-          <ResultsContent />
+-        </main>
+-        <Footer />
+-      </div>
+-    </QuestionnaireProvider>
+-  );
+-};
+-
+ export default Results;
+diff --git a/src/utils/answerMappingUtils.ts b/src/utils/answerMappingUtils.ts
+index 75fcf71..a4c75ec 100644
+--- a/src/utils/answerMappingUtils.ts
++++ b/src/utils/answerMappingUtils.ts
+@@ -3,126 +3,123 @@ import { UserAnswers } from "@/context/QuestionnaireContext";
+ import { getQuestionData } from "@/data/questionnaireData";
+ 
+ /**
+- * Extracts all relevant tags from user answers based on questionnaire data.
+- * @param answers User's answers from the questionnaire
+- * @returns Array of tags that match the user's answers
++ * Maps an age-range answer to numeric min/max for DB filtering.
++ */
++export const getAgeRange = (ageAnswer: string): { minAge: number; maxAge: number } | null => {
++  switch (ageAnswer) {
++    case "unter 18": return { minAge: 0, maxAge: 17 };
++    case "18-24": return { minAge: 18, maxAge: 24 };
++    case "25-34": return { minAge: 25, maxAge: 34 };
++    case "35-49": return { minAge: 35, maxAge: 49 };
++    case "50-64": return { minAge: 50, maxAge: 64 };
++    case "über 65": return { minAge: 65, maxAge: 120 };
++    default: return null;
++  }
++};
++
++/**
++ * Extracts all relevant tags from user answers.
++ * Handles both single-select (string) and multi-select (string[]) answers.
+  */
+ export const extractTagsFromAnswers = (answers: UserAnswers): string[] => {
+   const collectedTags: string[] = [];
+   
+-  console.log("=== EXTRACTING TAGS FROM ANSWERS ===");
+-  console.log("User answers:", answers);
+-  
+-  // Iterate through all answers
+   Object.entries(answers).forEach(([questionId, selectedAnswer]) => {
+-    console.log(`Processing question ${questionId} with answer: ${selectedAnswer}`);
+-    
+-    // Get question data
+     const questionData = getQuestionData(questionId);
++    if (!questionData?.tags || !questionData?.options) return;
+     
+-    if (!questionData) {
+-      console.log(`No question data found for ${questionId}`);
+-      return;
+-    }
+-    
+-    if (!questionData.tags || !questionData.options) {
+-      console.log(`Question ${questionId} has no tags or options`);
+-      return;
+-    }
+-    
+-    // Find the index of the selected answer in the options array
+-    const answerIndex = questionData.options.indexOf(selectedAnswer);
++    // Normalize to array for uniform processing
++    const selectedValues = Array.isArray(selectedAnswer) ? selectedAnswer : [selectedAnswer];
+     
+-    if (answerIndex === -1) {
+-      console.log(`Answer "${selectedAnswer}" not found in options for ${questionId}`);
+-      return;
+-    }
+-    
+-    // Get the corresponding tag
+-    const correspondingTag = questionData.tags[answerIndex];
+-    
+-    if (correspondingTag) {
+-      console.log(`Found tag "${correspondingTag}" for answer "${selectedAnswer}" in ${questionId}`);
+-      collectedTags.push(correspondingTag);
+-    } else {
+-      console.log(`No tag found for answer index ${answerIndex} in ${questionId}`);
+-    }
++    selectedValues.forEach(val => {
++      const answerIndex = questionData.options.indexOf(val);
++      if (answerIndex !== -1 && questionData.tags![answerIndex]) {
++        collectedTags.push(questionData.tags![answerIndex]);
++      }
++    });
+   });
+   
+-  // Remove duplicates
+-  const uniqueTags = Array.from(new Set(collectedTags));
+-  
+-  console.log("Collected tags:", uniqueTags);
+-  console.log("=== END TAG EXTRACTION ===");
+-  
+-  return uniqueTags;
++  return Array.from(new Set(collectedTags));
+ };
+ 
+ /**
+- * Groups tags by category for better organization
+- * @param tags Array of tags
+- * @returns Object with tags grouped by category
++ * Tag priority weights — tags from different question types have different
++ * importance for matching. Activity and specific-need tags are most important.
+  */
+-export const groupTagsByCategory = (tags: string[]): { [category: string]: string[] } => {
+-  const grouped: { [category: string]: string[] } = {};
+-  
+-  tags.forEach(tag => {
+-    const parts = tag.split('_');
+-    const category = parts[0] || 'general';
+-    
+-    if (!grouped[category]) {
+-      grouped[category] = [];
+-    }
+-    
+-    grouped[category].push(tag);
+-  });
+-  
+-  return grouped;
++const TAG_WEIGHTS: Record<string, number> = {
++  // Age group tags (already filtered by DB, low extra weight)
++  "U18": 0.5, "18-24": 0.5, "25-34": 0.5, "35-49": 0.5, "50-64": 0.5, "65plus": 0.5,
++  // Nationality tags (medium weight)
++  "Deutsch": 1, "EU": 1, "Ukrainisch": 1.5, "Türkisch": 1.5, "Syrisch": 1.5, "Drittstaat": 1.5,
+ };
+ 
+-interface DatabaseFilters {
+-  minAge?: number;
+-  maxAge?: number;
+-  incomeMin?: number;
+-  incomeMax?: number;
+-  district?: string[];
+-  requiresChildren?: boolean;
+-  requiresMarriage?: boolean;
+-  educationLevel?: string[];
+-  employmentStatus?: string[];
+-  categories?: string[];
+-  tags?: string[];
++function getTagWeight(tag: string): number {
++  if (TAG_WEIGHTS[tag]) return TAG_WEIGHTS[tag];
++  
++  // Activity-specific tags (Q4) get highest weight
++  const prefix = tag.split('_')[0];
++  if (['Schule', 'Ausbildung', 'Studium', 'Arbeiten', 'Gründung', 'Selbstständig',
++       'Arbeitssuche', 'Weiterbildung', 'Übergang', 'Pflege', 'Familie', 'FSJ',
++       'Rente', 'Erwerbsunfähig', 'Sonstiges'].includes(prefix)) {
++    return 3;
++  }
++  
++  // Need-specific tags (challenges, health, wishes)
++  if (['Herausforderung', 'Gesundheit', 'Wunsch'].includes(prefix)) return 2;
++  
++  // Financial/housing tags
++  if (['Finanzen', 'Miete', 'Eigentum', 'Prekär', 'Ohne'].includes(prefix)) return 2;
++  
++  // Health status tags
++  if (prefix === 'Beeinträchtigung') return 1.5;
++  
++  return 1;
+ }
+ 
+ /**
+- * Maps user questionnaire answers to database filter parameters.
+- * @param answers User's answers from the questionnaire
+- * @returns Filter parameters that can be used with the Supabase query
++ * Compute a relevance score for a funding item against user tags.
++ * Returns a number 0-100. Higher = more relevant.
+  */
+-export const mapAnswersToFilters = (answers: UserAnswers): DatabaseFilters => {
+-  const extractedTags = extractTagsFromAnswers(answers);
++export const computeRelevanceScore = (
++  fundingTags: string[],
++  userTags: string[]
++): number => {
++  if (!fundingTags || fundingTags.length === 0 || userTags.length === 0) return 0;
++  
++  let matchedWeight = 0;
++  let totalWeight = 0;
++  let matchCount = 0;
+   
+-  const filters: DatabaseFilters = {
+-    tags: extractedTags
+-  };
++  userTags.forEach(userTag => {
++    const weight = getTagWeight(userTag);
++    totalWeight += weight;
++    
++    if (fundingTags.includes(userTag)) {
++      matchedWeight += weight;
++      matchCount++;
++    }
++  });
+   
+-  console.log("Mapped filters:", filters);
++  if (totalWeight === 0) return 0;
+   
+-  return filters;
++  // Weighted match ratio (0-1)
++  const weightedRatio = matchedWeight / totalWeight;
++  
++  // Bonus for absolute number of matches (rewards breadth)
++  const matchBonus = Math.min(matchCount / 3, 1) * 0.2;
++  
++  return Math.round((weightedRatio + matchBonus) * 100);
+ };
+ 
+ /**
+- * Applies the database filters to a Supabase query builder.
+- * @param query The Supabase query builder
+- * @param filters The database filters
+- * @returns The updated query with filters applied
++ * Groups tags by category for debugging/display.
+  */
+-export const applyFiltersToQuery = (query: any, filters: DatabaseFilters): any => {
+-  if (filters.tags && filters.tags.length > 0) {
+-    console.log("Applying tag filters to query:", filters.tags);
+-    // Apply tag filters - we'll use client-side filtering for multiple tags
+-    // as Supabase has limitations with complex array filtering
+-  }
+-  
+-  return query;
++export const groupTagsByCategory = (tags: string[]): Record<string, string[]> => {
++  const grouped: Record<string, string[]> = {};
++  tags.forEach(tag => {
++    const category = tag.split('_')[0] || 'general';
++    if (!grouped[category]) grouped[category] = [];
++    grouped[category].push(tag);
++  });
++  return grouped;
+ };

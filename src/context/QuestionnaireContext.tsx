@@ -3,12 +3,12 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 const QUESTIONNAIRE_ANSWERS_KEY = "questionnaireAnswers";
 const QUESTIONNAIRE_HISTORY_KEY = "questionnaireHistory";
 
-export type UserAnswers = Record<string, string>;
+export type UserAnswers = Record<string, string | string[]>;
 
 interface QuestionnaireContextType {
   currentQuestionId: string;
-  answers: Record<string, string>;
-  updateAnswer: (questionId: string, answer: string) => void;
+  answers: Record<string, string | string[]>;
+  updateAnswer: (questionId: string, answer: string | string[]) => void;
   goToNextQuestion: (answerOverride?: string) => void;
   goToPreviousQuestion: () => void;
   resetQuestionnaire: () => void;
@@ -19,11 +19,11 @@ interface QuestionnaireContextType {
 const QuestionnaireContext = createContext<QuestionnaireContextType | undefined>(undefined);
 
 // Initial answers state
-const initialAnswers: Record<string, string> = {};
+const initialAnswers: Record<string, string | string[]> = {};
 
 export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentQuestionId, setCurrentQuestionId] = useState<string>("Q1");
-  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers);
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>(initialAnswers);
   const [questionHistory, setQuestionHistory] = useState<string[]>(["Q1"]);
   const [isLastQuestion, setIsLastQuestion] = useState<boolean>(false);
 
@@ -61,7 +61,10 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   }, [answers, questionHistory]);
 
   const getAnswer = (questionId: string): string | undefined => {
-    return answers[questionId];
+    const val = answers[questionId];
+    if (!val) return undefined;
+    if (Array.isArray(val)) return val[0]; // For routing, use first selection
+    return val;
   };
 
   // Navigation logic for the new questionnaire structure
@@ -464,9 +467,9 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   };
 
-  // Update answer and move to next question
-  const updateAnswer = (questionId: string, answer: string) => {
-    console.log(`Updating answer for ${questionId}: ${answer}`);
+  // Update answer (string for single-select, string[] for multi-select)
+  const updateAnswer = (questionId: string, answer: string | string[]) => {
+    console.log(`Updating answer for ${questionId}:`, answer);
     setAnswers(prev => ({
       ...prev,
       [questionId]: answer

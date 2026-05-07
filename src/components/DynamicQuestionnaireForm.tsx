@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import StepProgress from "./questionnaire/StepProgress";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { QuestionData, getQuestionData } from "@/data/questionnaireData";
-import { useState } from "react";
-import { CheckCircle, ArrowLeft, Shield, Users } from "lucide-react";
+import { getQuestionData } from "@/data/questionnaireData";
+import { useState, useEffect } from "react";
+import { CheckCircle, ArrowLeft, Shield, Users, ArrowRight } from "lucide-react";
 
 const DynamicQuestionnaireForm = () => {
   const navigate = useNavigate();
@@ -21,33 +19,38 @@ const DynamicQuestionnaireForm = () => {
     isLastQuestion,
   } = useQuestionnaire();
 
-  // Track loading state to prevent multiple clicks
   const [isProcessing, setIsProcessing] = useState(false);
-  
-  // Track animation state for card transitions
   const [animationState, setAnimationState] = useState<'idle' | 'slide-out' | 'slide-in'>('idle');
   const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward'>('forward');
   
-  // Get the current question data
-  const questionData = getQuestionData(currentQuestionId);
-
-  // Constant total steps to make progress more predictable
-  const estimatedTotalSteps = 6;
+  // Multi-select: track currently checked items
+  const [multiSelections, setMultiSelections] = useState<string[]>([]);
   
-  // Calculate progress based on how far we are in our question history
+  const questionData = getQuestionData(currentQuestionId);
+  const isMultiSelect = questionData?.multiSelect === true;
+  const maxSelections = questionData?.maxSelections || 3;
+
+  // Reset multi-selections when question changes
+  useEffect(() => {
+    const existing = answers[currentQuestionId];
+    if (Array.isArray(existing)) {
+      setMultiSelections(existing);
+    } else {
+      setMultiSelections([]);
+    }
+  }, [currentQuestionId]);
+
+  const estimatedTotalSteps = 10;
   const progressPercentage = Math.min(
     ((questionHistory.length) / estimatedTotalSteps) * 100,
-    100
+    95
   );
 
-  // Handle going back to previous question or home
   const handleBack = () => {
     if (isProcessing) return;
-    
     setIsProcessing(true);
     setAnimationDirection('backward');
     setAnimationState('slide-out');
-    
     setTimeout(() => {
       if (questionHistory.length > 1) {
         goToPreviousQuestion();
@@ -55,7 +58,6 @@ const DynamicQuestionnaireForm = () => {
         navigate("/");
       }
       setAnimationState('slide-in');
-      
       setTimeout(() => {
         setAnimationState('idle');
         setIsProcessing(false);
@@ -63,56 +65,54 @@ const DynamicQuestionnaireForm = () => {
     }, 250);
   };
 
-  // Handle the selection of an answer
-  const handleSelect = (value: string) => {
-    console.log('handleSelect called:', { value, isProcessing, currentQuestionId });
-    
-    if (isProcessing) {
-      console.log('Already processing, ignoring click');
-      return;
-    }
-    
-    console.log('Processing answer selection...');
-    setIsProcessing(true);
-    
-    // Update the answer first
-    updateAnswer(currentQuestionId, value);
-    
-    // Start card swipe out animation
+  const animateForward = (answerValue?: string) => {
     setAnimationDirection('forward');
     setAnimationState('slide-out');
-    
-    // Wait for slide-out animation, then change question and slide in
     setTimeout(() => {
-      console.log('Slide-out complete, navigating with value:', value);
-      
       if (isLastQuestion) {
-        console.log('Last question reached, going to results');
         navigate("/results");
       } else {
-        console.log('Going to next question with answer:', value);
-        goToNextQuestion(value);
+        goToNextQuestion(answerValue);
       }
-      
-      // Start slide-in animation
       setAnimationState('slide-in');
-      
-      // Complete the transition
       setTimeout(() => {
         setAnimationState('idle');
         setIsProcessing(false);
-        console.log('Card transition complete');
       }, 250);
     }, 250);
   };
 
-  // If no question data is found, provide option to reset the questionnaire
+  const handleSingleSelect = (value: string) => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+    updateAnswer(currentQuestionId, value);
+    animateForward(value);
+  };
+
+  const handleMultiToggle = (value: string) => {
+    if (isProcessing) return;
+    setMultiSelections(prev => {
+      if (prev.includes(value)) {
+        return prev.filter(v => v !== value);
+      }
+      if (prev.length >= maxSelections) return prev;
+      return [...prev, value];
+    });
+  };
+
+  const handleMultiConfirm = () => {
+    if (isProcessing || multiSelections.length === 0) return;
+    setIsProcessing(true);
+    updateAnswer(currentQuestionId, multiSelections);
+    animateForward();
+  };
+
   if (!questionData) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
           <h3 className="text-2xl font-medium mb-4 text-red-800">Frage nicht gefunden</h3>
-          <p className="text-red-600 mb-6">Die Frage mit der ID "{currentQuestionId}" konnte nicht gefunden werden.</p>
+          <p className="text-red-600 mb-6">Die Frage mit der ID &quot;{currentQuestionId}&quot; konnte nicht gefunden werden.</p>
           <Button onClick={() => navigate("/")} className="bg-berlin-orange hover:bg-berlin-orange/90">
             Fragebogen neu starten
           </Button>
@@ -121,15 +121,8 @@ const DynamicQuestionnaireForm = () => {
     );
   }
 
-  // Add debug info
-  console.log("Current question ID:", currentQuestionId);
-  console.log("Question data:", questionData);
-  console.log("Current answers:", answers);
-
-  // Render the current question
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Trust header */}
       <div className="bg-white shadow-sm border-b border-gray-100 p-3 mb-4 rounded-t-lg">
         <div className="flex items-center justify-center space-x-4 md:space-x-6 text-xs md:text-sm text-gray-600">
           <div className="flex items-center space-x-1 md:space-x-2">
@@ -141,11 +134,6 @@ const DynamicQuestionnaireForm = () => {
             <Users className="w-3 h-3 md:w-4 md:h-4 text-berlin-blue" />
             <span className="hidden sm:inline">Von Berlinern für Berliner</span>
             <span className="sm:hidden">Berlin</span>
-          </div>
-          <div className="flex items-center space-x-1 md:space-x-2">
-            <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-berlin-orange" />
-            <span className="hidden sm:inline">Offiziell verifiziert</span>
-            <span className="sm:hidden">Verifiziert</span>
           </div>
         </div>
       </div>
@@ -171,7 +159,10 @@ const DynamicQuestionnaireForm = () => {
                   {questionData.question}
                 </h3>
                 <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
-                  Wähle die Option, die am besten zu deiner aktuellen Situation passt.
+                  {isMultiSelect 
+                    ? `Wähle bis zu ${maxSelections} Optionen, die auf dich zutreffen.`
+                    : "Wähle die Option, die am besten zu deiner aktuellen Situation passt."
+                  }
                 </p>
               </div>
 
@@ -181,36 +172,67 @@ const DynamicQuestionnaireForm = () => {
                   questionData.options.length <= 6 ? 'grid-cols-1 md:grid-cols-2' :
                   'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
                 }`}>
-                  {questionData.options.map((option, index) => (
-                    <div 
-                      key={`${currentQuestionId}-${option}`}
-                      className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-300 hover:border-berlin-orange hover:shadow-md cursor-pointer ${
-                        answers[currentQuestionId] === option 
-                          ? 'border-berlin-orange bg-berlin-orange/5 shadow-md' 
-                          : 'border-gray-200 bg-white hover:bg-gray-50'
-                      } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                      onClick={() => handleSelect(option)}
-                    >
-                      <div className="flex items-center space-x-3 w-full">
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                          answers[currentQuestionId] === option 
-                            ? 'border-berlin-orange bg-berlin-orange' 
-                            : 'border-gray-300'
-                        }`}>
-                          {answers[currentQuestionId] === option && (
-                            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                  {questionData.options.map((option, index) => {
+                    const isSelected = isMultiSelect
+                      ? multiSelections.includes(option)
+                      : answers[currentQuestionId] === option;
+                    
+                    const isDisabled = isMultiSelect && !isSelected && multiSelections.length >= maxSelections;
+
+                    return (
+                      <div 
+                        key={`${currentQuestionId}-${option}`}
+                        className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                          isSelected 
+                            ? 'border-berlin-orange bg-berlin-orange/5 shadow-md' 
+                            : isDisabled
+                              ? 'border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed'
+                              : 'border-gray-200 bg-white hover:border-berlin-orange hover:shadow-md hover:bg-gray-50'
+                        } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+                        style={{ animationDelay: `${index * 0.05}s` }}
+                        onClick={() => {
+                          if (isDisabled) return;
+                          if (isMultiSelect) {
+                            handleMultiToggle(option);
+                          } else {
+                            handleSingleSelect(option);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center space-x-3 w-full">
+                          {isMultiSelect ? (
+                            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                              isSelected 
+                                ? 'border-berlin-orange bg-berlin-orange' 
+                                : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </div>
+                          ) : (
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                              isSelected 
+                                ? 'border-berlin-orange bg-berlin-orange' 
+                                : 'border-gray-300'
+                            }`}>
+                              {isSelected && (
+                                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                              )}
+                            </div>
+                          )}
+                          <span className="flex-1 text-sm md:text-base font-medium text-gray-800 leading-tight">
+                            {option}
+                          </span>
+                          {isSelected && (
+                            <CheckCircle className="h-5 w-5 text-berlin-orange animate-fade-in-up flex-shrink-0" />
                           )}
                         </div>
-                        <span className="flex-1 text-sm md:text-base font-medium text-gray-800 leading-tight">
-                          {option}
-                        </span>
-                        {answers[currentQuestionId] === option && (
-                          <CheckCircle className="h-5 w-5 text-berlin-orange animate-fade-in-up flex-shrink-0" />
-                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -227,9 +249,20 @@ const DynamicQuestionnaireForm = () => {
               <span>Zurück</span>
             </Button>
             
-            <div className="text-xs md:text-sm text-gray-500">
-              Alle Angaben werden vertraulich behandelt
-            </div>
+            {isMultiSelect ? (
+              <Button
+                onClick={handleMultiConfirm}
+                disabled={isProcessing || multiSelections.length === 0}
+                className="flex items-center space-x-2 bg-berlin-orange hover:bg-berlin-orange/90 text-white"
+              >
+                <span>Weiter ({multiSelections.length}/{maxSelections})</span>
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            ) : (
+              <div className="text-xs md:text-sm text-gray-500">
+                Alle Angaben werden vertraulich behandelt
+              </div>
+            )}
           </div>
         </div>
       </div>
