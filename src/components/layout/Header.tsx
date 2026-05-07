@@ -21,7 +21,7 @@ const Header = () => {
             <Link to="/blog" className="text-[20px] text-foreground hover:text-primary transition-colors">
               blog
             </Link>
-            <Button 
+            <Button
               onClick={() => navigate("/questionnaire")}
               className="bg-foreground hover:bg-foreground/90 text-background text-[20px] px-6 py-2 rounded-[10px]"
             >

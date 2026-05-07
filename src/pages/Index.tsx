@@ -1,5 +1,5 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Eye, Heart, Users, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
