@@ -30,12 +30,13 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-[25px] font-semibold mb-6">Rechtliches</h3>
             <nav className="flex flex-col gap-3">
-              <a href="#" className="text-[25px] text-primary-foreground/90 hover:text-primary-foreground transition-colors">
+              <Link to="/impressum" className="text-[25px] text-primary-foreground/90 hover:text-primary-foreground transition-colors">
                 Impressum
-              </a>
-              <a href="#" className="text-[25px] text-primary-foreground/90 hover:text-primary-foreground transition-colors">
+              </Link>
+              <Link to="/datenschutz" className="text-[25px] text-primary-foreground/90 hover:text-primary-foreground transition-colors">
                 Datenschutz
-              </a>
+              </Link>
+              {/* TODO: Nutzungsbedingungen-Seite erstellen */}
               <a href="#" className="text-[25px] text-primary-foreground/90 hover:text-primary-foreground transition-colors">
                 Nutzungsbedingungen
               </a>
