@@ -4,8 +4,22 @@ import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import StepProgress from "./questionnaire/StepProgress";
 import { Button } from "@/components/ui/button";
 import { getQuestionData } from "@/data/questionnaireData";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CheckCircle, ArrowLeft, Shield, Users, ArrowRight } from "lucide-react";
+
+const getRemainingSteps = (questionId: string): number => {
+  const match = questionId.match(/^Q(\d+)/i);
+  const num = match ? parseInt(match[1]) : 10;
+  if (num <= 1) return 9;
+  if (num === 2) return 8;
+  if (num === 3) return 7;
+  if (num === 4) return 6;
+  if (num === 5) return 5;
+  if (num === 6) return 4;
+  if (num <= 8) return 3;
+  if (num === 9) return 1;
+  return 0;
+};
 
 const DynamicQuestionnaireForm = () => {
   const navigate = useNavigate();
@@ -19,6 +33,7 @@ const DynamicQuestionnaireForm = () => {
     isLastQuestion,
   } = useQuestionnaire();
 
+  const maxProgressRef = useRef(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [animationState, setAnimationState] = useState<'idle' | 'slide-out' | 'slide-in'>('idle');
   const [animationDirection, setAnimationDirection] = useState<'forward' | 'backward'>('forward');
@@ -40,11 +55,13 @@ const DynamicQuestionnaireForm = () => {
     }
   }, [currentQuestionId]);
 
-  const estimatedTotalSteps = 10;
-  const progressPercentage = Math.min(
-    ((questionHistory.length) / estimatedTotalSteps) * 100,
-    95
-  );
+  const remainingEstimate = getRemainingSteps(currentQuestionId);
+  const dynamicTotalSteps = questionHistory.length + remainingEstimate;
+  const rawProgress = isLastQuestion
+    ? 100
+    : Math.min((questionHistory.length / dynamicTotalSteps) * 100, 95);
+  maxProgressRef.current = Math.max(maxProgressRef.current, rawProgress);
+  const progressPercentage = maxProgressRef.current;
 
   const handleBack = () => {
     if (isProcessing) return;
@@ -151,10 +168,10 @@ const DynamicQuestionnaireForm = () => {
         'animate-fade-in'
       }`}>
         <div className="p-6">
-          <StepProgress 
-            currentStep={questionHistory.length} 
-            totalSteps={estimatedTotalSteps} 
-            value={progressPercentage} 
+          <StepProgress
+            currentStep={questionHistory.length}
+            totalSteps={dynamicTotalSteps}
+            value={progressPercentage}
           />
           
           <div className="py-6">
