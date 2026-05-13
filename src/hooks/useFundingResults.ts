@@ -28,6 +28,7 @@ const MIN_RESULTS = 5;
 export const useFundingResults = (answers?: UserAnswers) => {
   return useQuery({
     queryKey: ['funding', 'filtered', JSON.stringify(answers)],
+    retry: 1,
     queryFn: async () => {
       // 1. Extract user tags from all answers
       const userTags = answers ? extractTagsFromAnswers(answers) : [];

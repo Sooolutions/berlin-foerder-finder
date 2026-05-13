@@ -41,8 +41,9 @@ const SCHEMES: Record<'staatlich' | 'privat' | 'karitativ', ColorScheme> = {
 const FALLBACK_TYPES = ['staatlich', 'karitativ', 'privat'] as const;
 
 export const getColorScheme = (fundingType: FundingType, id: string): ColorScheme => {
-  const type = fundingType ?? FALLBACK_TYPES[id.charCodeAt(0) % 3];
-  return SCHEMES[type];
+  const resolved = fundingType && SCHEMES[fundingType] ? fundingType : null;
+  const type = resolved ?? FALLBACK_TYPES[(id?.charCodeAt(0) ?? 0) % 3];
+  return SCHEMES[type] ?? SCHEMES.staatlich;
 };
 
 // Desktop: 4-column grid — 6 cards per cycle, 3 rows per cycle

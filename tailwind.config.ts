@@ -70,6 +70,9 @@ export default {
 				'mehrdrin-yellow': 'hsl(var(--mehrdrin-yellow))',
 				'mehrdrin-red': 'hsl(var(--mehrdrin-red))',
 				'mehrdrin-lightblue': 'hsl(var(--mehrdrin-lightblue))',
+				// Legacy aliases (components still reference berlin-* names)
+				'berlin-blue': 'hsl(var(--primary))',
+				'berlin-orange': 'hsl(var(--foreground))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
