@@ -117,7 +117,7 @@ const Results = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 lg:px-8 py-8">
         {/* Page header */}
         <div className="mb-6">
           <div className="text-3xl font-bold text-gray-900">Deine Ergebnisse:</div>
