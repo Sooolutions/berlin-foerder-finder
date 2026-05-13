@@ -19,6 +19,7 @@ export interface Funding {
   tags: string[];
   min_age: number | null;
   max_age: number | null;
+  funding_type?: 'staatlich' | 'privat' | 'karitativ' | null;
   relevanceScore?: number;
 }
 

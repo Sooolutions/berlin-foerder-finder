@@ -1,31 +1,23 @@
 
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { useFundingResults } from "@/hooks/useFundingResults";
-import { useQuestionnaire } from "@/context/QuestionnaireContext";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Loader2, Euro, Calendar, ExternalLink, Star } from "lucide-react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { useFundingResults } from '@/hooks/useFundingResults';
+import { useQuestionnaire } from '@/context/QuestionnaireContext';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import FundingGrid from '@/components/results/FundingGrid';
 
 const Results = () => {
+  const navigate = useNavigate();
   const { answers } = useQuestionnaire();
   const { data: fundings, isLoading, error } = useFundingResults(answers);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const getAgeGroupDisplay = (ageAnswer: string | string[]) => {
-    const age = Array.isArray(ageAnswer) ? ageAnswer[0] : ageAnswer;
-    switch (age) {
-      case "unter 18": return "unter 18 Jahren";
-      case "18-24": return "18–24 Jahren";
-      case "25-34": return "25–34 Jahren";
-      case "35-49": return "35–49 Jahren";
-      case "50-64": return "50–64 Jahren";
-      case "über 65": return "über 65 Jahren";
-      default: return "";
-    }
+  const handleExpand = (id: string) => {
+    setExpandedId(prev => (prev === id ? null : id));
   };
-
-  const ageDisplay = answers.Q1 ? getAgeGroupDisplay(answers.Q1) : "";
 
   if (isLoading) {
     return (
@@ -52,7 +44,7 @@ const Results = () => {
             <div className="bg-red-50 border border-red-200 rounded-lg p-8">
               <h2 className="text-2xl font-bold mb-4 text-red-800">Es ist ein Fehler aufgetreten</h2>
               <p className="text-red-600 mb-6">Bitte versuche es später erneut.</p>
-              <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={() => navigate('/')} className="bg-blue-600 hover:bg-blue-700">
                 Neue Suche starten
               </Button>
             </div>
@@ -74,12 +66,16 @@ const Results = () => {
               <p className="text-gray-600 mb-6">
                 Versuche es mit anderen Kriterien oder kontaktiere direkt die Beratungsstellen.
               </p>
-              <div className="space-x-4">
-                <Button onClick={() => window.location.href = "/"} className="bg-blue-600 hover:bg-blue-700">
+              <div className="flex flex-wrap gap-4 justify-center">
+                <Button onClick={() => navigate('/')} className="bg-blue-600 hover:bg-blue-700">
                   Neue Suche starten
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="https://berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="https://berlin.de/sen/soziales/themen/soziale-sicherung/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Beratung finden
                   </a>
                 </Button>
@@ -95,104 +91,42 @@ const Results = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-12">
-        <div className="space-y-6 max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2 text-gray-900">
-              Deine Ergebnisse {ageDisplay && `für ${ageDisplay}`}
-            </h2>
-            <p className="text-gray-600">
-              {fundings.length} {fundings.length === 1 ? 'Angebot gefunden' : 'Angebote gefunden'}
-            </p>
-          </div>
+      <main className="flex-grow container mx-auto px-4 py-8">
+        {/* Page header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Deine Ergebnisse:</h1>
+          <p className="text-gray-500 mt-1 text-sm">
+            {fundings.length} {fundings.length === 1 ? 'Angebot gefunden' : 'Angebote gefunden'}
+          </p>
+          <div id="filter-container" className="flex gap-3 mt-4 items-center" />
+        </div>
 
-          {/* Funding Cards */}
-          {fundings.map((funding) => (
-            <Card key={funding.id} className="hover:shadow-lg transition-shadow duration-300">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-xl mb-1 text-gray-900">{funding.title}</CardTitle>
-                    <CardDescription className="text-lg text-blue-600">
-                      {funding.organization}
-                    </CardDescription>
-                  </div>
-                  <div className="flex flex-wrap gap-2 items-center">
-                    {(funding.relevanceScore ?? 0) > 50 && (
-                      <Badge className="bg-green-100 text-green-800 border-green-200">
-                        <Star className="w-3 h-3 mr-1" />
-                        Top-Treffer
-                      </Badge>
-                    )}
-                    {funding.categories && funding.categories.slice(0, 2).map((category) => (
-                      <Badge key={category} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                        {category}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 mb-4 leading-relaxed">{funding.description}</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  {funding.amount && (
-                    <div className="flex items-start space-x-2 text-sm">
-                      <Euro className="w-4 h-4 text-green-600 mt-0.5" />
-                      <div>
-                        <span className="font-medium block">Förderhöhe:</span>
-                        <span className="text-green-700">{funding.amount}</span>
-                      </div>
-                    </div>
-                  )}
-                  {funding.application_deadline && (
-                    <div className="flex items-center space-x-2 text-sm">
-                      <Calendar className="w-4 h-4 text-orange-600" />
-                      <span className="font-medium">Frist:</span>
-                      <span className="text-orange-700">{funding.application_deadline}</span>
-                    </div>
-                  )}
-                </div>
-                
-                {funding.application_process && (
-                  <div className="bg-gray-50 p-3 rounded-lg border mb-4">
-                    <h4 className="font-medium mb-1 text-gray-800 text-sm">Antragsprozess</h4>
-                    <p className="text-gray-600 text-sm">{funding.application_process}</p>
-                  </div>
-                )}
-              </CardContent>
-              <CardFooter className="justify-between bg-gray-50 border-t pt-4">
-                <div className="text-sm text-gray-600">
-                  {funding.contact_email && (
-                    <div><span className="font-medium">Kontakt:</span> <span className="text-blue-600">{funding.contact_email}</span></div>
-                  )}
-                  {funding.contact_phone && (
-                    <div className="text-blue-600 text-xs">Tel: {funding.contact_phone}</div>
-                  )}
-                </div>
-                <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  <a href={funding.url} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
-                    <span>Mehr Details</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-          
-          {/* Action buttons */}
-          <div className="text-center bg-white p-6 rounded-lg shadow-sm border border-gray-100 mt-8">
-            <div className="space-x-4">
-              <Button onClick={() => window.location.href = "/"} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
-                Neue Suche starten
-              </Button>
-              <Button asChild className="bg-blue-600 hover:bg-blue-700">
-                <a href="https://www.berlin.de/sen/soziales/themen/soziale-sicherung/" target="_blank" rel="noopener noreferrer">
-                  Beratungsstellen finden
-                </a>
-              </Button>
-            </div>
+        <FundingGrid
+          fundings={fundings}
+          expandedId={expandedId}
+          onExpand={handleExpand}
+          onClose={() => setExpandedId(null)}
+        />
+
+        {/* Action buttons */}
+        <div className="text-center bg-white p-6 rounded-lg shadow-sm border border-gray-100 mt-8">
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button
+              onClick={() => navigate('/')}
+              variant="outline"
+              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+            >
+              Neue Suche starten
+            </Button>
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <a
+                href="https://www.berlin.de/sen/soziales/themen/soziale-sicherung/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Beratungsstellen finden
+              </a>
+            </Button>
           </div>
         </div>
       </main>
