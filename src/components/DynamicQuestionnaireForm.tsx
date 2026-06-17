@@ -55,6 +55,13 @@ const DynamicQuestionnaireForm = () => {
     }
   }, [currentQuestionId]);
 
+  // Auto-navigate when the questionnaire reaches its end
+  useEffect(() => {
+    if (isLastQuestion) {
+      navigate("/results");
+    }
+  }, [isLastQuestion]);
+
   const remainingEstimate = getRemainingSteps(currentQuestionId);
   const dynamicTotalSteps = questionHistory.length + remainingEstimate;
   const rawProgress = isLastQuestion

@@ -618,7 +618,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q4_50-64_Gründung",
     question: "Was benötigst du aktuell, um dein Vorhaben zu starten?",
     options: ["Beratung/Coaching", "Finanzierung", "Mentoring/Netzwerk", "Unterstützung beim Businessplan", "Rechtliche/Steuerliche Beratung", "Marketing", "Vereinbarkeit mit Privatleben", "Erfahrungsaustausch"],
-    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing", "Gründung_Familie", "Gründung_Experience"],
+    tags: ["Gründung_Beratung", "Gründung_Finanzierung", "Gründung_Netzwerk", "Gründung_Businessplan", "Gründung_RechtSteuern", "Gründung_Marketing", "Gründung_Familie", "Gründung_Erfahrung"],
     multiSelect: true,
     maxSelections: 3
   },
@@ -786,7 +786,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q4_65plus_Selbstständig",
     question: "Was wäre hilfreich, um deine Unternehmung erfolgreich zu gestalten?",
     options: ["Weiterbildung/Fachwissen", "Marketing", "Kundengewinnung", "Rechtliche/steuerliche Beratung", "Finanzierung/Investitionen", "Mentoring/Netzwerk", "Vereinbarkeit mit Familie", "Internationalisierung", "Nachfolge- oder Ausstiegsplanung", "Erfahrungsaustausch"],
-    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge", "Selbstständig_Experience"],
+    tags: ["Selbstständig_Weiterbildung", "Selbstständig_Marketing", "Selbstständig_Kunden", "Selbstständig_RechtSteuern", "Selbstständig_Finanzierung", "Selbstständig_Netzwerk", "Selbstständig_Vereinbarkeit", "Selbstständig_International", "Selbstständig_Nachfolge", "Selbstständig_Erfahrung"],
     multiSelect: true,
     maxSelections: 3
   },
