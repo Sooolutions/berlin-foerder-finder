@@ -1,5 +1,5 @@
 
-import { Component, ReactNode, useState } from 'react';
+import { Component, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -7,7 +7,7 @@ import { useFundingResults } from '@/hooks/useFundingResults';
 import { useQuestionnaire } from '@/context/QuestionnaireContext';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import FundingGrid from '@/components/results/FundingGrid';
+import ResultsScreen from '@/components/results/ResultsScreen';
 
 // Catches render errors in the grid so the page never shows a blank white screen
 class GridErrorBoundary extends Component<
@@ -39,11 +39,6 @@ const Results = () => {
   const navigate = useNavigate();
   const { answers } = useQuestionnaire();
   const { data: fundings, isLoading, error } = useFundingResults(answers);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  const handleExpand = (id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  };
 
   if (isLoading) {
     return (
@@ -119,44 +114,9 @@ const Results = () => {
       <Header />
       <main className="flex-grow container mx-auto px-4 lg:px-8 py-8">
         {/* Page header */}
-        <div className="mb-6">
-          <div className="text-3xl font-bold text-gray-900">Deine Ergebnisse:</div>
-          <div className="text-gray-500 mt-1 text-sm">
-            {fundings.length} {fundings.length === 1 ? 'Angebot gefunden' : 'Angebote gefunden'}
-          </div>
-          <div id="filter-container" className="flex gap-3 mt-4 items-center" />
-        </div>
-
         <GridErrorBoundary>
-          <FundingGrid
-            fundings={fundings}
-            expandedId={expandedId}
-            onExpand={handleExpand}
-            onClose={() => setExpandedId(null)}
-          />
+          <ResultsScreen fundings={fundings} />
         </GridErrorBoundary>
-
-        {/* Action buttons */}
-        <div className="text-center bg-white p-6 rounded-lg shadow-sm border border-gray-100 mt-8">
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Button
-              onClick={() => navigate('/')}
-              variant="outline"
-              className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-            >
-              Neue Suche starten
-            </Button>
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
-              <a
-                href="https://www.berlin.de/sen/soziales/themen/soziale-sicherung/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Beratungsstellen finden
-              </a>
-            </Button>
-          </div>
-        </div>
       </main>
       <Footer />
     </div>

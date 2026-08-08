@@ -7,10 +7,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { getColorScheme } from "@/components/results/fundingCardUtils";
+import { schemeOf } from "@/components/results/resultsTheme";
 import ScrollReveal from "@/components/home/ScrollReveal";
 import Counter from "@/components/home/Counter";
-import heroSbahn from "@/assets/hero-sbahn.jpg";
 
 interface FundingTeaser {
   id: string;
@@ -66,11 +65,7 @@ const Index = () => {
         {/* Hero — full-bleed, emotional, one message */}
         <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
-            <img
-              src={heroSbahn}
-              alt="S-Bahn Berlin"
-              className="w-full h-full object-cover"
-            />
+            <div className="w-full h-full bg-[#1a1a2e]" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/50 to-black/75" />
           </div>
 
@@ -174,7 +169,7 @@ const Index = () => {
 
             <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-5 md:overflow-visible">
               {fundingTeasers.map((funding, i) => {
-                const colors = getColorScheme(funding.funding_type, funding.id);
+                const colors = schemeOf(funding);
                 return (
                   <ScrollReveal
                     key={funding.id}
@@ -186,7 +181,7 @@ const Index = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block h-full p-6 rounded-2xl border transition-transform duration-200 hover:-translate-y-1"
-                      style={{ backgroundColor: colors.bg, borderColor: colors.border }}
+                      style={{ backgroundColor: colors.cardBg, borderColor: colors.cardBorder }}
                     >
                       <span
                         className="inline-block !text-xs font-semibold px-2.5 py-1 rounded-full mb-4 text-white"
