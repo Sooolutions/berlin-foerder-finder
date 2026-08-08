@@ -33,7 +33,7 @@ const steps = [
   },
   {
     title: "Förderung beantragen",
-    desc: "Direkt zur richtigen Anlaufstelle – ohne Umwege.",
+    desc: "Direkt zur richtigen Anlaufstelle — ohne Umwege.",
   },
 ];
 
@@ -63,7 +63,7 @@ const Index = () => {
       <Header />
 
       <main className="flex-grow">
-        {/* Hero – full-bleed, emotional, one message */}
+        {/* Hero — full-bleed, emotional, one message */}
         <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <img
@@ -107,7 +107,7 @@ const Index = () => {
           </motion.div>
         </section>
 
-        {/* Erkennungsmomente – persönliche Problem-Momente statt Makro-Statistik */}
+        {/* Erkennungsmomente — persönliche Problem-Momente statt Makro-Statistik */}
         <section className="py-28 md:py-36 px-4 bg-white">
           <div className="container mx-auto max-w-3xl text-center">
             <div className="space-y-8 md:space-y-10 mb-14">
@@ -118,7 +118,7 @@ const Index = () => {
               </ScrollReveal>
               <ScrollReveal delay={0.12}>
                 <p className="!text-2xl md:!text-4xl !font-medium text-muted-foreground/70 leading-snug">
-                  „Irgendwo gibt's bestimmt was für mich – aber wann soll ich das rausfinden?"
+                  „Irgendwo gibt's bestimmt was für mich — aber wann soll ich das rausfinden?"
                 </p>
               </ScrollReveal>
               <ScrollReveal delay={0.24}>
@@ -160,7 +160,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Angebote – echte Daten, farbcodiert wie in den Ergebnissen */}
+        {/* Angebote — echte Daten, farbcodiert wie in den Ergebnissen */}
         <section className="py-24 px-4 bg-white">
           <div className="container mx-auto max-w-6xl">
             <ScrollReveal>
@@ -208,7 +208,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Zahlen – große Typografie statt Karten, mit Counter-Animation */}
+        {/* Zahlen — große Typografie statt Karten, mit Counter-Animation */}
         <section className="py-24 px-4 bg-foreground text-background">
           <div className="container mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-8 text-center">
             <ScrollReveal>
@@ -228,13 +228,13 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Wir bauen für Berlin – ersetzt die KI-Portrait-Community-Section, ehrlich statt vorgetäuscht */}
+        {/* Wir bauen für Berlin — ersetzt die KI-Portrait-Community-Section, ehrlich statt vorgetäuscht */}
         <section className="py-24 px-4 bg-white">
           <div className="container mx-auto max-w-4xl">
             <ScrollReveal>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
                 {/*
-                  TODO: echtes Teamfoto einsetzen, sobald vorhanden – nicht das
+                  TODO: echtes Teamfoto einsetzen, sobald vorhanden — nicht das
                   vorhandene team-portrait.jpg verwenden, das ist KI-generiert.
                 */}
                 <div className="md:col-span-2 rounded-2xl aspect-[4/3] bg-secondary/50 border border-dashed border-border flex items-center justify-center text-center p-6">
@@ -245,7 +245,7 @@ const Index = () => {
                 <div className="md:col-span-3">
                   <h2 className="text-foreground mb-4">Wir bauen das für Berlin.</h2>
                   <p className="text-muted-foreground !text-lg">
-                    MehrDrin entsteht gerade – von Menschen, die selbst durch Berliner
+                    MehrDrin entsteht gerade — von Menschen, die selbst durch Berliner
                     Bürokratie navigieren mussten. Noch gibt es keine große Geschichte zu
                     erzählen, nur den Anspruch, das für dich einfacher zu machen.
                   </p>
@@ -255,7 +255,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* FAQ – erweitert um Datenschutz & "Wer steckt dahinter" */}
+        {/* FAQ — erweitert um Datenschutz & "Wer steckt dahinter" */}
         <section className="py-20 px-4 bg-white">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
@@ -313,7 +313,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Call to Action – stärkster visueller Moment, voller Blau-Block */}
+        {/* Call to Action — stärkster visueller Moment, voller Blau-Block */}
         <section className="py-28 px-4 bg-primary">
           <ScrollReveal>
             <div className="container mx-auto text-center max-w-3xl">
