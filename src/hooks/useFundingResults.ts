@@ -20,6 +20,8 @@ export interface Funding {
   min_age: number | null;
   max_age: number | null;
   funding_type?: 'staatlich' | 'privat' | 'karitativ' | null;
+  /** Bezirke, für die das Angebot gilt. Leer oder null bedeutet berlinweit. */
+  district?: string[] | null;
   relevanceScore?: number;
 }
 

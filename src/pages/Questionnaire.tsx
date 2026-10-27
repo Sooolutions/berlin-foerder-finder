@@ -19,9 +19,12 @@ const Questionnaire = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header backToHome />
+      {/* Auf dem Handy übernimmt die Fragekarte Zurück und Schließen, damit alles auf einen Bildschirm passt */}
+      <div className="hidden md:block">
+        <Header backToHome />
+      </div>
       
-      <main className="flex-grow bg-gradient-to-br from-berlin-blue/5 via-white to-berlin-orange/5 py-6 md:py-8">
+      <main className="flex-grow bg-gradient-to-br from-berlin-blue/5 via-white to-berlin-orange/5 py-3 md:py-8">
         <div className="max-w-4xl mx-auto px-4 h-full flex items-center">
           <div className="w-full">
             <QuestionnaireCard />

@@ -34,8 +34,8 @@ const Header = ({ backToHome = false }: HeaderProps) => {
           </Link>
 
           {backToHome ? (
-            <Link to="/" className="text-[18px] text-foreground hover:text-primary transition-colors">
-              ← Zurück zur Startseite
+            <Link to="/" className="whitespace-nowrap text-[15px] sm:text-[18px] text-foreground hover:text-primary transition-colors">
+              ← <span className="hidden sm:inline">Zurück zur </span>Startseite
             </Link>
           ) : (
             <>

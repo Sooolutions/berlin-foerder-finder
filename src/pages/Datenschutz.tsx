@@ -29,9 +29,10 @@ const Datenschutz = () => {
               Beschäftigung etc.) — keine Namen, keine E-Mail-Adressen, keine Kontaktdaten.
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed mt-4">
-              Deine Antworten werden ausschließlich im lokalen Speicher deines Browsers (localStorage)
-              zwischengespeichert, um dir eine unterbrechungsfreie Nutzung zu ermöglichen. Diese Daten
-              verlassen deinen Browser nicht und werden nicht an unsere Server übertragen.
+              Deine Antworten werden ausschließlich im Sitzungsspeicher deines Browsers (sessionStorage)
+              zwischengespeichert, um dir eine unterbrechungsfreie Nutzung zu ermöglichen, und beim Schließen
+              des Tabs automatisch gelöscht. Die Antworten werden nicht an unsere Server übertragen. Für die
+              Suche wird lediglich die gewählte Altersgruppe als Filter an unsere Datenbank übermittelt.
             </p>
           </section>
 
@@ -100,9 +101,9 @@ const Datenschutz = () => {
             <h2 className="text-2xl font-semibold mb-4">6. Cookies und lokaler Speicher</h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
               Wir setzen keine Tracking-Cookies oder Analyse-Cookies ein. Die Website nutzt ausschließlich
-              den lokalen Speicher (localStorage) deines Browsers, um deine Fragebogen-Antworten während
-              der Sitzung zu speichern. Diese Daten werden nicht an uns übertragen und bleiben lokal auf
-              deinem Gerät. Du kannst diese Daten jederzeit über die Einstellungen deines Browsers löschen.
+              den Sitzungsspeicher (sessionStorage) deines Browsers, um deine Fragebogen-Antworten während
+              der Sitzung zu speichern. Diese Daten werden nicht an uns übertragen, bleiben lokal auf
+              deinem Gerät und werden beim Schließen des Tabs automatisch gelöscht.
             </p>
           </section>
 

@@ -52,8 +52,101 @@ const ModeToggle = ({ mode, onToggle, large = false }: { mode: Mode; onToggle: (
 );
 
 /* ------------------------------------------------------------------ *
- * Chips mit den eigenen Antworten aus dem Fragebogen
+ * Bezirksfilter und Chips mit den eigenen Antworten
  * ------------------------------------------------------------------ */
+const BEZIRKE = [
+  'Charlottenburg-Wilmersdorf',
+  'Friedrichshain-Kreuzberg',
+  'Lichtenberg',
+  'Marzahn-Hellersdorf',
+  'Mitte',
+  'Neukölln',
+  'Pankow',
+  'Reinickendorf',
+  'Spandau',
+  'Steglitz-Zehlendorf',
+  'Tempelhof-Schöneberg',
+  'Treptow-Köpenick',
+] as const;
+
+const DISTRICT_KEY = 'resultsDistrict';
+
+const readDistrict = (): string => {
+  try {
+    const saved = sessionStorage.getItem(DISTRICT_KEY) ?? '';
+    return (BEZIRKE as readonly string[]).includes(saved) ? saved : '';
+  } catch {
+    return '';
+  }
+};
+
+const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
+  const active = value !== '';
+  return (
+    <label
+      style={{
+        position: 'relative',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '5px 28px 5px 10px',
+        borderRadius: r(-6),
+        border: `1.5px solid ${active ? '#4F90DE' : '#d9d6cf'}`,
+        background: active ? '#eef4fc' : '#fff',
+        color: active ? '#2f6fbf' : '#3f3d39',
+        font: `700 11.5px ${FONT}`,
+        cursor: 'pointer',
+      }}
+    >
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} aria-hidden="true">
+        <path d="M12 21s-7-6.2-7-11.5a7 7 0 1 1 14 0C19 14.8 12 21 12 21z" />
+        <circle cx="12" cy="9.5" r="2.5" />
+      </svg>
+      <span style={{ font: 'inherit' }}>{value || 'Alle Bezirke'}</span>
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={3}
+        aria-hidden="true"
+        style={{ position: 'absolute', right: 10 }}
+      >
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+      <select
+        aria-label="Nach Bezirk filtern"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%' }}
+      >
+        <option value="">Alle Bezirke</option>
+        {BEZIRKE.map((b) => (
+          <option key={b} value={b}>
+            {b}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+};
+
+const FilterBar = ({
+  answers,
+  district,
+  onDistrictChange,
+}: {
+  answers: UserAnswers;
+  district: string;
+  onDistrictChange: (v: string) => void;
+}) => (
+  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 7, marginBottom: 18 }}>
+    <DistrictSelect value={district} onChange={onDistrictChange} />
+    <AnswerChips answers={answers} />
+  </div>
+);
+
 const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
 
   const labels = Object.values(answers)
@@ -64,7 +157,7 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
   if (!labels.length) return null;
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 18 }}>
+    <>
       {labels.map((label) => (
         <span
           key={label}
@@ -80,7 +173,7 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
           {label}
         </span>
       ))}
-    </div>
+    </>
   );
 };
 
@@ -527,7 +620,27 @@ const MoreCard = ({ hidden, onClick }: { hidden: number; onClick: () => void }) 
 /* ------------------------------------------------------------------ *
  * Hauptkomponente
  * ------------------------------------------------------------------ */
-const ResultsScreen = ({ fundings, answers }: { fundings: Funding[]; answers: UserAnswers }) => {
+const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]; answers: UserAnswers }) => {
+  // Bezirksfilter: berlinweite Angebote (ohne Bezirk) bleiben immer sichtbar,
+  // bezirkliche Angebote nur im gewählten Bezirk.
+  const [district, setDistrictState] = useState<string>(readDistrict);
+  const setDistrict = (value: string) => {
+    setDistrictState(value);
+    try {
+      if (value) sessionStorage.setItem(DISTRICT_KEY, value);
+      else sessionStorage.removeItem(DISTRICT_KEY);
+    } catch {
+      /* Speicher nicht verfügbar, Filter gilt dann nur bis zum Neuladen */
+    }
+  };
+  const fundings = useMemo(
+    () =>
+      district
+        ? allFundings.filter((f) => !f.district || f.district.length === 0 || f.district.includes(district))
+        : allFundings,
+    [allFundings, district],
+  );
+
   // Handy und Laptop haben getrennte Modi: mobil startet die Story-Ansicht
   // genauso ruhig in der Übersicht, kann aber unabhängig umgeschaltet werden.
   const [mobileMode, setMobileMode] = useState<Mode>('overview');
@@ -559,8 +672,11 @@ const ResultsScreen = ({ fundings, answers }: { fundings: Funding[]; answers: Us
 
   if (!fundings.length) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', font: `500 16px ${FONT}`, color: '#6d6a65' }}>
-        Für deine Angaben haben wir noch keine passenden Angebote gefunden.
+      <div style={{ padding: '20px 0' }}>
+        <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} />
+        <div style={{ textAlign: 'center', padding: '50px 20px', font: `500 16px ${FONT}`, color: '#6d6a65' }}>
+          Für deine Angaben haben wir noch keine passenden Angebote gefunden.
+        </div>
       </div>
     );
   }
@@ -588,8 +704,22 @@ const ResultsScreen = ({ fundings, answers }: { fundings: Funding[]; answers: Us
         >
           <div>
             <div style={{ font: `800 23px ${FONT}`, color: '#111' }}>Deine Ergebnisse</div>
-            <div style={{ font: `500 13px ${FONT}`, color: '#9a9a9a', marginTop: 3 }}>
-              <span style={count.style}>{count.value}</span> Angebote passen zu dir
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 7,
+                font: `500 13px ${FONT}`,
+                color: '#9a9a9a',
+                marginTop: 4,
+              }}
+            >
+              <span style={{ ...count.style, fontSize: 39, lineHeight: 1, transformOrigin: 'left bottom' }}>
+                {count.value}
+              </span>
+              <span style={{ font: 'inherit' }}>
+                {district ? `Angebote passen zu dir in ${district}` : 'Angebote passen zu dir'}
+              </span>
             </div>
           </div>
           <ModeToggle mode={mobileMode} onToggle={() => setMobileMode(mobileMode === 'overview' ? 'story' : 'overview')} />
@@ -597,7 +727,7 @@ const ResultsScreen = ({ fundings, answers }: { fundings: Funding[]; answers: Us
 
         {mobileMode === 'overview' ? (
           <div>
-            <AnswerChips answers={answers} />
+            <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} />
 
             {/* Top-Treffer */}
             <div
@@ -761,9 +891,27 @@ const ResultsScreen = ({ fundings, answers }: { fundings: Funding[]; answers: Us
             >
               Deine Ergebnisse
             </div>
-            <div style={{ font: `800 32px ${FONT}`, color: '#111', marginTop: 3 }}>
-              <span style={{ ...count.style, transformOrigin: 'left center' }}>{count.value}</span> Angebote
-              passen zu dir
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 16,
+                font: `800 32px ${FONT}`,
+                color: '#111',
+                marginTop: 3,
+              }}
+            >
+              <span style={{ ...count.style, fontSize: 96, lineHeight: 0.95, transformOrigin: 'left bottom' }}>
+                {count.value}
+              </span>
+              <span style={{ font: 'inherit' }}>
+                Angebote passen zu dir
+                {district && (
+                  <span style={{ display: 'block', font: `600 16px ${FONT}`, color: '#8d8d8d', marginTop: 4 }}>
+                    berlinweit und in {district}
+                  </span>
+                )}
+              </span>
             </div>
           </div>
           <ModeToggle
@@ -775,7 +923,7 @@ const ResultsScreen = ({ fundings, answers }: { fundings: Funding[]; answers: Us
 
         {desktopMode === 'overview' ? (
           <div>
-            <AnswerChips answers={answers} />
+            <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} />
 
             <div
               style={{

@@ -27,11 +27,11 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
   const [questionHistory, setQuestionHistory] = useState<string[]>(["Q1"]);
   const [isLastQuestion, setIsLastQuestion] = useState<boolean>(false);
 
-  // Load from localStorage on mount
+  // Load from sessionStorage on mount
   useEffect(() => {
     try {
-      const savedAnswers = localStorage.getItem(QUESTIONNAIRE_ANSWERS_KEY);
-      const savedHistory = localStorage.getItem(QUESTIONNAIRE_HISTORY_KEY);
+      const savedAnswers = sessionStorage.getItem(QUESTIONNAIRE_ANSWERS_KEY);
+      const savedHistory = sessionStorage.getItem(QUESTIONNAIRE_HISTORY_KEY);
       
       if (savedAnswers) {
         const parsedAnswers = JSON.parse(savedAnswers);
@@ -46,17 +46,17 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         }
       }
     } catch (error) {
-      console.error("Error loading from localStorage:", error);
+      console.error("Error loading from sessionStorage:", error);
     }
   }, []);
 
-  // Save to localStorage whenever answers or history change
+  // Save to sessionStorage whenever answers or history change
   useEffect(() => {
     try {
-      localStorage.setItem(QUESTIONNAIRE_ANSWERS_KEY, JSON.stringify(answers));
-      localStorage.setItem(QUESTIONNAIRE_HISTORY_KEY, JSON.stringify(questionHistory));
+      sessionStorage.setItem(QUESTIONNAIRE_ANSWERS_KEY, JSON.stringify(answers));
+      sessionStorage.setItem(QUESTIONNAIRE_HISTORY_KEY, JSON.stringify(questionHistory));
     } catch (error) {
-      console.error("Error saving to localStorage:", error);
+      console.error("Error saving to sessionStorage:", error);
     }
   }, [answers, questionHistory]);
 
@@ -505,12 +505,12 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     setQuestionHistory(["Q1"]);
     setIsLastQuestion(false);
     
-    // Clear localStorage
+    // Clear sessionStorage
     try {
-      localStorage.removeItem(QUESTIONNAIRE_ANSWERS_KEY);
-      localStorage.removeItem(QUESTIONNAIRE_HISTORY_KEY);
+      sessionStorage.removeItem(QUESTIONNAIRE_ANSWERS_KEY);
+      sessionStorage.removeItem(QUESTIONNAIRE_HISTORY_KEY);
     } catch (error) {
-      console.error("Error clearing localStorage:", error);
+      console.error("Error clearing sessionStorage:", error);
     }
   };
 
