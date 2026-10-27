@@ -66,7 +66,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q5_U18",
     question: "Wohnst du bei deinen Eltern oder Verwandten?",
     options: ["Ja", "Nein, ich wohne in einer Betreuungseinrichtung (Wohngruppe, Internat, Heim, etc.)"],
-    tags: ["Familie", "Betreuung"]
+    tags: ["Wohnen_Familie", "Betreuung"]
   },
   "Q6_U18_Eltern": {
     id: "Q6_U18_Eltern",
@@ -129,8 +129,8 @@ const questionsMap: Record<string, QuestionData> = {
   "Q3_18-24": {
     id: "Q3_18-24",
     question: "Was machst du aktuell?",
-    options: ["Schule", "Ausbildung", "Studium", "FSJ oder FÖJ", "Arbeiten (angestellt)", "Gründung eines Unternehmens", "Selbstständig/Unternehmer:in", "Arbeitssuchend", "Orientierungs-/Überbrückungsphase (keine Ausbildung/Arbeit)", "Pflege von Angehörigen", "Familienzeit oder Kinderbetreuung", "Sonstiges"],
-    tags: ["Schule", "Ausbildung", "Studium", "FSJ", "Arbeiten", "Gründung", "Selbstständig", "Arbeitssuchend", "Übergang", "Pflege", "Familie", "Sonstiges"]
+    options: ["Schule", "Ausbildung", "Studium", "FSJ oder FÖJ", "Arbeiten (angestellt)", "Gründung eines Unternehmens", "Selbstständig/Unternehmer:in", "Arbeitssuchend", "Berufliche Weiterbildung/Umschulung", "Orientierungs-/Überbrückungsphase (keine Ausbildung/Arbeit)", "Pflege von Angehörigen", "Familienzeit oder Kinderbetreuung", "Sonstiges"],
+    tags: ["Schule", "Ausbildung", "Studium", "FSJ", "Arbeiten", "Gründung", "Selbstständig", "Arbeitssuchend", "Weiterbildung", "Übergang", "Pflege", "Familie", "Sonstiges"]
   },
   "Q4_18-24_Schule": {
     id: "Q4_18-24_Schule",
@@ -240,7 +240,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q5_18-24",
     question: "Was beschreibt deine Wohnsituation am besten?",
     options: ["Alleine (zu Miete)", "Alleine (Eigentum)", "Bei meiner Familie", "Wohngemeinschaft (WG)", "In einem Wohnheim (Studentenwohnheim, etc.)", "Ich habe aktuell keinen Wohnsitz"],
-    tags: ["Miete", "Eigentum", "Familie", "WG", "Wohnheim", "Prekär"]
+    tags: ["Miete", "Eigentum", "Wohnen_Familie", "WG", "Wohnheim", "Prekär"]
   },
   "Q5A_18-24_Ohne": {
     id: "Q5A_18-24_Ohne",
@@ -397,7 +397,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q5_25-34",
     question: "Was beschreibt deine Wohnsituation am besten?",
     options: ["Alleine (zu Miete)", "Alleine (Eigentum)", "Bei meiner Familie", "Wohngemeinschaft (WG)", "In einem Wohnheim (Studentenwohnheim, etc.)", "Ich habe aktuell keinen Wohnsitz"],
-    tags: ["Miete", "Eigentum", "Familie", "WG", "Wohnheim", "Prekär"]
+    tags: ["Miete", "Eigentum", "Wohnen_Familie", "WG", "Wohnheim", "Prekär"]
   },
   "Q5A_25-34_Ohne": {
     id: "Q5A_25-34_Ohne",
@@ -538,7 +538,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q5_35-49",
     question: "Was beschreibt deine Wohnsituation am besten?",
     options: ["Alleine (zu Miete)", "Alleine (Eigentum)", "Bei meiner Familie", "Wohngemeinschaft (WG)", "In einem Wohnheim (Studentenwohnheim, etc.)", "Ich habe aktuell keinen Wohnsitz"],
-    tags: ["Miete", "Eigentum", "Familie", "WG", "Wohnheim", "Prekär"]
+    tags: ["Miete", "Eigentum", "Wohnen_Familie", "WG", "Wohnheim", "Prekär"]
   },
   "Q5A_35-49_Ohne": {
     id: "Q5A_35-49_Ohne",
@@ -690,7 +690,7 @@ const questionsMap: Record<string, QuestionData> = {
     id: "Q5_50-64",
     question: "Was beschreibt deine Wohnsituation am besten?",
     options: ["Ich wohne zur Miete", "Wohneigentum", "Bei meiner Familie", "Wohngemeinschaft", "Wohnheim", "Ich habe aktuell keinen Wohnsitz"],
-    tags: ["Miete", "Eigentum", "Familie", "WG", "Wohnheim", "Prekär"]
+    tags: ["Miete", "Eigentum", "Wohnen_Familie", "WG", "Wohnheim", "Prekär"]
   },
 
   "Q5A_50-64_Ohne": {

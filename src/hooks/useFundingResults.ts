@@ -30,7 +30,9 @@ export const useFundingResults = (answers?: UserAnswers) => {
     queryKey: ['funding', 'filtered', JSON.stringify(answers)],
     retry: 1,
     queryFn: async () => {
-      // 1. Extract user tags from all answers
+      // 1. Tags aus den Antworten. Der Aufrufer übergibt nur Antworten des
+      //    tatsächlich durchlaufenen Pfads (getActiveAnswers). Alters- und
+      //    neutrale Tags filtert computeRelevanceScore selbst heraus.
       const userTags = answers ? extractTagsFromAnswers(answers) : [];
       
       // 2. Build Supabase query with HARD age filter
@@ -64,7 +66,7 @@ export const useFundingResults = (answers?: UserAnswers) => {
         )
       })) as Funding[];
       
-      // 4. Primary results: score > 0 (at least one tag match), sorted by score
+      // 4. Primary results: mindestens ein aussagekräftiger Tag-Treffer, sortiert nach Score
       let results = scoredData
         .filter(f => (f.relevanceScore ?? 0) > 0)
         .sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));

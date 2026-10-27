@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Funding } from '@/hooks/useFundingResults';
-import { useQuestionnaire } from '@/context/QuestionnaireContext';
+import type { UserAnswers } from '@/context/QuestionnaireContext';
+import { buildReasonGroups, type ReasonGroup } from '@/utils/answerMappingUtils';
 import DetailSheet from './DetailSheet';
 import { ApplyButton, CategoryChip, CloseButton, DetailPanel, DetailRows } from './DetailParts';
 import { categoryOf, r, schemeOf } from './resultsTheme';
@@ -53,8 +54,7 @@ const ModeToggle = ({ mode, onToggle, large = false }: { mode: Mode; onToggle: (
 /* ------------------------------------------------------------------ *
  * Chips mit den eigenen Antworten aus dem Fragebogen
  * ------------------------------------------------------------------ */
-const AnswerChips = () => {
-  const { answers } = useQuestionnaire();
+const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
 
   const labels = Object.values(answers)
     .flatMap((value) => (Array.isArray(value) ? value : [value]))
@@ -434,9 +434,100 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
 };
 
 /* ------------------------------------------------------------------ *
+ * Zeilen "Weil du … angeklickt hast"
+ * ------------------------------------------------------------------ */
+const VISIBLE_PER_ROW = 6;
+const REST_KEY = '__rest__';
+
+const reasonTitle = (group: ReasonGroup<Funding>) =>
+  group.key === REST_KEY ? 'Weitere Angebote für deine Altersgruppe' : `Weil du „${group.option}“ angeklickt hast`;
+
+const ReasonHeading = ({ group, large = false }: { group: ReasonGroup<Funding>; large?: boolean }) => (
+  <div style={{ padding: large ? '0 0 14px' : '26px 0 8px' }}>
+    <div style={{ font: `800 ${large ? 20 : 18}px/1.25 ${FONT}`, color: '#111' }}>{reasonTitle(group)}</div>
+    <div style={{ font: `500 ${large ? 13 : 12}px ${FONT}`, color: '#8d8d8d', marginTop: 3 }}>
+      {group.fundings.length} {group.fundings.length === 1 ? 'passendes Angebot' : 'passende Angebote'}
+    </div>
+  </div>
+);
+
+const RailCard = ({ funding, onOpen }: { funding: Funding; onOpen: () => void }) => {
+  const scheme = schemeOf(funding);
+  return (
+    <div
+      onClick={onOpen}
+      className="snap-start"
+      style={{
+        flex: 'none',
+        width: 178,
+        height: 152,
+        background: scheme.cardBg,
+        border: `1px solid ${scheme.cardBorder}`,
+        borderTop: `4px solid ${scheme.accent}`,
+        borderRadius: r(),
+        padding: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: 'pointer',
+      }}
+    >
+      <CategoryChip funding={funding} label={categoryOf(funding)} />
+      <div
+        style={{
+          font: `800 17px/1.2 ${FONT}`,
+          color: '#111',
+          marginTop: 'auto',
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}
+      >
+        {funding.title}
+      </div>
+      <div
+        style={{
+          font: `500 12px ${FONT}`,
+          color: '#8d8d8d',
+          marginTop: 5,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {funding.organization}
+      </div>
+    </div>
+  );
+};
+
+const MoreCard = ({ hidden, onClick }: { hidden: number; onClick: () => void }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="snap-start"
+    style={{
+      flex: 'none',
+      width: 120,
+      height: 152,
+      borderRadius: r(),
+      border: '1px dashed #d6d3cc',
+      background: '#faf9f6',
+      color: '#3f3d39',
+      font: `700 14px/1.3 ${FONT}`,
+      cursor: 'pointer',
+    }}
+  >
+    +{hidden}
+    <br />
+    weitere
+  </button>
+);
+
+/* ------------------------------------------------------------------ *
  * Hauptkomponente
  * ------------------------------------------------------------------ */
-const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
+const ResultsScreen = ({ fundings, answers }: { fundings: Funding[]; answers: UserAnswers }) => {
   // Handy und Laptop haben getrennte Modi: mobil startet die Story-Ansicht
   // genauso ruhig in der Übersicht, kann aber unabhängig umgeschaltet werden.
   const [mobileMode, setMobileMode] = useState<Mode>('overview');
@@ -444,6 +535,25 @@ const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
 
   const [sheetFunding, setSheetFunding] = useState<Funding | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+  const expand = (key: string) => setExpanded((prev) => new Set(prev).add(key));
+
+  // Top-Treffer oben, darunter je angeklickter Antwort eine eigene Zeile.
+  // Jedes Angebot erscheint genau einmal. Angebote ohne Bezug zu einer
+  // Antwort (Auffüllung bei sehr wenigen Treffern) landen in einer Restzeile.
+  const { groups, ordered } = useMemo(() => {
+    const top = fundings.slice(0, 4);
+    const exclude = new Set(top.map((f) => f.id));
+    const reasonGroups = buildReasonGroups(fundings, answers, { exclude });
+    const placed = new Set<string>(exclude);
+    reasonGroups.forEach((g) => g.fundings.forEach((f) => placed.add(f.id)));
+    const rest = fundings.filter((f) => !placed.has(f.id));
+    if (rest.length > 0) {
+      reasonGroups.push({ key: REST_KEY, option: '', question: '', tag: '', fundings: rest });
+    }
+    return { groups: reasonGroups, ordered: [...top, ...reasonGroups.flatMap((g) => g.fundings)] };
+  }, [fundings, answers]);
 
   const count = useCountUp(fundings.length);
 
@@ -457,7 +567,6 @@ const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
 
   const [hero, ...rest] = fundings;
   const ranked = rest.slice(0, 3);
-  const rail = rest.slice(0, 4);
   const heroScheme = schemeOf(hero);
 
   const toggleCard = (id: string) => setOpenId((prev) => (prev === id ? null : id));
@@ -488,7 +597,7 @@ const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
 
         {mobileMode === 'overview' ? (
           <div>
-            <AnswerChips />
+            <AnswerChips answers={answers} />
 
             {/* Top-Treffer */}
             <div
@@ -592,50 +701,25 @@ const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
               </>
             )}
 
-            {/* Reihe passend zu den Angaben */}
-            {rail.length > 0 && (
-              <>
-                <div style={{ font: `800 18px ${FONT}`, color: '#111', padding: '26px 0 6px' }}>
-                  Passend zu deinen Angaben
-                </div>
-                <div
-                  className="snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
-                  style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '2px 0 12px', scrollbarWidth: 'none' }}
-                >
-                  {rail.map((funding) => {
-                    const scheme = schemeOf(funding);
-                    return (
-                      <div
-                        key={funding.id}
-                        onClick={() => setSheetFunding(funding)}
-                        className="snap-start"
-                        style={{
-                          flex: 'none',
-                          width: 178,
-                          height: 152,
-                          background: scheme.cardBg,
-                          border: `1px solid ${scheme.cardBorder}`,
-                          borderTop: `4px solid ${scheme.accent}`,
-                          borderRadius: r(),
-                          padding: 16,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <CategoryChip funding={funding} label={categoryOf(funding)} />
-                        <div style={{ font: `800 17px/1.2 ${FONT}`, color: '#111', marginTop: 'auto' }}>
-                          {funding.title}
-                        </div>
-                        <div style={{ font: `500 12px ${FONT}`, color: '#8d8d8d', marginTop: 5 }}>
-                          {funding.organization}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+            {/* Je angeklickter Antwort eine Reihe */}
+            {groups.map((group) => {
+              const visible = expanded.has(group.key) ? group.fundings : group.fundings.slice(0, VISIBLE_PER_ROW);
+              const hidden = group.fundings.length - visible.length;
+              return (
+                <section key={group.key}>
+                  <ReasonHeading group={group} />
+                  <div
+                    className="snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+                    style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: '2px 0 12px', scrollbarWidth: 'none' }}
+                  >
+                    {visible.map((funding) => (
+                      <RailCard key={funding.id} funding={funding} onOpen={() => setSheetFunding(funding)} />
+                    ))}
+                    {hidden > 0 && <MoreCard hidden={hidden} onClick={() => expand(group.key)} />}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         ) : (
           <div
@@ -648,7 +732,7 @@ const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
               scrollbarWidth: 'none',
             }}
           >
-            {fundings.map((funding) => (
+            {ordered.map((funding) => (
               <StoryCard key={funding.id} funding={funding} onOpen={() => setSheetFunding(funding)} />
             ))}
           </div>
@@ -691,7 +775,7 @@ const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
 
         {desktopMode === 'overview' ? (
           <div>
-            <AnswerChips />
+            <AnswerChips answers={answers} />
 
             <div
               style={{
@@ -896,33 +980,57 @@ const ResultsScreen = ({ fundings }: { fundings: Funding[] }) => {
               )}
             </div>
 
-            <div style={{ font: `800 20px ${FONT}`, color: '#111', marginBottom: 14 }}>
-              Alle passenden Angebote
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-                gap: 16,
-                alignItems: 'start',
-              }}
-            >
-              {fundings.map((funding) => (
-                <ExpandableCard
-                  key={funding.id}
-                  funding={funding}
-                  isOpen={openId === funding.id}
-                  onToggle={() => toggleCard(funding.id)}
-                  onClose={(e) => {
-                    e.stopPropagation();
-                    setOpenId(null);
-                  }}
-                />
-              ))}
-            </div>
+            {groups.map((group) => {
+              const visible = expanded.has(group.key) ? group.fundings : group.fundings.slice(0, VISIBLE_PER_ROW);
+              const hidden = group.fundings.length - visible.length;
+              return (
+                <section key={group.key} style={{ marginBottom: 36 }}>
+                  <ReasonHeading group={group} large />
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                      gap: 16,
+                      alignItems: 'start',
+                    }}
+                  >
+                    {visible.map((funding) => (
+                      <ExpandableCard
+                        key={funding.id}
+                        funding={funding}
+                        isOpen={openId === funding.id}
+                        onToggle={() => toggleCard(funding.id)}
+                        onClose={(e) => {
+                          e.stopPropagation();
+                          setOpenId(null);
+                        }}
+                      />
+                    ))}
+                  </div>
+                  {hidden > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => expand(group.key)}
+                      style={{
+                        marginTop: 14,
+                        padding: '10px 18px',
+                        borderRadius: r(-3),
+                        border: '1px solid #e5e3de',
+                        background: '#fff',
+                        color: '#3f3d39',
+                        font: `700 14px ${FONT}`,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Alle {group.fundings.length} anzeigen
+                    </button>
+                  )}
+                </section>
+              );
+            })}
           </div>
         ) : (
-          <DesktopStory fundings={fundings} />
+          <DesktopStory fundings={ordered} />
         )}
       </div>
 

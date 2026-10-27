@@ -1,5 +1,5 @@
 
-import { Component, ReactNode } from 'react';
+import { Component, ReactNode, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -8,6 +8,7 @@ import { useQuestionnaire } from '@/context/QuestionnaireContext';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import ResultsScreen from '@/components/results/ResultsScreen';
+import { getActiveAnswers } from '@/utils/answerMappingUtils';
 
 // Catches render errors in the grid so the page never shows a blank white screen
 class GridErrorBoundary extends Component<
@@ -37,8 +38,10 @@ class GridErrorBoundary extends Component<
 
 const Results = () => {
   const navigate = useNavigate();
-  const { answers } = useQuestionnaire();
-  const { data: fundings, isLoading, error } = useFundingResults(answers);
+  const { answers, questionHistory } = useQuestionnaire();
+  // Nur Antworten des tatsächlich durchlaufenen Pfads zählen
+  const activeAnswers = useMemo(() => getActiveAnswers(answers, questionHistory), [answers, questionHistory]);
+  const { data: fundings, isLoading, error } = useFundingResults(activeAnswers);
 
   if (isLoading) {
     return (
@@ -115,7 +118,7 @@ const Results = () => {
       <main className="flex-grow container mx-auto px-4 lg:px-8 py-8">
         {/* Page header */}
         <GridErrorBoundary>
-          <ResultsScreen fundings={fundings} />
+          <ResultsScreen fundings={fundings} answers={activeAnswers} />
         </GridErrorBoundary>
       </main>
       <Footer />

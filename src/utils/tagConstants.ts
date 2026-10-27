@@ -1,7 +1,7 @@
 export const AGE_TAGS = ["U18", "18-24", "25-34", "35-49", "50-64", "65plus"] as const;
 export const NATIONALITY_TAGS = ["Deutsch", "EU", "Ukrainisch", "Türkisch", "Syrisch", "Drittstaat"] as const;
 export const ACTIVITY_TAGS = ["Schule", "Ausbildung", "Studium", "Arbeiten", "Gründung", "Selbstständig", "Arbeitssuchend", "Weiterbildung", "Übergang", "Pflege", "Familie", "FSJ", "Rente", "Erwerbsunfähig", "Sonstiges"] as const;
-export const HOUSING_TAGS = ["Miete", "Eigentum", "WG", "Wohnheim", "Heim", "Betreuung", "Prekär"] as const;
+export const HOUSING_TAGS = ["Miete", "Eigentum", "WG", "Wohnheim", "Heim", "Betreuung", "Prekär", "Wohnen_Familie"] as const;
 
 export const SCHULE_DETAIL_TAGS = ["Schule_Lernschwierigkeit", "Schule_Mobbing", "Schule_Mittagessen", "Schule_Material", "Schule_Psyche"] as const;
 export const AUSBILDUNG_DETAIL_TAGS = ["Ausbildung_Berufsschule", "Ausbildung_Miteinander", "Ausbildung_Perspektive", "Ausbildung_Vereinbarkeit", "Ausbildung_Finanzen", "Ausbildung_Verantwortung"] as const;
@@ -37,8 +37,16 @@ export const ALL_VALID_TAGS = new Set<string>([
   ...HERAUSFORDERUNG_TAGS, ...WUNSCH_TAGS, ...OHNE_DETAIL_TAGS,
 ]);
 
-export const EXCLUDED_FROM_SCORING = new Set([
-  "Beeinträchtigung_Nein", "Finanzen_regelmäßig-gut", "Ohne_Nichts"
+/**
+ * Antworten ohne Aussagekraft für das Matching: Sie beschreiben "keinen Bedarf"
+ * (z. B. keine Beeinträchtigung) oder sind so allgemein, dass fast jedes Angebot
+ * passen würde (Alter, deutsche Staatsangehörigkeit, Wohnen bei der Familie,
+ * "Sonstiges"). Sie fließen weder in die Punktzahl noch in die Ergebnis-Gruppen ein.
+ */
+export const EXCLUDED_FROM_SCORING = new Set<string>([
+  "Beeinträchtigung_Nein", "Finanzen_regelmäßig-gut", "Ohne_Nichts",
+  "Deutsch", "Wohnen_Familie", "Sonstiges",
+  ...AGE_TAGS,
 ]);
 
 export function validateTags(tags: string[]): { valid: string[]; invalid: string[] } {

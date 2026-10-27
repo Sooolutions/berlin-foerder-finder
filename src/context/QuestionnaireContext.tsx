@@ -144,6 +144,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         if (activity === "Gründung eines Unternehmens") return "Q4_18-24_Gründung";
         if (activity === "Selbstständig/Unternehmer:in") return "Q4_18-24_Selbstständig";
         if (activity === "Arbeitssuchend") return "Q4_18-24_Arbeitssuchend";
+        if (activity === "Berufliche Weiterbildung/Umschulung") return "Q4_18-24_Weiterbildung";
         if (activity === "Orientierungs-/Überbrückungsphase (keine Ausbildung/Arbeit)") return "Q4_18-24_Übergangsphase";
         if (activity === "Pflege von Angehörigen") return "Q4_18-24_Pflege";
         if (activity === "Familienzeit oder Kinderbetreuung") return "Q4_18-24_Familie";
@@ -439,6 +440,11 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
       case "Q8_65plus":
         const health65plus = answer || answers["Q8_65plus"];
         if (health65plus === "Keine Beeinträchtigungen") {
+          // Nicht-deutsche Staatsangehörigkeit bekommt die Variante mit Ankommens-Fragen
+          const nationality65plus = answers["Q2_65plus"];
+          if (nationality65plus && nationality65plus !== "Deutsch") {
+            return "Q9_65plus_Ausland_Nein";
+          }
           return "Q9_65plus_Nein";
         }
         return "Q9_65plus_Ja";
@@ -447,10 +453,6 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         return "Q10_65plus";
 
       case "Q9_65plus_Nein":
-        const nationality65plus = answers["Q2_65plus"];
-        if (nationality65plus !== "Deutsch") {
-          return "Q9_65plus_Ausland_Nein";
-        }
         return "Q10_65plus";
 
       case "Q9_65plus_Ausland_Nein":
