@@ -39,13 +39,15 @@ const steps = [
 const Index = () => {
   const navigate = useNavigate();
   const [fundingTeasers, setFundingTeasers] = useState<FundingTeaser[]>([]);
+  const [offerCount, setOfferCount] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchRandomFunding = async () => {
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from("funding")
-        .select("id, title, description, organization, url, categories, funding_type");
+        .select("id, title, description, organization, url, categories, funding_type", { count: "exact" });
       if (data && !error) {
+        setOfferCount(count ?? data.length);
         const shuffled = [...data].sort(() => 0.5 - Math.random());
         setFundingTeasers(shuffled.slice(0, 5));
       }
@@ -163,7 +165,7 @@ const Index = () => {
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
               <p className="text-muted-foreground text-center max-w-xl mx-auto mb-14">
-                Ein Ausschnitt aus über 280 Angeboten für Bildung, Wohnen, Familie und Gesundheit.
+                Ein Ausschnitt aus {offerCount ? `über ${Math.floor(offerCount / 10) * 10}` : "vielen"} Angeboten für Bildung, Wohnen, Familie und Gesundheit.
               </p>
             </ScrollReveal>
 
@@ -207,7 +209,7 @@ const Index = () => {
         <section className="py-24 px-4 bg-foreground text-background">
           <div className="container mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-8 text-center">
             <ScrollReveal>
-              <Counter to={280} suffix="+" className="block !text-6xl md:!text-7xl font-black mb-3" />
+              <Counter to={offerCount ?? 0} className="block !text-6xl md:!text-7xl font-black mb-3" />
               <p className="text-background/70">Angebote, staatlich und nicht-staatlich</p>
             </ScrollReveal>
             <ScrollReveal delay={0.15}>
