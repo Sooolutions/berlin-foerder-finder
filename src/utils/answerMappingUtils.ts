@@ -171,10 +171,109 @@ const groupPriority = (tag: string): number => {
 };
 
 /**
+ * Themenfamilie eines Tags. Antworten derselben Familie (z. B. „Schule“ und
+ * „Mobbing“) gelten nicht als unabhängige Bestätigung füreinander.
+ */
+export const tagFamily = (tag: string): string => {
+  const [prefix] = tag.split('_');
+  if ((ACTIVITY_TAGS as readonly string[]).includes(prefix) || ACTIVITY_PREFIXES.includes(prefix)) return 'activity';
+  if (prefix === 'Beeinträchtigung' || prefix === 'Gesundheit') return 'health';
+  if (['Miete', 'Eigentum', 'WG', 'Wohnheim', 'Prekär', 'Ohne', 'Heim', 'Betreuung', 'Wohnen'].includes(prefix)) return 'housing';
+  if (prefix === 'Finanzen') return 'finance';
+  if ((NATIONALITY_TAGS as readonly string[]).includes(tag)) return 'origin';
+  if (prefix === 'Herausforderung') return 'challenge';
+  if (prefix === 'Wunsch') return 'wish';
+  return prefix;
+};
+
+/** Themenbereiche, in denen ein Angebot für eine andere Lebenslage gedacht sein kann. */
+const EXCLUSIVE_FAMILIES = new Set(['activity', 'health', 'origin', 'housing', 'finance']);
+const AGE_TAG_SET = new Set(['U18', '18-24', '25-34', '35-49', '50-64', '65plus']);
+
+/**
+ * Antworten, die inhaltlich zusammengehören. Wer in einer WG wohnt, wohnt
+ * auch zur Miete; wer Syrisch angibt, gehört zu den Drittstaatsangehörigen.
+ */
+const COMPATIBLE: Record<string, string[]> = {
+  Miete: ['Miete', 'WG', 'Wohnheim'],
+  WG: ['Miete', 'WG', 'Wohnheim'],
+  Wohnheim: ['Miete', 'WG', 'Wohnheim'],
+  Prekär: ['Prekär', 'Ohne_Bekannte', 'Ohne_Not', 'Ohne_Öffentlich', 'Ohne_Fahrzeug', 'Ohne_Nichts'],
+  Syrisch: ['Syrisch', 'Drittstaat'],
+  Ukrainisch: ['Ukrainisch', 'Drittstaat'],
+  Türkisch: ['Türkisch', 'Drittstaat'],
+};
+
+export interface FitInfo {
+  /** Themenbereiche, in denen das Angebot eine aussagekräftige Antwort trifft */
+  matchedFamilies: Set<string>;
+  /** Themenbereiche, in denen das Angebot erkennbar auf eine andere Lebenslage zielt */
+  contradictions: number;
+  /** Widerspruch bei der Wohnsituation (z. B. Angebot nur für Eigentum) */
+  housingConflict: boolean;
+}
+
+/**
+ * Prüft ein Angebot gegen ALLE Antworten, auch die neutralen.
+ * Ein Widerspruch liegt vor, wenn das Angebot in einem Themenbereich, zu dem
+ * die Person geantwortet hat, nur Tags trägt, die nicht zu ihrer Antwort
+ * passen. Beispiel: „keine Beeinträchtigung“ angegeben, Angebot nur für
+ * körperliche Beeinträchtigung; „zur Miete“, Angebot nur für Eigentum.
+ * Bei den Finanzen zählt nur „kommt gut zurecht“ als Gegensatz zu Angeboten
+ * für finanzielle Notlagen.
+ */
+export const makeFitAnalyzer = (answers: UserAnswers) => {
+  const all = extractSelections(answers).filter((s) => !AGE_TAG_SET.has(s.tag));
+  const userByFamily = new Map<string, Set<string>>();
+  all.forEach((s) => {
+    const fam = tagFamily(s.tag);
+    if (!userByFamily.has(fam)) userByFamily.set(fam, new Set());
+    (COMPATIBLE[s.tag] ?? [s.tag]).forEach((t) => userByFamily.get(fam)!.add(t));
+  });
+  const financeOk = userByFamily.get('finance')?.has('Finanzen_regelmäßig-gut') ?? false;
+  const meaningful = new Set(all.filter((s) => isMeaningfulTag(s.tag)).map((s) => s.tag));
+
+  return (fundingTags: string[] | null): FitInfo => {
+    const tags = fundingTags ?? [];
+    const matchedFamilies = new Set<string>();
+    tags.forEach((t) => {
+      if (meaningful.has(t)) matchedFamilies.add(tagFamily(t));
+    });
+    let contradictions = 0;
+    let housingConflict = false;
+    userByFamily.forEach((userTags, fam) => {
+      if (!EXCLUSIVE_FAMILIES.has(fam)) return;
+      if (fam === 'finance' && !financeOk) return;
+      const offerTags = tags.filter((t) => !AGE_TAG_SET.has(t) && tagFamily(t) === fam);
+      if (offerTags.length > 0 && !offerTags.some((t) => userTags.has(t))) {
+        contradictions++;
+        if (fam === 'housing') housingConflict = true;
+      }
+    });
+    return { matchedFamilies, contradictions, housingConflict };
+  };
+};
+
+/** Passt ein Angebot insgesamt eher zu einer anderen Lebenslage als zur eigenen? */
+export const contradictsSituation = (fit: FitInfo): boolean =>
+  fit.housingConflict || fit.contradictions > fit.matchedFamilies.size;
+
+/** Zeilen werden bis zu dieser Größe mit neutralen Treffern aufgefüllt. */
+const FILL_PER_ROW = 6;
+
+/**
  * Verteilt die Treffer auf Zeilen je angeklickter Antwort.
+ *
+ * Eine Zeile zeigt Angebote, die zur angeklickten Antwort passen und
+ * gleichzeitig zum Rest der Situation stimmen:
+ * 1. Angebote, die erkennbar für eine andere Lebenslage gedacht sind, fallen weg.
+ * 2. Vorrang haben Angebote, die zusätzlich eine Angabe aus einem anderen
+ *    Themenbereich treffen (z. B. Schule UND knappe Finanzen).
+ * 3. Gibt es davon weniger als sechs, wird mit den besten übrigen passenden
+ *    Angeboten auf sechs aufgefüllt, damit keine Antwort leer ausgeht.
+ *
  * Jedes Angebot erscheint nur einmal, und zwar in der spezifischsten passenden
- * Zeile, sortiert nach Gesamtrelevanz. Wie viele davon sichtbar sind, entscheidet
- * die Oberfläche. Zeilen ohne Treffer entfallen.
+ * Zeile. Zeilen ohne Treffer entfallen.
  */
 export function buildReasonGroups<T extends { id: string; tags: string[] | null; relevanceScore?: number }>(
   fundings: T[],
@@ -182,19 +281,30 @@ export function buildReasonGroups<T extends { id: string; tags: string[] | null;
   options: { exclude?: Set<string> } = {}
 ): ReasonGroup<T>[] {
   const used = new Set<string>(options.exclude ?? []);
+  const fitOf = makeFitAnalyzer(answers);
 
   const seenTags = new Set<string>();
   const selections = extractSelections(answers)
     .filter((s) => isMeaningfulTag(s.tag))
     .filter((s) => (seenTags.has(s.tag) ? false : (seenTags.add(s.tag), true)))
-    .map((s, order) => ({ ...s, order }))
+    .map((s, order) => ({ ...s, order, family: tagFamily(s.tag) }))
     .sort((a, b) => groupPriority(a.tag) - groupPriority(b.tag) || a.order - b.order);
 
-  const byScore = [...fundings].sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
+  const scored = fundings
+    .map((f) => ({ f, fit: fitOf(f.tags) }))
+    .filter(({ fit }) => !contradictsSituation(fit))
+    .sort((a, b) => (b.f.relevanceScore ?? 0) - (a.f.relevanceScore ?? 0));
 
   const groups: ReasonGroup<T>[] = [];
   selections.forEach((s) => {
-    const items = byScore.filter((f) => !used.has(f.id) && (f.tags ?? []).includes(s.tag));
+    const candidates = scored.filter(({ f }) => !used.has(f.id) && (f.tags ?? []).includes(s.tag));
+    const confirmedEntries = candidates.filter(({ fit }) => [...fit.matchedFamilies].some((fam) => fam !== s.family));
+    const neutral = candidates
+      .filter((c) => !confirmedEntries.includes(c))
+      .sort((a, b) => a.fit.contradictions - b.fit.contradictions || (b.f.relevanceScore ?? 0) - (a.f.relevanceScore ?? 0));
+    const items = [...confirmedEntries, ...neutral.slice(0, Math.max(0, FILL_PER_ROW - confirmedEntries.length))].map(
+      (c) => c.f,
+    );
     if (items.length === 0) return;
     items.forEach((f) => used.add(f.id));
     groups.push({ key: `${s.questionId}:${s.tag}`, option: s.option, question: s.question, tag: s.tag, fundings: items });

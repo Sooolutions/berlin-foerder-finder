@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react';
 import type { Funding } from '@/hooks/useFundingResults';
 import type { UserAnswers } from '@/context/QuestionnaireContext';
-import { buildReasonGroups, type ReasonGroup } from '@/utils/answerMappingUtils';
+import {
+  buildReasonGroups,
+  contradictsSituation,
+  extractSelections,
+  isMeaningfulTag,
+  makeFitAnalyzer,
+  type ReasonGroup,
+} from '@/utils/answerMappingUtils';
 import DetailSheet from './DetailSheet';
 import { ApplyButton, CategoryChip, CloseButton, DetailPanel, DetailRows } from './DetailParts';
 import { categoryOf, r, schemeOf } from './resultsTheme';
@@ -148,31 +155,39 @@ const FilterBar = ({
 );
 
 const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
-
-  const labels = Object.values(answers)
-    .flatMap((value) => (Array.isArray(value) ? value : [value]))
-    .filter((value): value is string => typeof value === 'string' && value.length > 0 && value.length < 40)
-    .slice(0, 6);
-
-  if (!labels.length) return null;
+  // Alle Antworten des durchlaufenen Pfads, in Reihenfolge der Fragen.
+  // Angaben, die nur als Rahmen dienen (Alter filtert hart, neutrale Antworten
+  // wie „Deutsch“ oder „keine Beeinträchtigung“), erscheinen heller.
+  const chips = extractSelections(answers);
+  const seen = new Set<string>();
+  const unique = chips.filter((c) => (seen.has(c.option) ? false : (seen.add(c.option), true)));
+  if (!unique.length) return null;
 
   return (
     <>
-      {labels.map((label) => (
-        <span
-          key={label}
-          style={{
-            font: `600 11.5px ${FONT}`,
-            padding: '5px 10px',
-            borderRadius: r(-6),
-            background: '#f2f1ed',
-            color: '#6f6c65',
-            border: '1px solid #e8e6e0',
-          }}
-        >
-          {label}
-        </span>
-      ))}
+      {unique.map((c) => {
+        const meaningful = isMeaningfulTag(c.tag);
+        return (
+          <span
+            key={`${c.questionId}:${c.option}`}
+            title={`${c.question} ${c.option}`}
+            style={{
+              font: `600 11.5px ${FONT}`,
+              padding: '5px 10px',
+              borderRadius: r(-6),
+              background: meaningful ? '#f2f1ed' : '#fafaf8',
+              color: meaningful ? '#5f5c56' : '#a3a09a',
+              border: `1px ${meaningful ? 'solid' : 'dashed'} #e3e0d9`,
+              maxWidth: 260,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {c.option}
+          </span>
+        );
+      })}
     </>
   );
 };
@@ -656,21 +671,26 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
   // Jedes Angebot erscheint genau einmal. Angebote ohne Bezug zu einer
   // Antwort (Auffüllung bei sehr wenigen Treffern) landen in einer Restzeile.
   const { groups, ordered } = useMemo(() => {
-    const top = fundings.slice(0, 4);
+    // Angebote, die erkennbar für eine andere Lebenslage gedacht sind, fallen ganz weg
+    const fitOf = makeFitAnalyzer(answers);
+    const pool = fundings.filter((f) => (f.relevanceScore ?? 0) === 0 || !contradictsSituation(fitOf(f.tags)));
+    const top = pool.slice(0, 4);
     const exclude = new Set(top.map((f) => f.id));
-    const reasonGroups = buildReasonGroups(fundings, answers, { exclude });
+    const reasonGroups = buildReasonGroups(pool, answers, { exclude });
     const placed = new Set<string>(exclude);
     reasonGroups.forEach((g) => g.fundings.forEach((f) => placed.add(f.id)));
-    const rest = fundings.filter((f) => !placed.has(f.id));
+    // Restzeile nur für Auffüllangebote ohne Tagtreffer (bei sehr wenigen Ergebnissen)
+    const rest = pool.filter((f) => !placed.has(f.id) && (f.relevanceScore ?? 0) === 0);
     if (rest.length > 0) {
       reasonGroups.push({ key: REST_KEY, option: '', question: '', tag: '', fundings: rest });
     }
     return { groups: reasonGroups, ordered: [...top, ...reasonGroups.flatMap((g) => g.fundings)] };
   }, [fundings, answers]);
 
-  const count = useCountUp(fundings.length);
+  // Gezählt wird, was tatsächlich angezeigt wird
+  const count = useCountUp(ordered.length);
 
-  if (!fundings.length) {
+  if (!ordered.length) {
     return (
       <div style={{ padding: '20px 0' }}>
         <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} />
@@ -681,7 +701,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
     );
   }
 
-  const [hero, ...rest] = fundings;
+  const [hero, ...rest] = ordered;
   const ranked = rest.slice(0, 3);
   const heroScheme = schemeOf(hero);
 
