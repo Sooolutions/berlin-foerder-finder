@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { schemeOf } from "@/components/results/resultsTheme";
 import ScrollReveal from "@/components/home/ScrollReveal";
 import Counter from "@/components/home/Counter";
+import heroImg from "@/assets/hero-wallet.jpg";
 
 interface FundingTeaser {
   id: string;
@@ -60,15 +61,24 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Header />
+    <div className="relative min-h-screen flex flex-col bg-white">
+      {/* Navigation liegt über dem Hero-Bild */}
+      <div className="absolute inset-x-0 top-0 z-30">
+        <Header />
+      </div>
 
       <main className="flex-grow">
         {/* Hero — full-bleed, emotional, one message */}
-        <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+        <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-28 pb-20">
           <div className="absolute inset-0">
-            <div className="w-full h-full bg-[#1a1a2e]" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/50 to-black/75" />
+            <img
+              src={heroImg}
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover object-center scale-110 blur-[2px] brightness-[0.9] saturate-[0.9]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/80" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.4)_0%,rgba(0,0,0,0)_55%)]" />
           </div>
 
           <motion.div
@@ -77,10 +87,8 @@ const Index = () => {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-10 text-center px-6 max-w-3xl mx-auto"
           >
-            <h1 className="text-white !text-[42px] md:!text-[72px] font-black leading-[1.05] mb-6">
-              Du hast Besseres zu tun
-              <br />
-              als Antragsformulare.
+            <h1 className="text-white !text-[42px] md:!text-[72px] font-black leading-[1.05] mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+              Da ist mehr drin!
             </h1>
             <p className="text-white/85 !text-lg md:!text-xl max-w-xl mx-auto mb-10 !font-normal">
               Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.
