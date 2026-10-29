@@ -11,6 +11,7 @@ import { schemeOf } from "@/components/results/resultsTheme";
 import ScrollReveal from "@/components/home/ScrollReveal";
 import Counter from "@/components/home/Counter";
 import heroImg from "@/assets/hero-wallet.jpg";
+import heroImgMobile from "@/assets/hero-wallet-mobile.jpg";
 
 interface FundingTeaser {
   id: string;
@@ -71,14 +72,18 @@ const Index = () => {
         {/* Hero — full-bleed, emotional, one message */}
         <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-28 pb-20">
           <div className="absolute inset-0">
-            <img
-              src={heroImg}
-              alt=""
-              aria-hidden="true"
-              className="w-full h-full object-cover object-center scale-110 blur-[2px] brightness-[0.9] saturate-[0.9]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/80" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.4)_0%,rgba(0,0,0,0)_55%)]" />
+            {/* Portemonnaie liegt in beiden Bildvarianten exakt in der Bildmitte */}
+            <picture>
+              <source media="(max-aspect-ratio: 3/4)" srcSet={heroImgMobile} />
+              <img
+                src={heroImg}
+                alt=""
+                aria-hidden="true"
+                className="w-full h-full object-cover object-center"
+              />
+            </picture>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/15 to-black/65 md:from-black/60 md:via-black/25 md:to-black/75" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_55%,rgba(0,0,0,0.3)_100%)] md:bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_35%,rgba(0,0,0,0.55)_100%)]" />
           </div>
 
           <motion.div
@@ -87,10 +92,10 @@ const Index = () => {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-10 text-center px-6 max-w-3xl mx-auto"
           >
-            <h1 className="text-white !text-[42px] md:!text-[72px] font-black leading-[1.05] mb-6 drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+            <h1 className="text-white !text-[42px] md:!text-[72px] font-black leading-[1.05] mb-6 drop-shadow-[0_4px_28px_rgba(0,0,0,0.75)]">
               Da ist mehr drin!
             </h1>
-            <p className="text-white/85 !text-lg md:!text-xl max-w-xl mx-auto mb-10 !font-normal">
+            <p className="text-white/90 !text-lg md:!text-xl max-w-xl mx-auto mb-10 !font-normal [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
               Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.
             </p>
             <Button
