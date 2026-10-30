@@ -16,6 +16,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Impressum from "./pages/Impressum";
 import Datenschutz from "./pages/Datenschutz";
+import ConstructionNotice from "@/components/layout/ConstructionNotice";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <ConstructionNotice />
       <BrowserRouter>
         <QuestionnaireProvider>
           <Routes>
