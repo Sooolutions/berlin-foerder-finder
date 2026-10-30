@@ -73,6 +73,15 @@ const Datenschutz = () => {
               </a>
               .
             </p>
+            <p className="text-lg text-muted-foreground leading-relaxed mt-4">
+              Zur Verbesserung der Website nutzen wir außerdem Vercel Web Analytics und Vercel Speed Insights.
+              Web Analytics erfasst in aggregierter Form, welche Seiten aufgerufen werden. Speed Insights misst
+              die Ladegeschwindigkeit und Reaktionszeit der Seiten auf deinem Gerät (sogenannte Web Vitals)
+              zusammen mit Seitenpfad, Gerätetyp, Browser und Land. Beide Dienste setzen keine Cookies,
+              speichern nichts auf deinem Gerät und erstellen keine seitenübergreifenden Profile.
+              Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer schnellen und
+              funktionsfähigen Website).
+            </p>
           </section>
 
           <section className="mb-10">
