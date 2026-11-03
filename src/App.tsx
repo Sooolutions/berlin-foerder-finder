@@ -17,11 +17,13 @@ import BlogPost from "./pages/BlogPost";
 import Impressum from "./pages/Impressum";
 import Datenschutz from "./pages/Datenschutz";
 import ConstructionNotice from "@/components/layout/ConstructionNotice";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -45,6 +47,7 @@ const App = () => (
       <Analytics />
       <SpeedInsights />
     </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 

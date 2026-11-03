@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { formatDate, sortedPosts, SITE_URL, type BlogPost } from "@/content/blog/posts";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { tr, getLang } from "@/i18n/LanguageContext";
 
 const Meta = ({ post }: { post: BlogPost }) => (
   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground">
@@ -39,8 +40,13 @@ const Blog = () => {
         <div className="max-w-3xl mb-12 md:mb-16">
           <h1 className="!text-[40px] md:!text-[60px] font-black leading-[1.05] mb-5">Blog</h1>
           <p className="!text-[19px] md:!text-[21px] text-muted-foreground leading-relaxed">
-            Hintergründe zu Sozialleistungen, Förderungen und sozialer Teilhabe in Berlin.
+            {tr("Hintergründe zu Sozialleistungen, Förderungen und sozialer Teilhabe in Berlin.")}
           </p>
+          {getLang() !== "de" && (
+            <p className="mt-4 !text-[15px] rounded-lg bg-secondary px-4 py-3 text-foreground/80">
+              {tr("Unsere Artikel gibt es bisher nur auf Deutsch.")}
+            </p>
+          )}
         </div>
 
         {featured && (
@@ -51,7 +57,7 @@ const Blog = () => {
             <div className="grid lg:grid-cols-[1fr_1.3fr]">
               <div className="bg-[#1a2b45] text-white p-8 md:p-12 flex flex-col justify-between min-h-[220px]">
                 <span className="self-start bg-white/15 px-3 py-1 rounded-full !text-[14px] font-medium">
-                  Neuester Artikel
+                  {tr("Neuester Artikel")}
                 </span>
                 <div className="mt-10">
                   <div className="!text-[14px] uppercase tracking-wider text-white/60 mb-2">{featured.category}</div>
@@ -75,7 +81,7 @@ const Blog = () => {
                 </h2>
                 <p className="!text-[17px] md:!text-[18px] text-muted-foreground leading-relaxed mb-6">{featured.excerpt}</p>
                 <span className="inline-flex items-center gap-2 font-semibold text-primary !text-[17px]">
-                  Artikel lesen
+                  {tr("Artikel lesen")}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
@@ -85,7 +91,7 @@ const Blog = () => {
 
         {rest.length > 0 && (
           <section>
-            <h2 className="!text-[26px] font-bold mb-8">Weitere Artikel</h2>
+            <h2 className="!text-[26px] font-bold mb-8">{tr("Weitere Artikel")}</h2>
             <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
               {rest.map((post) => (
                 <Link

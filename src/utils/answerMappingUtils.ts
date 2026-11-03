@@ -1,6 +1,7 @@
 
 import { UserAnswers } from "@/context/QuestionnaireContext";
 import { getOptionLabel, getQuestionData } from "@/data/questionnaireData";
+import { tr } from "@/i18n/LanguageContext";
 import { ACTIVITY_TAGS, EXCLUDED_FROM_SCORING, NATIONALITY_TAGS } from "@/utils/tagConstants";
 
 /**
@@ -59,7 +60,7 @@ export const extractSelections = (answers: UserAnswers): AnswerSelection[] => {
       if (option) {
         selections.push({
           questionId,
-          question: questionData.question,
+          question: tr(questionData.question),
           option: getOptionLabel(questionId, option.id),
           tag: option.id,
         });

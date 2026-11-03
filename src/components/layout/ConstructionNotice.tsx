@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { tr, getLang } from "@/i18n/LanguageContext";
 
 const STORAGE_KEY = "mehrdrin_construction_notice_seen";
 
@@ -41,22 +42,24 @@ const ConstructionNotice = () => {
         >
           <DialogPrimitive.Close
             className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full text-foreground/60 transition-colors hover:bg-secondary hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Hinweis schließen"
+            aria-label={tr("Hinweis schließen")}
           >
             <X className="h-5 w-5" />
           </DialogPrimitive.Close>
 
-          <div className="mb-4 text-6xl leading-none" role="img" aria-label="Baustelle">
+          <div className="mb-4 text-6xl leading-none" role="img" aria-label={tr("Baustelle")}>
             🚧
           </div>
           <DialogPrimitive.Title className="mb-3 text-2xl font-semibold">
-            Hier wird noch gebaut
+            {tr("Hier wird noch gebaut")}
           </DialogPrimitive.Title>
           <DialogPrimitive.Description className="text-base leading-relaxed text-muted-foreground">
-            MehrDrin befindet sich derzeit im Aufbau. Datenbank, Fragebogen und
-            Ergebnisdarstellung werden fortlaufend erweitert und geprüft, weshalb
-            einzelne Angaben noch unvollständig oder fehlerhaft sein können. Wir
-            freuen uns dennoch, wenn du dich schon jetzt umschaust.
+            {tr("MehrDrin befindet sich derzeit im Aufbau. Datenbank, Fragebogen und Ergebnisdarstellung werden fortlaufend erweitert und geprüft, weshalb einzelne Angaben noch unvollständig oder fehlerhaft sein können. Wir freuen uns dennoch, wenn du dich schon jetzt umschaust.")}
+            {getLang() !== "de" && (
+              <span className="mt-3 block">
+                {tr("Die Übersetzung ist teilweise maschinell erstellt. Verbindlich ist die deutsche Fassung.")}
+              </span>
+            )}
           </DialogPrimitive.Description>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

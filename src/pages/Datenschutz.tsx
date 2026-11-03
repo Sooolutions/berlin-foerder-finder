@@ -1,5 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { tr, getLang } from "@/i18n/LanguageContext";
 
 const Datenschutz = () => {
   return (
@@ -7,7 +8,12 @@ const Datenschutz = () => {
       <Header />
 
       <main className="flex-grow">
-        <div className="container mx-auto px-4 py-16 max-w-3xl">
+        <div lang="de" className="container mx-auto px-4 py-16 max-w-3xl">
+          {getLang() !== "de" && (
+            <p lang={getLang()} className="mb-8 rounded-lg bg-secondary px-4 py-3 text-foreground/80">
+              {tr("Diese Seite ist nur auf Deutsch verfügbar. Rechtlich verbindlich ist die deutsche Fassung.")}
+            </p>
+          )}
           <h1 className="text-4xl font-semibold mb-4">Datenschutzerklärung</h1>
           <p className="text-muted-foreground text-lg mb-10">Stand: Mai 2026</p>
 
@@ -111,7 +117,8 @@ const Datenschutz = () => {
             <p className="text-lg text-muted-foreground leading-relaxed">
               Wir setzen keine Tracking-Cookies oder Analyse-Cookies ein. Die Website nutzt ausschließlich
               den Sitzungsspeicher (sessionStorage) deines Browsers, um deine Fragebogen-Antworten während
-              der Sitzung zu speichern. Diese Daten werden nicht an uns übertragen, bleiben lokal auf
+              der Sitzung zu speichern. Ebenso wird dort die von dir gewählte Sprache der Website
+              gespeichert. Diese Daten werden nicht an uns übertragen, bleiben lokal auf
               deinem Gerät und werden beim Schließen des Tabs automatisch gelöscht.
             </p>
           </section>

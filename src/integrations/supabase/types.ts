@@ -98,6 +98,53 @@ export type Database = {
         }
         Relationships: []
       }
+      funding_translations: {
+        Row: {
+          amount: string | null
+          application_process: string | null
+          created_at: string
+          description: string
+          funding_id: string
+          lang: string
+          source_hash: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: string | null
+          application_process?: string | null
+          created_at?: string
+          description: string
+          funding_id: string
+          lang: string
+          source_hash: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: string | null
+          application_process?: string | null
+          created_at?: string
+          description?: string
+          funding_id?: string
+          lang?: string
+          source_hash?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funding_translations_funding_id_fkey"
+            columns: ["funding_id"]
+            isOneToOne: false
+            referencedRelation: "funding"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

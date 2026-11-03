@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import BlogFigure from "@/components/blog/BlogFigure";
 import { formatDate, getPostBySlug, SITE_URL } from "@/content/blog/posts";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { tr, getLang } from "@/i18n/LanguageContext";
 import NotFound from "./NotFound";
 
 /** Fließtext mit Fußnotenmarkern [^n] als hochgestellte Links */
@@ -19,7 +20,7 @@ const RichText = ({ text }: { text: string }) => {
             <a
               href={`#fn-${part}`}
               className="!text-[12px] font-semibold text-primary no-underline hover:underline"
-              aria-label={`Fußnote ${part}`}
+              aria-label={tr("Fußnote {n}", { n: part })}
             >
               {part}
             </a>
@@ -56,8 +57,13 @@ const BlogPost = () => {
             to="/blog"
             className="inline-flex items-center gap-1.5 !text-[15px] text-muted-foreground hover:text-primary transition-colors mb-8"
           >
-            <ArrowLeft className="w-4 h-4" /> Alle Artikel
+            <ArrowLeft className="w-4 h-4" /> {tr("Alle Artikel")}
           </Link>
+          {getLang() !== "de" && (
+            <p className="mb-8 !text-[15px] rounded-lg bg-secondary px-4 py-3 text-foreground/80">
+              {tr("Unsere Artikel gibt es bisher nur auf Deutsch.")}
+            </p>
+          )}
 
           <header className="mb-10">
             <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full !text-[14px] font-medium mb-5">
@@ -75,12 +81,12 @@ const BlogPost = () => {
               </span>
               <span className="flex items-center gap-1.5 !text-[15px]">
                 <Clock className="w-4 h-4" />
-                {post.readTime} Lesezeit
+                {post.readTime} {tr("Lesezeit")}
               </span>
             </div>
           </header>
 
-          <div className="text-[18px] md:text-[19px] leading-[1.75] text-foreground/90">
+          <div lang="de" className="text-[18px] md:text-[19px] leading-[1.75] text-foreground/90">
             {post.blocks.map((b, i) => {
               if (b.type === "h2")
                 return (
@@ -100,33 +106,33 @@ const BlogPost = () => {
           {/* Call to action */}
           <aside className="mt-14 rounded-2xl bg-secondary p-6 md:p-8">
             <div className="!text-[22px] md:!text-[26px] font-bold leading-snug mb-2">
-              Welche Angebote stehen dir zu?
+              {tr("Welche Angebote stehen dir zu?")}
             </div>
             <p className="!text-[17px] text-foreground/80 mb-5">
-              Beantworte 10 kurze Fragen und sieh, welche Unterstützung es in Berlin für deine Lebenssituation gibt.
+              {tr("Beantworte 10 kurze Fragen und sieh, welche Unterstützung es in Berlin für deine Lebenssituation gibt.")}
             </p>
             <Button asChild size="lg" className="rounded-full !text-[17px] px-7 py-6">
               <Link to="/questionnaire">
-                Jetzt herausfinden <ArrowRight className="ml-2 w-5 h-5" />
+                {tr("Jetzt herausfinden")} <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
           </aside>
 
           {/* Fußnoten und Quellen */}
           <section className="mt-14 border-t border-border pt-8">
-            <h2 className="!text-[20px] font-bold mb-4">Anmerkungen</h2>
+            <h2 className="!text-[20px] font-bold mb-4">{tr("Anmerkungen")}</h2>
             <ol className="space-y-1.5 list-decimal pl-6 marker:text-muted-foreground">
               {post.footnotes.map((fn, i) => (
                 <li key={i} id={`fn-${i + 1}`} className="!text-[15px] text-muted-foreground scroll-mt-24">
                   {fn}{" "}
-                  <a href={`#fnref-${i + 1}`} className="!text-[14px] text-primary hover:underline" aria-label="Zurück zum Text">
+                  <a href={`#fnref-${i + 1}`} className="!text-[14px] text-primary hover:underline" aria-label={tr("Zurück zum Text")}>
                     ↩
                   </a>
                 </li>
               ))}
             </ol>
 
-            <h2 className="!text-[20px] font-bold mt-10 mb-4">Quellen</h2>
+            <h2 className="!text-[20px] font-bold mt-10 mb-4">{tr("Quellen")}</h2>
             <ul className="space-y-3">
               {post.sources.map((s) => (
                 <li key={s.text} className="!text-[15px] text-muted-foreground leading-relaxed">

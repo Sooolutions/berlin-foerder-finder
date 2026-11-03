@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuestionnaire } from '@/context/QuestionnaireContext';
 import { getOptionLabel, getQuestionData } from '@/data/questionnaireData';
+import { tr, getLang } from '@/i18n/LanguageContext';
 import { getQuestionInfo } from '@/data/questionInfo';
 
 const FONT = "'Outfit', system-ui, sans-serif";
@@ -82,7 +83,7 @@ const InfoButton = ({ text, resetKey, size = 38 }: { text: string; resetKey: str
     >
       <button
         type="button"
-        aria-label="Warum fragen wir das?"
+        aria-label={tr("Warum fragen wir das?")}
         aria-expanded={open}
         onClick={() => setPinned((p) => !p)}
         style={{
@@ -112,7 +113,7 @@ const InfoButton = ({ text, resetKey, size = 38 }: { text: string; resetKey: str
           }}
         >
           <div style={{ font: `700 12px ${FONT}`, letterSpacing: '.05em', textTransform: 'uppercase', color: KICKER, marginBottom: 5 }}>
-            Warum fragen wir das?
+            {tr("Warum fragen wir das?")}
           </div>
           <div style={{ font: `400 13.5px/1.5 ${FONT}`, color: '#3f3d39' }}>{text}</div>
         </div>
@@ -126,9 +127,9 @@ const InfoButton = ({ text, resetKey, size = 38 }: { text: string; resetKey: str
  * ------------------------------------------------------------------ */
 const IntroOverlay = ({ onStart }: { onStart: () => void }) => {
   const points = [
-    'Etwa 10 Fragen, rund zwei Minuten',
-    'Keine Anmeldung, keine Namen, keine Kontaktdaten',
-    'Über das Fragezeichen erfährst du, warum wir etwas fragen',
+    tr('Etwa 10 Fragen, rund zwei Minuten'),
+    tr('Keine Anmeldung, keine Namen, keine Kontaktdaten'),
+    tr('Über das Fragezeichen erfährst du, warum wir etwas fragen'),
   ];
   return (
     <div
@@ -148,15 +149,13 @@ const IntroOverlay = ({ onStart }: { onStart: () => void }) => {
     >
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '28px 24px 12px' }}>
         <div style={{ font: `700 13px ${FONT}`, letterSpacing: '.06em', textTransform: 'uppercase', color: KICKER, marginBottom: 9 }}>
-          Bevor es losgeht
+          {tr("Bevor es losgeht")}
         </div>
         <div id="intro-title" style={{ font: `800 28px/1.12 ${FONT}`, color: '#111', marginBottom: 14 }}>
-          Nur Fragen, die für deine Förderung zählen
+          {tr("Nur Fragen, die für deine Förderung zählen")}
         </div>
         <div style={{ font: `400 15.5px/1.55 ${FONT}`, color: '#4a4844', marginBottom: 20 }}>
-          Wir stellen dir nur Fragen, die relevant sind, um dir passende Förderungen und Angebote anzuzeigen.
-          Nichts davon speichern wir. Deine Antworten nutzen wir ausschließlich, um unsere Datenbank passend
-          zu deiner Situation zu filtern.
+          {tr("Wir stellen dir nur Fragen, die relevant sind, um dir passende Förderungen und Angebote anzuzeigen. Nichts davon speichern wir. Deine Antworten nutzen wir ausschließlich, um unsere Datenbank passend zu deiner Situation zu filtern.")}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
           {points.map((p) => (
@@ -182,7 +181,7 @@ const IntroOverlay = ({ onStart }: { onStart: () => void }) => {
           ))}
         </div>
         <div style={{ font: `400 12.5px/1.5 ${FONT}`, color: '#9a968f', marginTop: 18 }}>
-          Deine Antworten bleiben nur in diesem Browserfenster und werden gelöscht, sobald du es schließt.
+          {tr("Deine Antworten bleiben nur in diesem Browserfenster und werden gelöscht, sobald du es schließt.")}
         </div>
       </div>
       <div style={{ padding: '12px 24px 22px', flex: 'none' }}>
@@ -201,7 +200,7 @@ const IntroOverlay = ({ onStart }: { onStart: () => void }) => {
             cursor: 'pointer',
           }}
         >
-          Los geht's
+          {tr("Los geht's")}
         </button>
       </div>
     </div>
@@ -359,9 +358,9 @@ const QuestionnaireCard = () => {
   if (!questionData) {
     return (
       <div style={{ textAlign: 'center', padding: 40, font: `500 16px ${FONT}`, color: '#6d6a65' }}>
-        Diese Frage konnte nicht geladen werden.{' '}
+        {tr('Diese Frage konnte nicht geladen werden.')}{' '}
         <button type="button" onClick={() => navigate('/')} style={{ color: ACCENT, background: 'none', border: 0, cursor: 'pointer' }}>
-          Neu starten
+          {tr("Neu starten")}
         </button>
       </div>
     );
@@ -410,7 +409,7 @@ const QuestionnaireCard = () => {
           flex: 'none',
         }}
       >
-        <button type="button" onClick={handleBack} aria-label="Zurück" style={{ ...iconButton(iconSize), fontSize: 18 }}>
+        <button type="button" onClick={handleBack} aria-label={tr("Zurück")} style={{ ...iconButton(iconSize), fontSize: 18 }}>
           ‹
         </button>
         <div
@@ -423,10 +422,10 @@ const QuestionnaireCard = () => {
             color: KICKER,
           }}
         >
-          Frage {currentStep} von {totalSteps}
+          {tr("Frage {n} von {total}", { n: currentStep, total: totalSteps })}
         </div>
-        <InfoButton text={getQuestionInfo(currentQuestionId, questionData.question)} resetKey={currentQuestionId} size={iconSize} />
-        <button type="button" onClick={() => navigate('/')} aria-label="Fragebogen verlassen" style={{ ...iconButton(iconSize), fontSize: 16 }}>
+        <InfoButton text={tr(getQuestionInfo(currentQuestionId, questionData.question))} resetKey={currentQuestionId} size={iconSize} />
+        <button type="button" onClick={() => navigate('/')} aria-label={tr("Fragebogen verlassen")} style={{ ...iconButton(iconSize), fontSize: 16 }}>
           ✕
         </button>
       </div>
@@ -455,14 +454,14 @@ const QuestionnaireCard = () => {
             }}
           >
             <div style={{ font: `800 ${level.title}px/1.12 ${FONT}`, color: '#111', marginBottom: level.hint ? 8 : tight ? 9 : 12 }}>
-              {questionData.question}
+              {tr(questionData.question)}
             </div>
 
             {level.hint && (
               <div style={{ font: `400 14px/1.45 ${FONT}`, color: '#8b8781', marginBottom: density >= 2 ? 12 : 18 }}>
                 {isMultiSelect
-                  ? `Wähle bis zu ${maxSelections} Optionen.`
-                  : 'Wähle die Option, die am besten passt.'}
+                  ? tr('Wähle bis zu {n} Optionen.', { n: maxSelections })
+                  : tr('Wähle die Option, die am besten passt.')}
               </div>
             )}
 
@@ -531,7 +530,7 @@ const QuestionnaireCard = () => {
                         hyphens: 'auto',
                         overflowWrap: 'anywhere',
                       }}
-                      lang="de"
+                      lang={getLang()}
                     >
                       {getOptionLabel(currentQuestionId, option.id)}
                     </span>
@@ -561,7 +560,7 @@ const QuestionnaireCard = () => {
             transition: 'all .18s',
           }}
         >
-          {isMultiSelect ? `Weiter (${multiSelections.length}/${maxSelections})` : 'Weiter'}
+          {isMultiSelect ? `${tr('Weiter')} (${multiSelections.length}/${maxSelections})` : tr('Weiter')}
         </button>
       </div>
     </div>

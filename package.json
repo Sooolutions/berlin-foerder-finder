@@ -12,7 +12,8 @@
     "retag": "node --env-file=.env --import tsx/esm scripts/retag.ts",
     "retag:dry": "node --env-file=.env --import tsx/esm scripts/retag.ts --dry-run",
     "translate": "node --env-file=.env --import tsx/esm scripts/translate.ts",
-    "check:questionnaire": "node --import tsx/esm scripts/check-questionnaire.ts"
+    "check:questionnaire": "node --import tsx/esm scripts/check-questionnaire.ts",
+    "check:translations": "node --import tsx/esm scripts/check-translations.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.97.1",

@@ -12,6 +12,8 @@ import ScrollReveal from "@/components/home/ScrollReveal";
 import Counter from "@/components/home/Counter";
 import heroImg from "@/assets/hero-wallet.jpg";
 import heroImgMobile from "@/assets/hero-wallet-mobile.jpg";
+import { useLanguage, tr } from "@/i18n/LanguageContext";
+import { useFundingTranslations } from "@/hooks/useFundingTranslations";
 
 interface FundingTeaser {
   id: string;
@@ -23,24 +25,26 @@ interface FundingTeaser {
   funding_type?: "staatlich" | "privat" | "karitativ" | null;
 }
 
-const steps = [
+const steps = () => [
   {
-    title: "Fragen beantworten",
-    desc: "10 kurze Fragen zu deiner Lebenssituation.",
+    title: tr("Fragen beantworten"),
+    desc: tr("10 kurze Fragen zu deiner Lebenssituation."),
   },
   {
-    title: "Angebote entdecken",
-    desc: "Wir zeigen dir passende Förderungen und Unterstützung.",
+    title: tr("Angebote entdecken"),
+    desc: tr("Wir zeigen dir passende Förderungen und Unterstützung."),
   },
   {
-    title: "Förderung beantragen",
-    desc: "Direkt zur richtigen Anlaufstelle — ohne Umwege.",
+    title: tr("Förderung beantragen"),
+    desc: tr("Direkt zur richtigen Anlaufstelle — ohne Umwege."),
   },
 ];
 
 const Index = () => {
   const navigate = useNavigate();
-  const [fundingTeasers, setFundingTeasers] = useState<FundingTeaser[]>([]);
+  const { t } = useLanguage();
+  const [rawTeasers, setFundingTeasers] = useState<FundingTeaser[]>([]);
+  const fundingTeasers = useFundingTranslations(rawTeasers);
   const [offerCount, setOfferCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -93,17 +97,17 @@ const Index = () => {
             className="relative z-10 text-center px-6 max-w-3xl mx-auto"
           >
             <h1 className="text-white !text-[42px] md:!text-[72px] font-black leading-[1.05] mb-6 drop-shadow-[0_4px_28px_rgba(0,0,0,0.75)]">
-              Da ist mehr drin!
+              {t("Da ist mehr drin!")}
             </h1>
             <p className="text-white/90 !text-lg md:!text-xl max-w-xl mx-auto mb-10 !font-normal [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
-              Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.
+              {t("Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.")}
             </p>
             <Button
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-10 py-6 text-lg rounded-full shadow-xl"
               onClick={startQuestionnaire}
             >
-              Jetzt herausfinden
+              {t("Jetzt herausfinden")}
               <ArrowRight className="ml-2 w-5 h-5" strokeWidth={2.5} />
             </Button>
           </motion.div>
@@ -123,23 +127,23 @@ const Index = () => {
             <div className="space-y-8 md:space-y-10 mb-14">
               <ScrollReveal>
                 <p className="!text-2xl md:!text-4xl !font-medium text-muted-foreground/50 leading-snug">
-                  „Schon wieder knapp vor dem Monatsende?"
+                  {t("„Schon wieder knapp vor dem Monatsende?“")}
                 </p>
               </ScrollReveal>
               <ScrollReveal delay={0.12}>
                 <p className="!text-2xl md:!text-4xl !font-medium text-muted-foreground/70 leading-snug">
-                  „Irgendwo gibt's bestimmt was für mich — aber wann soll ich das rausfinden?"
+                  {t("„Irgendwo gibt's bestimmt was für mich — aber wann soll ich das rausfinden?“")}
                 </p>
               </ScrollReveal>
               <ScrollReveal delay={0.24}>
                 <p className="!text-2xl md:!text-4xl !font-semibold text-foreground leading-snug">
-                  „Den Antrag hab ich angefangen. Liegt noch irgendwo."
+                  {t("„Den Antrag hab ich angefangen. Liegt noch irgendwo.“")}
                 </p>
               </ScrollReveal>
             </div>
             <ScrollReveal delay={0.36}>
               <p className="!text-xl md:!text-2xl !font-semibold text-primary">
-                Genau dafür ist MehrDrin da.
+                {t("Genau dafür ist MehrDrin da.")}
               </p>
             </ScrollReveal>
           </div>
@@ -150,12 +154,12 @@ const Index = () => {
           <div className="container mx-auto max-w-5xl">
             <ScrollReveal>
               <p className="text-center !text-sm md:!text-base !font-semibold tracking-wide text-primary mb-16 uppercase">
-                Kein Amt. Keine Warteschlange. Nur deine Möglichkeiten.
+                {t("Kein Amt. Keine Warteschlange. Nur deine Möglichkeiten.")}
               </p>
             </ScrollReveal>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative">
               <div className="hidden md:block absolute top-8 left-[16.6%] right-[16.6%] h-px bg-border" />
-              {steps.map((step, i) => (
+              {steps().map((step, i) => (
                 <ScrollReveal key={step.title} delay={i * 0.15}>
                   <div className="text-center relative">
                     <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center !text-2xl font-bold mx-auto mb-6 relative z-10">
@@ -174,11 +178,13 @@ const Index = () => {
         <section className="py-24 px-4 bg-white">
           <div className="container mx-auto max-w-6xl">
             <ScrollReveal>
-              <h2 className="text-foreground text-center mb-4">Das wartet auf dich.</h2>
+              <h2 className="text-foreground text-center mb-4">{t("Das wartet auf dich.")}</h2>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
               <p className="text-muted-foreground text-center max-w-xl mx-auto mb-14">
-                Ein Ausschnitt aus {offerCount ? `über ${Math.floor(offerCount / 10) * 10}` : "vielen"} Angeboten für Bildung, Wohnen, Familie und Gesundheit.
+                {offerCount
+                  ? t("Ein Ausschnitt aus über {n} Angeboten für Bildung, Wohnen, Familie und Gesundheit.", { n: Math.floor(offerCount / 10) * 10 })
+                  : t("Ein Ausschnitt aus vielen Angeboten für Bildung, Wohnen, Familie und Gesundheit.")}
               </p>
             </ScrollReveal>
 
@@ -202,7 +208,7 @@ const Index = () => {
                         className="inline-block !text-xs font-semibold px-2.5 py-1 rounded-full mb-4 text-white"
                         style={{ backgroundColor: colors.accent }}
                       >
-                        {funding.categories?.[0] ?? funding.organization}
+                        {funding.categories?.[0] ? t(funding.categories[0]) : funding.organization}
                       </span>
                       <h3 className="font-semibold mb-2 line-clamp-2 !text-lg text-foreground">
                         {funding.title}
@@ -223,17 +229,17 @@ const Index = () => {
           <div className="container mx-auto max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-14 md:gap-8 text-center">
             <ScrollReveal>
               <Counter to={offerCount ?? 0} className="block !text-6xl md:!text-7xl font-black mb-3" />
-              <p className="text-background/70">Angebote, staatlich und nicht-staatlich</p>
+              <p className="text-background/70">{t("Angebote, staatlich und nicht-staatlich")}</p>
             </ScrollReveal>
             <ScrollReveal delay={0.15}>
               <Counter to={10} className="block !text-6xl md:!text-7xl font-black mb-3" />
-              <p className="text-background/70">kurze Fragen bis zu deiner Übersicht</p>
+              <p className="text-background/70">{t("kurze Fragen bis zu deiner Übersicht")}</p>
             </ScrollReveal>
             <ScrollReveal delay={0.3}>
               <span className="block !text-6xl md:!text-7xl font-black mb-3">
                 1-2<span className="!text-2xl align-top ml-1">min</span>
               </span>
-              <p className="text-background/70">bis du weißt, was für dich drin ist</p>
+              <p className="text-background/70">{t("bis du weißt, was für dich drin ist")}</p>
             </ScrollReveal>
           </div>
         </section>
@@ -253,11 +259,9 @@ const Index = () => {
                   </p>
                 </div>
                 <div className="md:col-span-3">
-                  <h2 className="text-foreground mb-4">Wir bauen das für Berlin.</h2>
+                  <h2 className="text-foreground mb-4">{t("Wir bauen das für Berlin.")}</h2>
                   <p className="text-muted-foreground !text-lg">
-                    MehrDrin entsteht gerade — von Menschen, die selbst durch Berliner
-                    Bürokratie navigieren mussten. Noch gibt es keine große Geschichte zu
-                    erzählen, nur den Anspruch, das für dich einfacher zu machen.
+                    {t("MehrDrin entsteht gerade — von Menschen, die selbst durch Berliner Bürokratie navigieren mussten. Noch gibt es keine große Geschichte zu erzählen, nur den Anspruch, das für dich einfacher zu machen.")}
                   </p>
                 </div>
               </div>
@@ -270,51 +274,46 @@ const Index = () => {
           <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
               <ScrollReveal>
-                <h2 className="text-foreground">Antworten auf die häufig gestellten Fragen.</h2>
+                <h2 className="text-foreground">{t("Antworten auf die häufig gestellten Fragen.")}</h2>
               </ScrollReveal>
               <ScrollReveal delay={0.1}>
                 <Accordion type="single" collapsible className="space-y-4">
                   <AccordionItem value="item-1" className="border rounded-xl px-6 bg-secondary">
-                    <AccordionTrigger className="!text-lg font-medium">Was ist MehrDrin?</AccordionTrigger>
+                    <AccordionTrigger className="!text-lg font-medium">{t("Was ist MehrDrin?")}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
-                      MehrDrin ist eine Plattform, die dir hilft, passende Förderungen und
-                      Unterstützungsangebote für deine Lebenssituation zu finden.
+                      {t("MehrDrin ist eine Plattform, die dir hilft, passende Förderungen und Unterstützungsangebote für deine Lebenssituation zu finden.")}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-2" className="border rounded-xl px-6 bg-secondary">
-                    <AccordionTrigger className="!text-lg font-medium">Ist die Nutzung kostenlos?</AccordionTrigger>
+                    <AccordionTrigger className="!text-lg font-medium">{t("Ist die Nutzung kostenlos?")}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
-                      Ja, die Nutzung von MehrDrin ist komplett kostenlos.
+                      {t("Ja, die Nutzung von MehrDrin ist komplett kostenlos.")}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-3" className="border rounded-xl px-6 bg-secondary">
-                    <AccordionTrigger className="!text-lg font-medium">Welche Daten werden erhoben?</AccordionTrigger>
+                    <AccordionTrigger className="!text-lg font-medium">{t("Welche Daten werden erhoben?")}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
-                      Wir erheben nur die Daten, die für die Ermittlung passender Förderungen
-                      notwendig sind. Deine Daten werden vertraulich behandelt.
+                      {t("Wir erheben nur die Daten, die für die Ermittlung passender Förderungen notwendig sind. Deine Daten werden vertraulich behandelt.")}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-4" className="border rounded-xl px-6 bg-secondary">
                     <AccordionTrigger className="!text-lg font-medium">
-                      Was passiert mit meinen Angaben nach der Nutzung?
+                      {t("Was passiert mit meinen Angaben nach der Nutzung?")}
                     </AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
-                      Deine Antworten werden ausschließlich zur Ermittlung passender Angebote
-                      verwendet und nicht an Dritte weitergegeben.
+                      {t("Deine Antworten werden ausschließlich zur Ermittlung passender Angebote verwendet und nicht an Dritte weitergegeben.")}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-5" className="border rounded-xl px-6 bg-secondary">
-                    <AccordionTrigger className="!text-lg font-medium">Wie aktuell sind die Informationen?</AccordionTrigger>
+                    <AccordionTrigger className="!text-lg font-medium">{t("Wie aktuell sind die Informationen?")}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
-                      Unsere Datenbank wird regelmäßig aktualisiert und basiert auf offiziellen
-                      Quellen.
+                      {t("Unsere Datenbank wird regelmäßig aktualisiert und basiert auf offiziellen Quellen.")}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-6" className="border rounded-xl px-6 bg-secondary">
-                    <AccordionTrigger className="!text-lg font-medium">Wer steckt hinter MehrDrin?</AccordionTrigger>
+                    <AccordionTrigger className="!text-lg font-medium">{t("Wer steckt hinter MehrDrin?")}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
-                      MehrDrin wird von einem kleinen Berliner Team gebaut, das die Suche nach
-                      Förderungen einfacher machen möchte.
+                      {t("MehrDrin wird von einem kleinen Berliner Team gebaut, das die Suche nach Förderungen einfacher machen möchte.")}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
@@ -328,17 +327,17 @@ const Index = () => {
           <ScrollReveal>
             <div className="container mx-auto text-center max-w-3xl">
               <h2 className="text-primary-foreground mb-6">
-                Finde jetzt heraus, was dir zusteht.
+                {t("Finde jetzt heraus, was dir zusteht.")}
               </h2>
               <p className="text-primary-foreground/80 mb-8">
-                In nur wenigen Minuten zu deinen passenden Förderungen.
+                {t("In nur wenigen Minuten zu deinen passenden Förderungen.")}
               </p>
               <Button
                 size="lg"
                 className="bg-white hover:bg-white/90 text-primary px-12 py-6 text-xl rounded-full shadow-xl"
                 onClick={startQuestionnaire}
               >
-                Jetzt starten
+                {t("Jetzt starten")}
                 <ArrowRight className="ml-2 w-6 h-6" />
               </Button>
             </div>

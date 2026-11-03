@@ -1,3 +1,5 @@
+import { tr } from "@/i18n/LanguageContext";
+
 /**
  * Eine Antwortoption.
  *
@@ -1533,5 +1535,6 @@ export function getOption(questionId: string, optionId: string): AnswerOption | 
  * später die Übersetzung eingehängt werden kann.
  */
 export function getOptionLabel(questionId: string, optionId: string): string {
-  return getOption(questionId, optionId)?.label ?? optionId;
+  const label = getOption(questionId, optionId)?.label;
+  return label ? tr(label) : optionId;
 }

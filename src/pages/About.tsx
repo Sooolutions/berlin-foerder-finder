@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useLanguage, tr } from "@/i18n/LanguageContext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import teamPortrait from "@/assets/team-portrait.jpg";
 
 const carouselCards = [
 {
-  text: "Wusstest du, dass ca. 50% der staatlichen Hilfeleistungen nicht in Anspruch genommen werden?"
+  text: "Wusstest du, dass ca. 50% der staatlichen Hilfeleistungen nicht in Anspruch genommen werden?",
 },
 {
   text: "Jährlich bleiben über 10 Milliarden Euro an Fördergeldern ungenutzt – weil Menschen nicht wissen, dass sie Anspruch haben."
@@ -19,6 +20,7 @@ const carouselCards = [
 
 
 const About = () => {
+  const { t } = useLanguage();
   const [currentCard, setCurrentCard] = useState(0);
 
   const nextCard = () => {
@@ -42,7 +44,7 @@ const About = () => {
               <div className="rounded-3xl overflow-hidden aspect-[4/3] bg-muted">
                 <img
 
-                  alt="Das MehrDrin Team"
+                  alt={t("Das MehrDrin Team")}
                   className="w-full h-full object-cover" src="/lovable-uploads/4578534a-313a-40ef-911f-6629001815f5.jpg" />
                 
               </div>
@@ -51,12 +53,12 @@ const About = () => {
             {/* Text Content - Right aligned */}
             <div className="lg:w-1/4 lg:text-right">
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                Mehr drin für dich!
+                {t("Mehr drin für dich!")}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Wir glauben, dass Berlin mehr verdient.<br />
-                Mehr Bildung. Mehr Geld. Mehr Chancen.<br />
-                Deswegen haben wir MehrDrin gestartet.
+                {t("Wir glauben, dass Berlin mehr verdient.")}<br />
+                {t("Mehr Bildung. Mehr Geld. Mehr Chancen.")}<br />
+                {t("Deswegen haben wir MehrDrin gestartet.")}
               </p>
             </div>
           </div>
@@ -71,16 +73,16 @@ const About = () => {
             <div className="max-w-4xl mx-auto text-center">
               {/* Headers */}
               <h2 className="text-xl md:text-2xl font-medium text-white/80 mb-2">
-                Unsere Vision
+                {t("Unsere Vision")}
               </h2>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-12">
-                Unterstützung die ankommt
+                {t("Unterstützung die ankommt")}
               </h1>
 
               {/* White Card Carousel */}
               <div className="bg-white rounded-3xl p-8 md:p-12 mb-8 min-h-[200px] flex items-center justify-center">
                 <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground text-center leading-relaxed">
-                  {carouselCards[currentCard].text}
+                  {tr(carouselCards[currentCard].text)}
                 </h1>
               </div>
 
@@ -124,10 +126,10 @@ const About = () => {
         <section className="container mx-auto px-4 py-16">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Wir stehen für Vielfalt
+              {t("Wir stehen für Vielfalt")}
             </h1>
             <p className="text-lg text-muted-foreground">
-              Wir wünschen uns Einfachheit, Fairness und echten Zugang zu Chancen für Alle!
+              {t("Wir wünschen uns Einfachheit, Fairness und echten Zugang zu Chancen für Alle!")}
             </p>
           </div>
 
@@ -141,7 +143,7 @@ const About = () => {
                   <Sun className="h-7 w-7 text-white" />
                 </div>
                 <p className="text-foreground text-lg">
-                  <span className="font-bold">Transparenz</span> bedeutet für uns eine offene, leicht zugängliche Datenbank ohne Hürden.
+                  <span className="font-bold">{t("Transparenz")}</span> {t("bedeutet für uns eine offene, leicht zugängliche Datenbank ohne Hürden.")}
                 </p>
               </div>
               
@@ -151,7 +153,7 @@ const About = () => {
                   <Share2 className="h-7 w-7 text-white" />
                 </div>
                 <p className="text-foreground text-lg">
-                  <span className="font-bold">Partnerschaft</span> verstehen wir als keine Alleingänge, sondern enge Zusammenarbeit mit Behörden.
+                  <span className="font-bold">{t("Partnerschaft")}</span> {t("verstehen wir als keine Alleingänge, sondern enge Zusammenarbeit mit Behörden.")}
                 </p>
               </div>
             </div>
@@ -161,7 +163,7 @@ const About = () => {
               <div className="rounded-3xl overflow-hidden aspect-[3/4] w-full max-w-sm">
                 <img
 
-                  alt="Team Member"
+                  alt={t("Teammitglied")}
                   className="w-full h-full object-cover" src="/lovable-uploads/d137245e-cec6-4146-be28-7a3e0e7bfea1.jpg" />
                 
               </div>
@@ -175,7 +177,7 @@ const About = () => {
                   <Users className="h-7 w-7 text-white" />
                 </div>
                 <p className="text-foreground text-lg">
-                  <span className="font-bold">Gemeinwohl</span> heißt für uns keine Gewinne, keine Werbung.
+                  <span className="font-bold">{t("Gemeinwohl")}</span> {t("heißt für uns keine Gewinne, keine Werbung.")}
                 </p>
               </div>
               
@@ -185,7 +187,7 @@ const About = () => {
                   <SmilePlus className="h-7 w-7 text-white" />
                 </div>
                 <p className="text-foreground text-lg">
-                  <span className="font-bold">Selbstbestimmung</span> bedeutet für uns, Menschen jeder Sprache und Herkunft zu befähigen.
+                  <span className="font-bold">{t("Selbstbestimmung")}</span> {t("bedeutet für uns, Menschen jeder Sprache und Herkunft zu befähigen.")}
                 </p>
               </div>
             </div>
@@ -196,18 +198,18 @@ const About = () => {
         <section className="py-20 px-4 bg-white">
           <div className="container mx-auto text-center max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Es ist Mehr für dich drin.<br />
-              Finde jetzt heraus was dir zusteht!
+              {t("Es ist Mehr für dich drin.")}<br />
+              {t("Finde jetzt heraus was dir zusteht!")}
             </h1>
             <p className="text-muted-foreground mb-8">
-              Kostenlos und anonym zum vollständigen Angebot!
+              {t("Kostenlos und anonym zum vollständigen Angebot!")}
             </p>
             <Button
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 py-6 text-xl rounded-xl"
               onClick={() => window.location.href = '/questionnaire'}>
               
-              Jetzt Entdecken!
+              {t("Jetzt Entdecken!")}
               <ArrowRight className="ml-2 w-6 h-6" />
             </Button>
           </div>

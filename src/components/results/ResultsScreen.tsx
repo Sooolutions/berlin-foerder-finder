@@ -13,6 +13,7 @@ import DetailSheet from './DetailSheet';
 import { ApplyButton, CategoryChip, CloseButton, DetailPanel, DetailRows } from './DetailParts';
 import { categoryOf, r, schemeOf } from './resultsTheme';
 import { useCountUp } from './useCountUp';
+import { tr } from '@/i18n/LanguageContext';
 
 type Mode = 'overview' | 'story';
 
@@ -25,8 +26,8 @@ const ModeToggle = ({ mode, onToggle, large = false }: { mode: Mode; onToggle: (
   <button
     type="button"
     onClick={onToggle}
-    aria-label={mode === 'overview' ? 'Zur Story-Ansicht' : 'Zur Übersicht'}
-    title={mode === 'overview' ? 'Story-Ansicht' : 'Übersicht'}
+    aria-label={mode === 'overview' ? tr('Zur Story-Ansicht') : tr('Zur Übersicht')}
+    title={mode === 'overview' ? tr('Story-Ansicht') : tr('Übersicht')}
     style={{
       width: large ? 46 : 40,
       height: large ? 46 : 40,
@@ -109,7 +110,7 @@ const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: stri
         <path d="M12 21s-7-6.2-7-11.5a7 7 0 1 1 14 0C19 14.8 12 21 12 21z" />
         <circle cx="12" cy="9.5" r="2.5" />
       </svg>
-      <span style={{ font: 'inherit' }}>{value || 'Alle Bezirke'}</span>
+      <span style={{ font: 'inherit' }}>{value || tr('Alle Bezirke')}</span>
       <svg
         width="10"
         height="10"
@@ -123,12 +124,12 @@ const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: stri
         <path d="M6 9l6 6 6-6" />
       </svg>
       <select
-        aria-label="Nach Bezirk filtern"
+        aria-label={tr("Nach Bezirk filtern")}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%' }}
       >
-        <option value="">Alle Bezirke</option>
+        <option value="">{tr("Alle Bezirke")}</option>
         {BEZIRKE.map((b) => (
           <option key={b} value={b}>
             {b}
@@ -270,7 +271,7 @@ const StoryCard = ({ funding, onOpen }: { funding: Funding; onOpen: () => void }
             cursor: 'pointer',
           }}
         >
-          Details ansehen
+          {tr('Details ansehen')}
         </button>
         <div style={{ textAlign: 'center', font: `600 12px ${FONT}`, opacity: 0.6, marginTop: 12 }}>
           ↑ weiter wischen
@@ -415,7 +416,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
       <div style={{ font: `600 13px ${FONT}`, color: '#9a9a9a' }}>
-        Fokus-Modus — ein Angebot nach dem anderen
+        {tr('Fokus-Modus — ein Angebot nach dem anderen')}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, maxWidth: '100%' }}>
@@ -521,7 +522,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
                       borderRadius: r(-5),
                     }}
                   >
-                    Details ansehen →
+                    {tr('Details ansehen')} →
                   </span>
                 </div>
               </div>
@@ -548,7 +549,7 @@ const VISIBLE_PER_ROW = 6;
 const REST_KEY = '__rest__';
 
 const reasonTitle = (group: ReasonGroup<Funding>) =>
-  group.key === REST_KEY ? 'Weitere Angebote für deine Altersgruppe' : `Weil du „${group.option}“ angeklickt hast`;
+  group.key === REST_KEY ? tr('Weitere Angebote für deine Altersgruppe') : tr('Weil du „{option}“ angeklickt hast', { option: group.option });
 
 const ReasonHeading = ({ group, large = false }: { group: ReasonGroup<Funding>; large?: boolean }) => (
   <div style={{ padding: large ? '0 0 14px' : '26px 0 8px' }}>
@@ -628,7 +629,7 @@ const MoreCard = ({ hidden, onClick }: { hidden: number; onClick: () => void }) 
   >
     +{hidden}
     <br />
-    weitere
+    {tr('weitere')}
   </button>
 );
 
@@ -695,7 +696,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
       <div style={{ padding: '20px 0' }}>
         <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} />
         <div style={{ textAlign: 'center', padding: '50px 20px', font: `500 16px ${FONT}`, color: '#6d6a65' }}>
-          Für deine Angaben haben wir noch keine passenden Angebote gefunden.
+          {tr('Für deine Angaben haben wir noch keine passenden Angebote gefunden.')}
         </div>
       </div>
     );
@@ -723,7 +724,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
           }}
         >
           <div>
-            <div style={{ font: `800 23px ${FONT}`, color: '#111' }}>Deine Ergebnisse</div>
+            <div style={{ font: `800 23px ${FONT}`, color: '#111' }}>{tr('Deine Ergebnisse')}</div>
             <div
               style={{
                 display: 'flex',
@@ -738,7 +739,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                 {count.value}
               </span>
               <span style={{ font: 'inherit' }}>
-                {district ? `Angebote passen zu dir in ${district}` : 'Angebote passen zu dir'}
+                {district ? tr('Angebote passen zu dir in {district}', { district }) : tr('Angebote passen zu dir')}
               </span>
             </div>
           </div>
@@ -762,7 +763,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                 cursor: 'pointer',
               }}
             >
-              <CategoryChip funding={hero} label="Top-Treffer" />
+              <CategoryChip funding={hero} label={tr('Top-Treffer')} />
               <div style={{ font: `800 25px/1.14 ${FONT}`, margin: '13px 0 8px' }}>{hero.title}</div>
               <div style={{ font: `400 14px/1.55 ${FONT}`, opacity: 0.78, marginBottom: 16 }}>
                 {hero.description}
@@ -800,7 +801,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
             {ranked.length > 0 && (
               <>
                 <div style={{ font: `800 18px ${FONT}`, color: '#111', padding: '24px 0 11px' }}>
-                  Weitere Top-Treffer
+                  {tr('Weitere Top-Treffer')}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {ranked.map((funding, i) => {
@@ -909,7 +910,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                 color: '#4F90DE',
               }}
             >
-              Deine Ergebnisse
+              {tr('Deine Ergebnisse')}
             </div>
             <div
               style={{
@@ -925,10 +926,10 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                 {count.value}
               </span>
               <span style={{ font: 'inherit' }}>
-                Angebote passen zu dir
+                {tr('Angebote passen zu dir')}
                 {district && (
                   <span style={{ display: 'block', font: `600 16px ${FONT}`, color: '#8d8d8d', marginTop: 4 }}>
-                    berlinweit und in {district}
+                    {tr('berlinweit und in {district}', { district })}
                   </span>
                 )}
               </span>
@@ -975,7 +976,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                       style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 18 }}
                     >
                       <div>
-                        <CategoryChip funding={hero} label="Top-Treffer" />
+                        <CategoryChip funding={hero} label={tr('Top-Treffer')} />
                         <div style={{ font: `800 32px/1.1 ${FONT}`, color: '#111', margin: '14px 0 7px' }}>
                           {hero.title}
                         </div>
@@ -1015,7 +1016,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                   <div
                     style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}
                   >
-                    <CategoryChip funding={hero} label="Top-Treffer" />
+                    <CategoryChip funding={hero} label={tr('Top-Treffer')} />
                     <div>
                       <div style={{ font: `800 33px/1.1 ${FONT}`, margin: '0 0 10px' }}>{hero.title}</div>
                       <div
@@ -1047,7 +1048,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                             borderRadius: r(-5),
                           }}
                         >
-                          Details ansehen →
+                          {tr('Details ansehen')} →
                         </span>
                       </div>
                     </div>
@@ -1058,7 +1059,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
               {/* Rangliste — jede Zeile klappt an Ort und Stelle auf */}
               {openId !== hero.id && ranked.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ font: `800 17px ${FONT}`, color: '#111' }}>Weitere Top-Treffer</div>
+                  <div style={{ font: `800 17px ${FONT}`, color: '#111' }}>{tr('Weitere Top-Treffer')}</div>
                   {ranked.map((funding, i) => {
                     const scheme = schemeOf(funding);
                     const isOpen = openId === funding.id;
@@ -1190,7 +1191,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                         cursor: 'pointer',
                       }}
                     >
-                      Alle {group.fundings.length} anzeigen
+                      {tr('Alle {n} anzeigen', { n: group.fundings.length })}
                     </button>
                   )}
                 </section>

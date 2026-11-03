@@ -1,5 +1,6 @@
 import type { Funding } from '@/hooks/useFundingResults';
 import { r, rowsOf, schemeOf } from './resultsTheme';
+import { tr } from '@/i18n/LanguageContext';
 
 /**
  * Die Detailzeilen (Förderhöhe, Frist, Prozess, Kontakt, Telefon).
@@ -84,7 +85,7 @@ export const ApplyButton = ({ funding, block = false }: { funding: Funding; bloc
         cursor: 'pointer',
       }}
     >
-      Zur Antragsseite ↗
+      {tr('Zur Antragsseite')} ↗
     </a>
   );
 };
@@ -136,7 +137,7 @@ export const CloseButton = ({
 }) => (
   <button
     type="button"
-    aria-label="Schließen"
+    aria-label={tr("Schließen")}
     onClick={onClick}
     style={{
       width: 36,

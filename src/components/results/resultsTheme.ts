@@ -1,3 +1,4 @@
+import { tr } from '@/i18n/LanguageContext';
 import type { Funding } from '@/hooks/useFundingResults';
 
 /**
@@ -56,7 +57,7 @@ export const schemeOf = (funding: Pick<Funding, 'funding_type' | 'id'>): Scheme 
 
 /** Kategorie-Label für Chips — erste Kategorie, sonst der Fördertyp. */
 export const categoryOf = (funding: Funding): string =>
-  funding.categories?.[0] ?? funding.funding_type ?? 'Angebot';
+  tr(funding.categories?.[0] ?? funding.funding_type ?? 'Angebot');
 
 export interface DetailRow {
   label: string;
@@ -70,16 +71,16 @@ export interface DetailRow {
 /** Die Detailzeilen eines Angebots — leere Felder fallen raus. */
 export const rowsOf = (funding: Funding): DetailRow[] =>
   [
-    funding.amount && { label: 'Förderhöhe', value: funding.amount, strong: true },
-    funding.application_deadline && { label: 'Antragsfrist', value: funding.application_deadline },
-    funding.application_process && { label: 'Antragsprozess', value: funding.application_process },
+    funding.amount && { label: tr('Förderhöhe'), value: funding.amount, strong: true },
+    funding.application_deadline && { label: tr('Antragsfrist'), value: funding.application_deadline },
+    funding.application_process && { label: tr('Antragsprozess'), value: funding.application_process },
     funding.contact_email && {
-      label: 'Kontakt',
+      label: tr('Kontakt'),
       value: funding.contact_email,
       href: `mailto:${funding.contact_email}`,
     },
     funding.contact_phone && {
-      label: 'Telefon',
+      label: tr('Telefon'),
       value: funding.contact_phone,
       href: `tel:${funding.contact_phone.replace(/\s/g, '')}`,
     },

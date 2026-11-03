@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
+import LanguageSwitcher from "@/i18n/LanguageSwitcher";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface HeaderProps {
   backToHome?: boolean;
@@ -12,6 +14,7 @@ const Header = ({ backToHome = false }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     setMenuOpen(false);
@@ -34,15 +37,18 @@ const Header = ({ backToHome = false }: HeaderProps) => {
           </Link>
 
           {backToHome ? (
-            <Link to="/" className="whitespace-nowrap text-[15px] sm:text-[18px] text-foreground hover:text-primary transition-colors">
-              ← <span className="hidden sm:inline">Zurück zur </span>Startseite
-            </Link>
+            <div className="flex items-center gap-3 sm:gap-6">
+              <LanguageSwitcher />
+              <Link to="/" className="whitespace-nowrap text-[15px] sm:text-[18px] text-foreground hover:text-primary transition-colors">
+                ← <span className="hidden sm:inline">{t("Zurück zur")} </span>{t("Startseite")}
+              </Link>
+            </div>
           ) : (
             <>
               {/* Desktop nav */}
               <nav className="hidden md:flex items-center gap-12">
                 <Link to="/about" className="text-[20px] text-foreground hover:text-primary transition-colors">
-                  über uns
+                  {t("über uns")}
                 </Link>
                 <Link to="/blog" className="text-[20px] text-foreground hover:text-primary transition-colors">
                   blog
@@ -51,20 +57,24 @@ const Header = ({ backToHome = false }: HeaderProps) => {
                   onClick={() => navigate("/questionnaire")}
                   className="bg-foreground hover:bg-foreground/90 text-background text-[20px] px-6 py-2 rounded-[10px]"
                 >
-                  start
+                  {t("start")}
                 </Button>
+                <LanguageSwitcher />
               </nav>
 
-              {/* Mobile hamburger */}
+              {/* Mobil: Sprachumschalter direkt sichtbar, daneben das Menü */}
+              <div className="md:hidden flex items-center gap-2 ml-3">
+              <LanguageSwitcher />
               <button
-                className="md:hidden flex flex-col justify-center items-center gap-1.5 w-8 h-8"
+                className="flex flex-col justify-center items-center gap-1.5 w-8 h-8"
                 onClick={() => setMenuOpen(true)}
-                aria-label="Menü öffnen"
+                aria-label={t("Menü öffnen")}
               >
                 <span className="block w-6 h-0.5 bg-foreground rounded-full" />
                 <span className="block w-6 h-0.5 bg-foreground rounded-full" />
                 <span className="block w-6 h-0.5 bg-foreground rounded-full" />
               </button>
+              </div>
             </>
           )}
         </div>
@@ -91,7 +101,7 @@ const Header = ({ backToHome = false }: HeaderProps) => {
         {/* Close button */}
         <button
           onClick={() => setMenuOpen(false)}
-          aria-label="Menü schließen"
+          aria-label={t("Menü schließen")}
           className="self-end text-foreground hover:text-primary transition-colors"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -105,7 +115,7 @@ const Header = ({ backToHome = false }: HeaderProps) => {
             to="/about"
             className="text-[20px] text-foreground hover:text-primary transition-colors"
           >
-            über uns
+            {t("über uns")}
           </Link>
           <Link
             to="/blog"
@@ -117,7 +127,7 @@ const Header = ({ backToHome = false }: HeaderProps) => {
             onClick={() => navigate("/questionnaire")}
             className="bg-foreground hover:bg-foreground/90 text-background text-[20px] px-6 py-2 rounded-[10px] w-full"
           >
-            start
+            {t("start")}
           </Button>
         </nav>
       </div>

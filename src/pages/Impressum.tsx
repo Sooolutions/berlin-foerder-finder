@@ -1,5 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { tr, getLang } from "@/i18n/LanguageContext";
 
 const Impressum = () => {
   return (
@@ -7,7 +8,12 @@ const Impressum = () => {
       <Header />
 
       <main className="flex-grow">
-        <div className="container mx-auto px-4 py-16 max-w-3xl">
+        <div lang="de" className="container mx-auto px-4 py-16 max-w-3xl">
+          {getLang() !== "de" && (
+            <p lang={getLang()} className="mb-8 rounded-lg bg-secondary px-4 py-3 text-foreground/80">
+              {tr("Diese Seite ist nur auf Deutsch verfügbar. Rechtlich verbindlich ist die deutsche Fassung.")}
+            </p>
+          )}
           <h1 className="text-4xl font-semibold mb-10">Impressum</h1>
 
           <section className="mb-10">

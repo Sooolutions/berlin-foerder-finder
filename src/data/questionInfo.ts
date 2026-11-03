@@ -40,3 +40,6 @@ export const getQuestionInfo = (questionId: string, questionText: string): strin
   const hit = RULES.find(([re]) => re.test(questionText));
   return hit ? hit[1] : DEFAULT_INFO;
 };
+
+/** Alle Erklärtexte, z. B. für die Prüfung der Übersetzungen. */
+export const ALL_QUESTION_INFO: string[] = [...RULES.map(([, text]) => text), DEFAULT_INFO, NEEDS_INFO];

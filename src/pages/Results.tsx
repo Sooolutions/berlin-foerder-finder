@@ -9,6 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import ResultsScreen from '@/components/results/ResultsScreen';
 import { getActiveAnswers } from '@/utils/answerMappingUtils';
+import { useFundingTranslations } from '@/hooks/useFundingTranslations';
+import { tr } from '@/i18n/LanguageContext';
+import type { Funding } from '@/hooks/useFundingResults';
+
+const NO_FUNDINGS: Funding[] = [];
 
 // Catches render errors in the grid so the page never shows a blank white screen
 class GridErrorBoundary extends Component<
@@ -25,9 +30,9 @@ class GridErrorBoundary extends Component<
     if (this.state.hasError) {
       return (
         <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
-          <p className="text-red-700 mb-4">Die Ergebnisliste konnte nicht geladen werden.</p>
+          <p className="text-red-700 mb-4">{tr("Die Ergebnisliste konnte nicht geladen werden.")}</p>
           <a href="/" className="text-blue-600 hover:underline text-sm">
-            Zur Startseite
+            {tr("Zur Startseite")}
           </a>
         </div>
       );
@@ -41,7 +46,10 @@ const Results = () => {
   const { answers, questionHistory } = useQuestionnaire();
   // Nur Antworten des tatsächlich durchlaufenen Pfads zählen
   const activeAnswers = useMemo(() => getActiveAnswers(answers, questionHistory), [answers, questionHistory]);
-  const { data: fundings, isLoading, error } = useFundingResults(activeAnswers);
+  const { data: rawFundings, isLoading, error } = useFundingResults(activeAnswers);
+  // Texte in der gewählten Sprache, Matching und Reihenfolge bleiben unverändert
+  const translated = useFundingTranslations(rawFundings ?? NO_FUNDINGS);
+  const fundings = rawFundings ? translated : rawFundings;
 
   if (isLoading) {
     return (
@@ -50,8 +58,8 @@ const Results = () => {
         <main className="flex-grow container mx-auto px-4 py-12">
           <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-            <p className="text-lg text-gray-600">Wir durchsuchen alle verfügbaren Angebote für dich...</p>
-            <p className="text-sm text-gray-500">Das dauert nur einen Moment</p>
+            <p className="text-lg text-gray-600">{tr("Wir durchsuchen alle verfügbaren Angebote für dich...")}</p>
+            <p className="text-sm text-gray-500">{tr("Das dauert nur einen Moment")}</p>
           </div>
         </main>
         <Footer />
@@ -66,10 +74,10 @@ const Results = () => {
         <main className="flex-grow container mx-auto px-4 py-12">
           <div className="text-center my-12 max-w-md mx-auto">
             <div className="bg-red-50 border border-red-200 rounded-lg p-8">
-              <p className="text-xl font-bold mb-4 text-red-800">Es ist ein Fehler aufgetreten</p>
-              <p className="text-red-600 mb-6">Bitte versuche es später erneut.</p>
+              <p className="text-xl font-bold mb-4 text-red-800">{tr("Es ist ein Fehler aufgetreten")}</p>
+              <p className="text-red-600 mb-6">{tr("Bitte versuche es später erneut.")}</p>
               <Button onClick={() => navigate('/')} className="bg-blue-600 hover:bg-blue-700">
-                Neue Suche starten
+                {tr("Neue Suche starten")}
               </Button>
             </div>
           </div>
@@ -86,13 +94,13 @@ const Results = () => {
         <main className="flex-grow container mx-auto px-4 py-12">
           <div className="text-center my-12 max-w-2xl mx-auto">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-8">
-              <p className="text-xl font-bold mb-4 text-blue-800">Keine passenden Angebote gefunden</p>
+              <p className="text-xl font-bold mb-4 text-blue-800">{tr("Keine passenden Angebote gefunden")}</p>
               <p className="text-gray-600 mb-6">
-                Versuche es mit anderen Kriterien oder kontaktiere direkt die Beratungsstellen.
+                {tr("Versuche es mit anderen Kriterien oder kontaktiere direkt die Beratungsstellen.")}
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <Button onClick={() => navigate('/')} className="bg-blue-600 hover:bg-blue-700">
-                  Neue Suche starten
+                  {tr("Neue Suche starten")}
                 </Button>
                 <Button variant="outline" asChild>
                   <a
@@ -100,7 +108,7 @@ const Results = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Beratung finden
+                    {tr("Beratung finden")}
                   </a>
                 </Button>
               </div>
