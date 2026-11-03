@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "retag": "node --env-file=.env --import tsx/esm scripts/retag.ts",
-    "retag:dry": "node --env-file=.env --import tsx/esm scripts/retag.ts --dry-run"
+    "retag:dry": "node --env-file=.env --import tsx/esm scripts/retag.ts --dry-run",
+    "translate": "node --env-file=.env --import tsx/esm scripts/translate.ts",
+    "check:questionnaire": "node --import tsx/esm scripts/check-questionnaire.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.97.1",

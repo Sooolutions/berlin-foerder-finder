@@ -1,0 +1,419 @@
+import type { UserAnswers } from "@/context/QuestionnaireContext";
+
+/**
+ * Fragenverlauf. Bestimmt aus der aktuellen Frage und den gespeicherten
+ * Antworten die nächste Frage. Alle Vergleiche laufen über die
+ * Options-ids aus questionnaireData.ts, nie über Anzeigetexte. Dadurch
+ * bleibt der Verlauf in jeder Sprache identisch.
+ *
+ * Gibt "END" zurück, wenn der Fragebogen abgeschlossen ist.
+ */
+export function getNextQuestionId(
+  currentQuestionId: string,
+  answers: UserAnswers,
+  answerValue?: string,
+): string {
+  const getAnswer = (questionId: string): string | undefined => {
+    const val = answers[questionId];
+    if (!val) return undefined;
+    if (Array.isArray(val)) return val[0]; // Für das Routing zählt die erste Auswahl
+    return val;
+  };
+  const currentId = currentQuestionId;
+
+  const answer = answerValue || getAnswer(currentId);
+  
+  switch (currentId) {
+    case "Q1":
+      // Age-based routing
+      if (answer === "U18") return "Q2_U18";
+      if (answer === "18-24") return "Q2_18-24";
+      if (answer === "25-34") return "Q2_25-34";
+      if (answer === "35-49") return "Q2_35-49";
+      if (answer === "50-64") return "Q2_50-64";
+      if (answer === "65plus") return "Q2_65plus";
+      return "Q2_U18"; // Default to U18
+      
+    // Under 18 flow
+    case "Q2_U18":
+      return "Q3_U18";
+      
+    case "Q3_U18":
+      if (answer === "Schule") return "Q4_U18_Schule";
+      if (answer === "Ausbildung") return "Q4_U18_Ausbildung";
+      if (answer === "FSJ") return "Q4_U18_FSJ";
+      if (answer === "Sonstiges") return "Q4_U18_Sonstiges";
+      return "Q5_U18"; // Default
+      
+    case "Q4_U18_Schule":
+    case "Q4_U18_Ausbildung":
+    case "Q4_U18_FSJ":
+    case "Q4_U18_Sonstiges":
+      return "Q5_U18";
+      
+    case "Q5_U18":
+      if (answer === "Wohnen_Familie") return "Q6_U18_Eltern";
+      if (answer === "Betreuung") return "Q6_U18_Betreuung";
+      return "Q7_U18"; // Default
+      
+    case "Q6_U18_Eltern":
+    case "Q6_U18_Betreuung":
+      return "Q7_U18";
+      
+    case "Q7_U18":
+      if (answer === "Beeinträchtigung_Nein") {
+        // Check if user is from abroad
+        const nationality = getAnswer("Q2_U18");
+        if (nationality && nationality !== "Deutsch") {
+          return "Q8_U18_Ausland_Nein";
+        }
+        return "Q8_U18_Nein";
+      }
+      if (answer === "Beeinträchtigung_Gering" || answer === "Beeinträchtigung_Stark") {
+        return "Q8_U18_Ja";
+      }
+      return "Q9_U18"; // Default
+      
+    case "Q8_U18_Ja":
+    case "Q8_U18_Nein":
+    case "Q8_U18_Ausland_Nein":
+      return "Q9_U18";
+      
+    case "Q9_U18":
+      return "END"; // End of questionnaire
+      
+    // 18-24 flow
+    case "Q2_18-24":
+      return "Q3_18-24";
+      
+    case "Q3_18-24":
+      const activity = answer || "";
+      if (activity === "Schule") return "Q4_18-24_Schule";
+      if (activity === "Ausbildung") return "Q4_18-24_Ausbildung";
+      if (activity === "Studium") return "Q4_18-24_Studium";
+      if (activity === "FSJ") return "Q4_18-24_FSJ";
+      if (activity === "Arbeiten") return "Q4_18-24_Arbeiten";
+      if (activity === "Gründung") return "Q4_18-24_Gründung";
+      if (activity === "Selbstständig") return "Q4_18-24_Selbstständig";
+      if (activity === "Arbeitssuchend") return "Q4_18-24_Arbeitssuchend";
+      if (activity === "Weiterbildung") return "Q4_18-24_Weiterbildung";
+      if (activity === "Übergang") return "Q4_18-24_Übergangsphase";
+      if (activity === "Pflege") return "Q4_18-24_Pflege";
+      if (activity === "Familie") return "Q4_18-24_Familie";
+      if (activity === "Sonstiges") return "Q4_18-24_Sonstiges";
+      return "Q5_18-24"; // Default
+      
+    case "Q4_18-24_Schule":
+    case "Q4_18-24_Ausbildung":
+    case "Q4_18-24_Studium":
+    case "Q4_18-24_FSJ":
+    case "Q4_18-24_Arbeiten":
+    case "Q4_18-24_Gründung":
+    case "Q4_18-24_Selbstständig":
+    case "Q4_18-24_Arbeitssuchend":
+    case "Q4_18-24_Weiterbildung":
+    case "Q4_18-24_Übergangsphase":
+    case "Q4_18-24_Pflege":
+    case "Q4_18-24_Familie":
+    case "Q4_18-24_Sonstiges":
+      return "Q5_18-24";
+      
+    case "Q5_18-24":
+      if (answer === "Prekär") return "Q5A_18-24_Ohne";
+      return "Q6_18-24";
+      
+    case "Q5A_18-24_Ohne":
+      return "Q6_18-24";
+      
+    case "Q6_18-24":
+      return "Q8_18-24";
+      
+    case "Q8_18-24":
+      if (answer === "Beeinträchtigung_Nein") {
+        // Check if user is from abroad
+        const nationality = getAnswer("Q2_18-24");
+        if (nationality && nationality !== "Deutsch") {
+          return "Q9_18-24_Ausland_Nein";
+        }
+        return "Q9_18-24_Nein";
+      }
+      // Any health condition leads to the support question
+      return "Q9_18-24_Ja";
+      
+    case "Q9_18-24_Ja":
+    case "Q9_18-24_Nein":
+    case "Q9_18-24_Ausland_Nein":
+      return "Q10_18-24";
+      
+    case "Q10_18-24":
+      return "END"; // End of 18-24 questionnaire
+      
+    // 25-34 flow
+    case "Q2_25-34":
+      return "Q3_25-34";
+      
+    case "Q3_25-34":
+      const activity25_34 = answer || "";
+      if (activity25_34 === "Ausbildung") return "Q4_25-34_Ausbildung";
+      if (activity25_34 === "Studium") return "Q4_25-34_Studium";
+      if (activity25_34 === "Arbeiten") return "Q4_25-34_Arbeiten";
+      if (activity25_34 === "Gründung") return "Q4_25-34_Gründung";
+      if (activity25_34 === "Selbstständig") return "Q4_25-34_Selbstständigkeit";
+      if (activity25_34 === "Arbeitssuchend") return "Q4_25-34_Arbeitssuchend";
+      if (activity25_34 === "Weiterbildung") return "Q4_25-34_Weiterbildung";
+      if (activity25_34 === "Übergang") return "Q4_25-34_Übergangsphase";
+      if (activity25_34 === "Pflege") return "Q4_25-34_Pflege";
+      if (activity25_34 === "Familie") return "Q4_25-34_Familie";
+      if (activity25_34 === "Sonstiges") return "Q4_25-34_Sonstiges";
+      return "Q5_25-34"; // Default
+      
+    case "Q4_25-34_Ausbildung":
+    case "Q4_25-34_Studium":
+    case "Q4_25-34_Arbeiten":
+    case "Q4_25-34_Gründung":
+    case "Q4_25-34_Selbstständigkeit":
+    case "Q4_25-34_Arbeitssuchend":
+    case "Q4_25-34_Weiterbildung":
+    case "Q4_25-34_Übergangsphase":
+    case "Q4_25-34_Pflege":
+    case "Q4_25-34_Familie":
+    case "Q4_25-34_Sonstiges":
+      return "Q5_25-34";
+      
+    case "Q5_25-34":
+      if (answer === "Prekär") return "Q5A_25-34_Ohne";
+      return "Q6_25-34";
+      
+    case "Q5A_25-34_Ohne":
+      return "Q6_25-34";
+      
+    case "Q6_25-34":
+      return "Q8_25-34";
+      
+    case "Q8_25-34":
+      if (answer === "Beeinträchtigung_Nein") {
+        // Check if user is from abroad
+        const nationality = getAnswer("Q2_25-34");
+        if (nationality && nationality !== "Deutsch") {
+          return "Q9_25-34_Ausland_Nein";
+        }
+        return "Q9_25-34_Nein";
+      }
+      // Any health condition leads to the support question
+      return "Q9_25-34_Ja";
+      
+    case "Q9_25-34_Ja":
+    case "Q9_25-34_Nein":
+    case "Q9_25-34_Ausland_Nein":
+      return "Q10_25-34";
+      
+    case "Q10_25-34":
+      return "END"; // End of 25-34 questionnaire
+      
+    // 35-49 flow
+    case "Q2_35-49":
+      return "Q3_35-49";
+      
+    case "Q3_35-49":
+      const activity35_49 = answer || "";
+      if (activity35_49 === "Arbeiten") return "Q4_35-49_Arbeiten";
+      if (activity35_49 === "Gründung") return "Q4_35-49_Gründung";
+      if (activity35_49 === "Selbstständig") return "Q4_35-49_Selbstständigkeit";
+      if (activity35_49 === "Arbeitssuchend") return "Q4_35-49_Arbeitssuchend";
+      if (activity35_49 === "Weiterbildung") return "Q4_35-49_Weiterbildung";
+      if (activity35_49 === "Übergang") return "Q4_35-49_Übergangsphase";
+      if (activity35_49 === "Pflege") return "Q4_35-49_Pflege";
+      if (activity35_49 === "Familie") return "Q4_35-49_Familie";
+      if (activity35_49 === "Sonstiges") return "Q4_35-49_Sonstiges";
+      return "Q5_35-49"; // Default
+      
+    case "Q4_35-49_Arbeiten":
+    case "Q4_35-49_Gründung":
+    case "Q4_35-49_Selbstständigkeit":
+    case "Q4_35-49_Arbeitssuchend":
+    case "Q4_35-49_Weiterbildung":
+    case "Q4_35-49_Übergangsphase":
+    case "Q4_35-49_Pflege":
+    case "Q4_35-49_Familie":
+    case "Q4_35-49_Sonstiges":
+      return "Q5_35-49";
+      
+    case "Q5_35-49":
+      if (answer === "Prekär") return "Q5A_35-49_Ohne";
+      return "Q6_35-49";
+      
+    case "Q5A_35-49_Ohne":
+      return "Q6_35-49";
+      
+    case "Q6_35-49":
+      return "Q8_35-49";
+      
+    case "Q8_35-49":
+      if (answer === "Beeinträchtigung_Nein") {
+        // Check if user is from abroad
+        const nationality = getAnswer("Q2_35-49");
+        if (nationality && nationality !== "Deutsch") {
+          return "Q9_35-49_Ausland_Nein";
+        }
+        return "Q9_35-49_Nein";
+      }
+      // Any health condition leads to the support question
+      return "Q9_35-49_Ja";
+      
+    case "Q9_35-49_Ja":
+    case "Q9_35-49_Nein":
+    case "Q9_35-49_Ausland_Nein":
+      return "Q10_35-49";
+      
+    case "Q10_35-49":
+      return "END";
+
+    // 50-64 Age Group Navigation
+    case "Q2_50-64":
+      return "Q3_50-64";
+
+    case "Q3_50-64":
+      const currentActivity_50_64 = answerValue || answers[currentQuestionId];
+      switch (currentActivity_50_64) {
+        case "Arbeiten":
+          return "Q4_50-64_Arbeiten";
+        case "Gründung":
+          return "Q4_50-64_Gründung";
+        case "Selbstständig":
+          return "Q4_50-64_Selbstständig";
+        case "Arbeitssuchend":
+          return "Q4_50-64_Arbeitssuchend";
+        case "Weiterbildung":
+          return "Q4_50-64_Weiterbildung";
+        case "Übergang":
+          return "Q4_50-64_Übergangsphase";
+        case "Pflege":
+          return "Q4_50-64_Pflege";
+        case "Familie":
+          return "Q4_50-64_Familie";
+        case "Sonstiges":
+          return "Q4_50-64_Sonstiges";
+        default:
+          return "Q5_50-64";
+      }
+
+    case "Q4_50-64_Arbeiten":
+    case "Q4_50-64_Gründung":
+    case "Q4_50-64_Selbstständig":
+    case "Q4_50-64_Arbeitssuchend":
+    case "Q4_50-64_Weiterbildung":
+    case "Q4_50-64_Übergangsphase":
+    case "Q4_50-64_Pflege":
+    case "Q4_50-64_Familie":
+    case "Q4_50-64_Sonstiges":
+      return "Q5_50-64";
+
+    case "Q5_50-64":
+      const housingSituation_50_64 = answerValue || answers[currentQuestionId];
+      if (housingSituation_50_64 === "Prekär") {
+        return "Q5A_50-64_Ohne";
+      }
+      return "Q6_50-64";
+
+    case "Q5A_50-64_Ohne":
+      return "Q6_50-64";
+
+    case "Q6_50-64":
+      return "Q7_50-64";
+
+    case "Q7_50-64":
+      const healthCondition_50_64 = answerValue || answers[currentQuestionId];
+      if (healthCondition_50_64 === "Beeinträchtigung_Nein") {
+        // Check nationality for different question paths
+        const nationality_50_64 = getAnswer("Q2_50-64");
+        if (nationality_50_64 && ["Ukrainisch", "Türkisch", "Syrisch", "EU", "Drittstaat"].includes(nationality_50_64)) {
+          return "Q9_50-64_Ausland_Nein";
+        }
+        return "Q8_50-64_Nein";
+      }
+      return "Q8_50-64_Ja";
+
+    case "Q8_50-64_Ja":
+      return "Q10_50-64";
+
+    case "Q8_50-64_Nein":
+      return "Q10_50-64";
+
+    case "Q9_50-64_Ausland_Nein":
+      return "Q10_50-64";
+
+    case "Q10_50-64":
+      return "END";
+      
+    // 65+ Age Group Navigation
+    case "Q2_65plus":
+      return "Q3_65plus";
+
+    case "Q3_65plus":
+      const activity65plus = answer || answers["Q3_65plus"];
+      switch (activity65plus) {
+        case "Rente":
+          return "Q4_65plus_Rente";
+        case "Arbeiten":
+          return "Q4_65plus_Arbeit";
+        case "Selbstständig":
+          return "Q4_65plus_Selbstständig";
+        case "Pflege":
+          return "Q4_65plus_Pflege";
+        case "Erwerbsunfähig":
+          return "Q4_65plus_Erwerbsunfähig";
+        case "Sonstiges":
+          return "Q4_65plus_Sonstiges";
+        default:
+          return "Q5_65plus";
+      }
+
+    case "Q4_65plus_Rente":
+    case "Q4_65plus_Arbeit":
+    case "Q4_65plus_Selbstständig":
+    case "Q4_65plus_Pflege":
+    case "Q4_65plus_Erwerbsunfähig":
+    case "Q4_65plus_Sonstiges":
+      return "Q5_65plus";
+
+    case "Q5_65plus":
+      const housing65plus = answer || answers["Q5_65plus"];
+      if (housing65plus === "Prekär") {
+        return "Q5A_65plus_Ohne";
+      }
+      return "Q6_65plus";
+
+    case "Q5A_65plus_Ohne":
+      return "Q6_65plus";
+
+    case "Q6_65plus":
+      return "Q8_65plus"; // Note: Skipping Q7 for 65+ path
+
+    case "Q8_65plus":
+      const health65plus = answer || answers["Q8_65plus"];
+      if (health65plus === "Beeinträchtigung_Nein") {
+        // Nicht-deutsche Staatsangehörigkeit bekommt die Variante mit Ankommens-Fragen
+        const nationality65plus = answers["Q2_65plus"];
+        if (nationality65plus && nationality65plus !== "Deutsch") {
+          return "Q9_65plus_Ausland_Nein";
+        }
+        return "Q9_65plus_Nein";
+      }
+      return "Q9_65plus_Ja";
+
+    case "Q9_65plus_Ja":
+      return "Q10_65plus";
+
+    case "Q9_65plus_Nein":
+      return "Q10_65plus";
+
+    case "Q9_65plus_Ausland_Nein":
+      return "Q10_65plus";
+
+    case "Q10_65plus":
+      return "END";
+      
+    default:
+      return "END";
+  }
+}

@@ -203,14 +203,14 @@ const DynamicQuestionnaireForm = () => {
                 }`}>
                   {questionData.options.map((option, index) => {
                     const isSelected = isMultiSelect
-                      ? multiSelections.includes(option)
-                      : answers[currentQuestionId] === option;
+                      ? multiSelections.includes(option.id)
+                      : answers[currentQuestionId] === option.id;
                     
                     const isDisabled = isMultiSelect && !isSelected && multiSelections.length >= maxSelections;
 
                     return (
                       <div 
-                        key={`${currentQuestionId}-${option}`}
+                        key={`${currentQuestionId}-${option.id}`}
                         className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                           isSelected 
                             ? 'border-berlin-orange bg-berlin-orange/5 shadow-md' 
@@ -222,9 +222,9 @@ const DynamicQuestionnaireForm = () => {
                         onClick={() => {
                           if (isDisabled) return;
                           if (isMultiSelect) {
-                            handleMultiToggle(option);
+                            handleMultiToggle(option.id);
                           } else {
-                            handleSingleSelect(option);
+                            handleSingleSelect(option.id);
                           }
                         }}
                       >
@@ -253,7 +253,7 @@ const DynamicQuestionnaireForm = () => {
                             </div>
                           )}
                           <span className="flex-1 text-sm md:text-base font-medium text-gray-800 leading-tight">
-                            {option}
+                            {option.label}
                           </span>
                           {isSelected && (
                             <CheckCircle className="h-5 w-5 text-berlin-orange animate-fade-in-up flex-shrink-0" />

@@ -1,19 +1,19 @@
 
 import { UserAnswers } from "@/context/QuestionnaireContext";
-import { getQuestionData } from "@/data/questionnaireData";
+import { getOptionLabel, getQuestionData } from "@/data/questionnaireData";
 import { ACTIVITY_TAGS, EXCLUDED_FROM_SCORING, NATIONALITY_TAGS } from "@/utils/tagConstants";
 
 /**
- * Maps an age-range answer to numeric min/max for DB filtering.
+ * Maps an age-range answer (Options-id aus Q1) to numeric min/max for DB filtering.
  */
 export const getAgeRange = (ageAnswer: string): { minAge: number; maxAge: number } | null => {
   switch (ageAnswer) {
-    case "unter 18": return { minAge: 0, maxAge: 17 };
+    case "U18": return { minAge: 0, maxAge: 17 };
     case "18-24": return { minAge: 18, maxAge: 24 };
     case "25-34": return { minAge: 25, maxAge: 34 };
     case "35-49": return { minAge: 35, maxAge: 49 };
     case "50-64": return { minAge: 50, maxAge: 64 };
-    case "über 65": return { minAge: 65, maxAge: 120 };
+    case "65plus": return { minAge: 65, maxAge: 120 };
     default: return null;
   }
 };
@@ -38,7 +38,9 @@ export const getActiveAnswers = (answers: UserAnswers, history?: string[]): User
 export interface AnswerSelection {
   questionId: string;
   question: string;
+  /** Anzeigetext der Antwort */
   option: string;
+  /** Options-id, zugleich der Matching-Tag */
   tag: string;
 }
 
@@ -50,12 +52,18 @@ export const extractSelections = (answers: UserAnswers): AnswerSelection[] => {
   const selections: AnswerSelection[] = [];
   Object.entries(answers).forEach(([questionId, selectedAnswer]) => {
     const questionData = getQuestionData(questionId);
-    if (!questionData?.tags || !questionData?.options) return;
-    const selectedValues = Array.isArray(selectedAnswer) ? selectedAnswer : [selectedAnswer];
-    selectedValues.forEach((option) => {
-      const index = questionData.options.indexOf(option);
-      const tag = index !== -1 ? questionData.tags![index] : undefined;
-      if (tag) selections.push({ questionId, question: questionData.question, option, tag });
+    if (!questionData?.options) return;
+    const selectedIds = Array.isArray(selectedAnswer) ? selectedAnswer : [selectedAnswer];
+    selectedIds.forEach((optionId) => {
+      const option = questionData.options.find((o) => o.id === optionId);
+      if (option) {
+        selections.push({
+          questionId,
+          question: questionData.question,
+          option: getOptionLabel(questionId, option.id),
+          tag: option.id,
+        });
+      }
     });
   });
   return selections;

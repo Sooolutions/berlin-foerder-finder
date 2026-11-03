@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuestionnaire } from '@/context/QuestionnaireContext';
-import { getQuestionData } from '@/data/questionnaireData';
+import { getOptionLabel, getQuestionData } from '@/data/questionnaireData';
 import { getQuestionInfo } from '@/data/questionInfo';
 
 const FONT = "'Outfit', system-ui, sans-serif";
@@ -324,17 +324,17 @@ const QuestionnaireCard = () => {
   const selected = answers[currentQuestionId];
   const canContinue = isMultiSelect ? multiSelections.length > 0 : typeof selected === 'string' && !!selected;
 
-  const handleSelect = (option: string) => {
+  const handleSelect = (optionId: string) => {
     if (animating) return;
     if (isMultiSelect) {
       setMultiSelections((prev) => {
-        if (prev.includes(option)) return prev.filter((v) => v !== option);
+        if (prev.includes(optionId)) return prev.filter((v) => v !== optionId);
         if (prev.length >= maxSelections) return prev;
-        return [...prev, option];
+        return [...prev, optionId];
       });
       return;
     }
-    updateAnswer(currentQuestionId, option);
+    updateAnswer(currentQuestionId, optionId);
   };
 
   const handleNext = () => {
@@ -474,14 +474,15 @@ const QuestionnaireCard = () => {
               }}
             >
               {questionData.options.map((option) => {
-                const isSelected = isMultiSelect ? multiSelections.includes(option) : selected === option;
+                // Gespeichert und verglichen wird die id, angezeigt das Label
+                const isSelected = isMultiSelect ? multiSelections.includes(option.id) : selected === option.id;
                 const isDisabled = isMultiSelect && !isSelected && multiSelections.length >= maxSelections;
 
                 return (
                   <button
                     type="button"
-                    key={option}
-                    onClick={() => !isDisabled && handleSelect(option)}
+                    key={option.id}
+                    onClick={() => !isDisabled && handleSelect(option.id)}
                     disabled={isDisabled}
                     style={{
                       display: 'flex',
@@ -532,7 +533,7 @@ const QuestionnaireCard = () => {
                       }}
                       lang="de"
                     >
-                      {option}
+                      {getOptionLabel(currentQuestionId, option.id)}
                     </span>
                   </button>
                 );
