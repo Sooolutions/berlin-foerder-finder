@@ -1,41 +1,47 @@
-import { Globe } from "lucide-react";
+import { Check, ChevronDown, Globe } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { LANGUAGES, useLanguage } from "./LanguageContext";
 
 /**
- * Sprachumschalter für die Navigationsleiste. Jede Sprache steht in ihrer
- * eigenen Schreibweise, ohne Flaggen (Flaggen stehen für Staaten, nicht für
- * Sprachen).
+ * Sprachauswahl in der Mitte der Navigationsleiste. Der Knopf zeigt das
+ * Kürzel der aktuellen Sprache, das Menü jede Sprache in ihrer eigenen
+ * Schreibweise. Keine Flaggen, denn Flaggen stehen für Staaten, nicht für
+ * Sprachen.
  */
 const LanguageSwitcher = ({ className = "" }: { className?: string }) => {
   const { lang, setLang } = useLanguage();
+  const current = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
 
   return (
-    <div
-      role="group"
-      aria-label="Sprache / Language"
-      className={`flex flex-none items-center gap-0.5 sm:gap-1 rounded-full border border-foreground/15 bg-white/60 p-1 ${className}`}
-    >
-      <Globe className="hidden sm:block w-4 h-4 mx-1 text-foreground/60 flex-none" aria-hidden="true" />
-      {LANGUAGES.map((l) => {
-        const active = l.code === lang;
-        return (
-          <button
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        aria-label={`Sprache / Language: ${current.label}`}
+        className={`flex flex-none items-center gap-1.5 rounded-full border border-foreground/15 bg-white/70 px-3 py-1.5 text-[14px] font-semibold text-foreground transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${className}`}
+      >
+        <Globe className="w-4 h-4 text-foreground/60" aria-hidden="true" />
+        <span>{current.short}</span>
+        <ChevronDown className="w-3.5 h-3.5 text-foreground/50" aria-hidden="true" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center" className="min-w-[170px] bg-white">
+        {LANGUAGES.map((l) => (
+          <DropdownMenuItem
             key={l.code}
-            type="button"
             lang={l.code}
-            title={l.label}
-            aria-label={l.label}
-            aria-pressed={active}
-            onClick={() => !active && setLang(l.code)}
-            className={`rounded-full px-2 sm:px-2.5 py-1 text-[13px] font-semibold leading-none transition-colors ${
-              active ? "bg-foreground text-background" : "text-foreground/70 hover:text-foreground"
-            }`}
+            dir={l.rtl ? "rtl" : "ltr"}
+            onSelect={() => l.code !== lang && setLang(l.code)}
+            className="flex items-center justify-between gap-4 text-[15px] cursor-pointer"
           >
-            {l.short}
-          </button>
-        );
-      })}
-    </div>
+            <span>{l.label}</span>
+            {l.code === lang && <Check className="w-4 h-4 text-primary" aria-hidden="true" />}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

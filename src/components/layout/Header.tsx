@@ -30,28 +30,28 @@ const Header = ({ backToHome = false }: HeaderProps) => {
   return (
     <div className="w-full pt-4 px-4 bg-transparent">
       <header className="container mx-auto bg-secondary rounded-[12px] py-4 px-6">
-        <div className="flex justify-between items-center">
-          <Link to="/" className="flex items-center gap-2 text-[20px] font-semibold text-foreground">
+        {/* Mobil: Logo, Sprache, Menü nebeneinander. Ab md drei Spalten, die Sprache steht exakt in der Mitte. */}
+        <div className="flex justify-between items-center gap-3 md:grid md:grid-cols-[1fr_auto_1fr]">
+          <Link to="/" className="flex items-center gap-2 text-[20px] font-semibold text-foreground md:justify-self-start">
             <img src={logo} alt="MehrDrin Logo" className="h-8 w-auto" />
             MehrDrin
           </Link>
 
+          <LanguageSwitcher />
+
           {backToHome ? (
-            <div className="flex items-center gap-3 sm:gap-6">
-              <LanguageSwitcher />
-              <Link to="/" className="whitespace-nowrap text-[15px] sm:text-[18px] text-foreground hover:text-primary transition-colors">
-                ← <span className="hidden sm:inline">{t("Zurück zur")} </span>{t("Startseite")}
-              </Link>
-            </div>
+            <Link to="/" className="whitespace-nowrap text-[15px] sm:text-[18px] text-foreground hover:text-primary transition-colors md:justify-self-end">
+              <span className="inline-block rtl:rotate-180">←</span> <span className="hidden sm:inline">{t("Zurück zur")} </span>{t("Startseite")}
+            </Link>
           ) : (
             <>
               {/* Desktop nav */}
-              <nav className="hidden md:flex items-center gap-12">
+              <nav className="hidden md:flex items-center gap-6 lg:gap-12 justify-self-end">
                 <Link to="/about" className="text-[20px] text-foreground hover:text-primary transition-colors">
                   {t("über uns")}
                 </Link>
                 <Link to="/blog" className="text-[20px] text-foreground hover:text-primary transition-colors">
-                  blog
+                  {t("blog")}
                 </Link>
                 <Button
                   onClick={() => navigate("/questionnaire")}
@@ -59,14 +59,11 @@ const Header = ({ backToHome = false }: HeaderProps) => {
                 >
                   {t("start")}
                 </Button>
-                <LanguageSwitcher />
               </nav>
 
-              {/* Mobil: Sprachumschalter direkt sichtbar, daneben das Menü */}
-              <div className="md:hidden flex items-center gap-2 ml-3">
-              <LanguageSwitcher />
+              {/* Mobil: Menü */}
               <button
-                className="flex flex-col justify-center items-center gap-1.5 w-8 h-8"
+                className="md:hidden flex flex-col justify-center items-center gap-1.5 w-8 h-8"
                 onClick={() => setMenuOpen(true)}
                 aria-label={t("Menü öffnen")}
               >
@@ -74,7 +71,6 @@ const Header = ({ backToHome = false }: HeaderProps) => {
                 <span className="block w-6 h-0.5 bg-foreground rounded-full" />
                 <span className="block w-6 h-0.5 bg-foreground rounded-full" />
               </button>
-              </div>
             </>
           )}
         </div>
@@ -121,7 +117,7 @@ const Header = ({ backToHome = false }: HeaderProps) => {
             to="/blog"
             className="text-[20px] text-foreground hover:text-primary transition-colors"
           >
-            blog
+            {t("blog")}
           </Link>
           <Button
             onClick={() => navigate("/questionnaire")}

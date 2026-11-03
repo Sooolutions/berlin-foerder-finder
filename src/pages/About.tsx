@@ -210,7 +210,7 @@ const About = () => {
               onClick={() => window.location.href = '/questionnaire'}>
               
               {t("Jetzt Entdecken!")}
-              <ArrowRight className="ml-2 w-6 h-6" />
+              <ArrowRight className="ms-2 rtl:-scale-x-100 w-6 h-6" />
             </Button>
           </div>
         </section>

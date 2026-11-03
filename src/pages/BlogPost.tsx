@@ -57,7 +57,7 @@ const BlogPost = () => {
             to="/blog"
             className="inline-flex items-center gap-1.5 !text-[15px] text-muted-foreground hover:text-primary transition-colors mb-8"
           >
-            <ArrowLeft className="w-4 h-4" /> {tr("Alle Artikel")}
+            <ArrowLeft className="rtl:-scale-x-100 w-4 h-4" /> {tr("Alle Artikel")}
           </Link>
           {getLang() !== "de" && (
             <p className="mb-8 !text-[15px] rounded-lg bg-secondary px-4 py-3 text-foreground/80">
@@ -113,7 +113,7 @@ const BlogPost = () => {
             </p>
             <Button asChild size="lg" className="rounded-full !text-[17px] px-7 py-6">
               <Link to="/questionnaire">
-                {tr("Jetzt herausfinden")} <ArrowRight className="ml-2 w-5 h-5" />
+                {tr("Jetzt herausfinden")} <ArrowRight className="ms-2 rtl:-scale-x-100 w-5 h-5" />
               </Link>
             </Button>
           </aside>

@@ -20,7 +20,7 @@ const Footer = () => {
                 {t("Fragebogen")}
               </Link>
               <Link to="/blog" className="text-[25px] text-primary-foreground/90 hover:text-primary-foreground transition-colors">
-                Blog
+                {t("Blog")}
               </Link>
               <Link to="/about" className="text-[25px] text-primary-foreground/90 hover:text-primary-foreground transition-colors">
                 {t("Über uns")}

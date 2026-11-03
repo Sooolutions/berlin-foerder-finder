@@ -97,7 +97,8 @@ const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: stri
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        padding: '5px 28px 5px 10px',
+        padding: '5px 10px',
+        paddingInlineEnd: 28,
         borderRadius: r(-6),
         border: `1.5px solid ${active ? '#4F90DE' : '#d9d6cf'}`,
         background: active ? '#eef4fc' : '#fff',
@@ -119,7 +120,7 @@ const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: stri
         stroke="currentColor"
         strokeWidth={3}
         aria-hidden="true"
-        style={{ position: 'absolute', right: 10 }}
+        style={{ position: 'absolute', insetInlineEnd: 10 }}
       >
         <path d="M6 9l6 6 6-6" />
       </svg>
@@ -421,7 +422,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, maxWidth: '100%' }}>
         <button type="button" onClick={() => step(-1)} style={{ ...arrow, border: '1px solid #e2e2e2' }}>
-          ‹
+          <span className="inline-block rtl:-scale-x-100">‹</span>
         </button>
 
         <div
@@ -522,7 +523,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
                       borderRadius: r(-5),
                     }}
                   >
-                    {tr('Details ansehen')} →
+                    {tr('Details ansehen')} <span className="inline-block rtl:-scale-x-100">→</span>
                   </span>
                 </div>
               </div>
@@ -531,7 +532,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
         </div>
 
         <button type="button" onClick={() => step(1)} style={arrow}>
-          ›
+          <span className="inline-block rtl:-scale-x-100">›</span>
         </button>
       </div>
 
@@ -792,7 +793,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                     borderRadius: r(-5),
                   }}
                 >
-                  Details →
+                  {tr('Details')} <span className="inline-block rtl:-scale-x-100">→</span>
                 </span>
               </div>
             </div>
@@ -1048,7 +1049,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                             borderRadius: r(-5),
                           }}
                         >
-                          {tr('Details ansehen')} →
+                          {tr('Details ansehen')} <span className="inline-block rtl:-scale-x-100">→</span>
                         </span>
                       </div>
                     </div>

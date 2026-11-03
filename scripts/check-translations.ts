@@ -1,7 +1,8 @@
 /**
- * Prüft, ob alle Oberflächentexte übersetzt sind.
- *   npm run check:translations            Sprache en
- *   npm run check:translations -- --json  fehlende Schlüssel als JSON ausgeben
+ * Prüft, ob alle Oberflächentexte in allen Sprachen übersetzt sind und ob
+ * die Platzhalter wie {n} oder {district} in jeder Übersetzung erhalten sind.
+ *   npm run check:translations
+ *   npm run check:translations -- --json   fehlende Schlüssel (en) als JSON
  *
  * Gesammelt werden:
  *  1. alle Texte in t("…") und tr("…") im Quellcode
@@ -14,6 +15,11 @@ import { join } from "node:path";
 import { getAllQuestions } from "../src/data/questionnaireData";
 import { ALL_QUESTION_INFO } from "../src/data/questionInfo";
 import en from "../src/i18n/en";
+import tr from "../src/i18n/tr";
+import ar from "../src/i18n/ar";
+import uk from "../src/i18n/uk";
+
+const DICTS: Record<string, Record<string, string>> = { en, tr, ar, uk };
 
 const CATEGORY_KEYS = [
   "Familie", "Gesundheit", "Soziales", "Bildung", "Arbeit", "Integration", "Wohnen", "Wirtschaft",
@@ -50,14 +56,23 @@ ALL_QUESTION_INFO.forEach((k) => keys.add(k));
 CATEGORY_KEYS.forEach((k) => keys.add(k));
 EXTRA_KEYS.forEach((k) => keys.add(k));
 
-const missing = [...keys].filter((k) => !(k in en)).sort();
-const unused = Object.keys(en).filter((k) => !keys.has(k));
-
 if (process.argv.includes("--json")) {
-  console.log(JSON.stringify(missing, null, 1));
-} else {
-  console.log(`${keys.size} Texte, ${missing.length} ohne englische Übersetzung, ${unused.length} ungenutzte Einträge.`);
+  console.log(JSON.stringify([...keys].filter((k) => !(k in en)).sort(), null, 1));
+  process.exit(0);
+}
+
+const placeholders = (t: string) => (t.match(/\{\w+\}/g) ?? []).sort().join(",");
+let problems = 0;
+for (const [lang, dict] of Object.entries(DICTS)) {
+  const missing = [...keys].filter((k) => !(k in dict)).sort();
+  const unused = Object.keys(dict).filter((k) => !keys.has(k));
+  const broken = Object.entries(dict).filter(([k, v]) => placeholders(k) !== placeholders(v)).map(([k]) => k);
+  const empty = Object.entries(dict).filter(([, v]) => !v.trim()).map(([k]) => k);
+  console.log(`${lang}: ${keys.size} Texte, ${missing.length} fehlen, ${unused.length} ungenutzt, ${broken.length} mit falschen Platzhaltern, ${empty.length} leer.`);
   missing.forEach((k) => console.log("  fehlt:", k));
   unused.forEach((k) => console.log("  ungenutzt:", k));
+  broken.forEach((k) => console.log("  Platzhalter:", k));
+  empty.forEach((k) => console.log("  leer:", k));
+  problems += missing.length + broken.length + empty.length;
 }
-process.exit(missing.length ? 1 : 0);
+process.exit(problems ? 1 : 0);

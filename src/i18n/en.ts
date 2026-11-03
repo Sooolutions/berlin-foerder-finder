@@ -4,6 +4,9 @@
  * Vollständigkeit prüfen mit: npm run check:translations
  */
 const en: Record<string, string> = {
+  "blog": "blog",
+  "Blog": "Blog",
+  "Scroll": "Scroll",
   "10 kurze Fragen zu deiner Lebenssituation.": "10 short questions about your situation.",
   "18-24": "18-24",
   "25-34": "25-34",
@@ -88,6 +91,7 @@ const en: Record<string, string> = {
   "Deine Antworten werden ausschließlich zur Ermittlung passender Angebote verwendet und nicht an Dritte weitergegeben.": "Your answers are used only to find suitable offers and are never passed on to third parties.",
   "Deine Ergebnisse": "Your results",
   "Deswegen haben wir MehrDrin gestartet.": "That's why we started MehrDrin.",
+  "Details": "Details",
   "Details ansehen": "View details",
   "Deutsch": "German",
   "Die Ergebnisliste konnte nicht geladen werden.": "The results could not be loaded.",

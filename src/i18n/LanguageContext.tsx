@@ -15,15 +15,24 @@
  */
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import en from "./en";
+import tr_ from "./tr";
+import ar from "./ar";
+import uk from "./uk";
 
-export type Lang = "de" | "en";
+export type Lang = "de" | "en" | "tr" | "ar" | "uk";
 
-export const LANGUAGES: { code: Lang; label: string; short: string }[] = [
+/** Kürzel UA statt UK für Ukrainisch, damit es nicht mit „United Kingdom“ verwechselt wird. */
+export const LANGUAGES: { code: Lang; label: string; short: string; rtl?: boolean }[] = [
   { code: "de", label: "Deutsch", short: "DE" },
   { code: "en", label: "English", short: "EN" },
+  { code: "tr", label: "Türkçe", short: "TR" },
+  { code: "ar", label: "العربية", short: "AR", rtl: true },
+  { code: "uk", label: "Українська", short: "UA" },
 ];
 
-const DICTIONARIES: Record<Exclude<Lang, "de">, Record<string, string>> = { en };
+export const DICTIONARIES: Record<Exclude<Lang, "de">, Record<string, string>> = { en, tr: tr_, ar, uk };
+
+export const isRtl = (lang: Lang) => LANGUAGES.some((l) => l.code === lang && l.rtl);
 
 const STORAGE_KEY = "mehrdrin_lang";
 const isLang = (v: unknown): v is Lang => LANGUAGES.some((l) => l.code === v);
@@ -72,6 +81,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    // Arabisch wird von rechts nach links gesetzt
+    document.documentElement.dir = isRtl(lang) ? "rtl" : "ltr";
   }, [lang]);
 
   const setLang = useCallback((next: Lang) => {

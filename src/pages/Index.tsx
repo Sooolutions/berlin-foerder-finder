@@ -108,7 +108,7 @@ const Index = () => {
               onClick={startQuestionnaire}
             >
               {t("Jetzt herausfinden")}
-              <ArrowRight className="ml-2 w-5 h-5" strokeWidth={2.5} />
+              <ArrowRight className="ms-2 rtl:-scale-x-100 w-5 h-5" strokeWidth={2.5} />
             </Button>
           </motion.div>
 
@@ -117,7 +117,7 @@ const Index = () => {
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 !text-sm z-10 tracking-wide uppercase"
           >
-            Scroll
+            {t("Scroll")}
           </motion.div>
         </section>
 
@@ -338,7 +338,7 @@ const Index = () => {
                 onClick={startQuestionnaire}
               >
                 {t("Jetzt starten")}
-                <ArrowRight className="ml-2 w-6 h-6" />
+                <ArrowRight className="ms-2 rtl:-scale-x-100 w-6 h-6" />
               </Button>
             </div>
           </ScrollReveal>

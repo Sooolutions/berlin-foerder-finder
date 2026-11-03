@@ -109,7 +109,7 @@ const InfoButton = ({ text, resetKey, size = 38 }: { text: string; resetKey: str
             background: '#fff',
             border: '1px solid #e6e3dd',
             boxShadow: '0 10px 28px rgba(17,17,17,.12)',
-            textAlign: 'left',
+            textAlign: 'start',
           }}
         >
           <div style={{ font: `700 12px ${FONT}`, letterSpacing: '.05em', textTransform: 'uppercase', color: KICKER, marginBottom: 5 }}>
@@ -410,7 +410,7 @@ const QuestionnaireCard = () => {
         }}
       >
         <button type="button" onClick={handleBack} aria-label={tr("Zurück")} style={{ ...iconButton(iconSize), fontSize: 18 }}>
-          ‹
+          <span className="inline-block rtl:-scale-x-100">‹</span>
         </button>
         <div
           style={{
@@ -488,7 +488,7 @@ const QuestionnaireCard = () => {
                       alignItems: 'center',
                       gap: density >= 2 ? 9 : 14,
                       padding: level.pad,
-                      textAlign: 'left',
+                      textAlign: 'start',
                       borderRadius: density >= 2 ? 11 : 13,
                       border: `2px solid ${isSelected ? ACCENT : '#ececec'}`,
                       background: isSelected ? '#eef4fc' : '#fff',

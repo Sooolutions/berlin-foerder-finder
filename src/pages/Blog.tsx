@@ -38,7 +38,7 @@ const Blog = () => {
 
       <main className="flex-grow container mx-auto px-4 py-12 md:py-16">
         <div className="max-w-3xl mb-12 md:mb-16">
-          <h1 className="!text-[40px] md:!text-[60px] font-black leading-[1.05] mb-5">Blog</h1>
+          <h1 className="!text-[40px] md:!text-[60px] font-black leading-[1.05] mb-5">{tr("Blog")}</h1>
           <p className="!text-[19px] md:!text-[21px] text-muted-foreground leading-relaxed">
             {tr("Hintergründe zu Sozialleistungen, Förderungen und sozialer Teilhabe in Berlin.")}
           </p>
@@ -82,7 +82,7 @@ const Blog = () => {
                 <p className="!text-[17px] md:!text-[18px] text-muted-foreground leading-relaxed mb-6">{featured.excerpt}</p>
                 <span className="inline-flex items-center gap-2 font-semibold text-primary !text-[17px]">
                   {tr("Artikel lesen")}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5 rtl:-scale-x-100 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                 </span>
               </div>
             </div>
