@@ -3,10 +3,9 @@ import type { Funding } from '@/hooks/useFundingResults';
 import type { UserAnswers } from '@/context/QuestionnaireContext';
 import {
   buildReasonGroups,
-  contradictsSituation,
+  diversify,
   extractSelections,
   isMeaningfulTag,
-  makeFitAnalyzer,
   type ReasonGroup,
 } from '@/utils/answerMappingUtils';
 import DetailSheet from './DetailSheet';
@@ -673,10 +672,11 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
   // Jedes Angebot erscheint genau einmal. Angebote ohne Bezug zu einer
   // Antwort (Auffüllung bei sehr wenigen Treffern) landen in einer Restzeile.
   const { groups, ordered } = useMemo(() => {
-    // Angebote, die erkennbar für eine andere Lebenslage gedacht sind, fallen ganz weg
-    const fitOf = makeFitAnalyzer(answers);
-    const pool = fundings.filter((f) => (f.relevanceScore ?? 0) === 0 || !contradictsSituation(fitOf(f.tags)));
-    const top = pool.slice(0, 4);
+    // Harte Kriterien und Passung prüft bereits rankFundings. Die Liste ist
+    // nach Relevanz sortiert. Oben stehen vier unterschiedliche Angebote,
+    // nahezu gleiche aus anderen Bezirken rücken in die Zeilen darunter.
+    const pool = fundings;
+    const top = diversify(pool.filter((f) => (f.relevanceScore ?? 0) > 0)).slice(0, 4);
     const exclude = new Set(top.map((f) => f.id));
     const reasonGroups = buildReasonGroups(pool, answers, { exclude });
     const placed = new Set<string>(exclude);
