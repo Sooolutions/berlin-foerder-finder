@@ -82,7 +82,7 @@ const en: Record<string, string> = {
   "Bitte versuche es später erneut.": "Please try again later.",
   "Bürokratische Herausforderungen (z. B. Ämter, Anträge, Unterstützungssysteme)": "Bureaucratic hurdles (e.g. public offices, applications, support systems)",
   "Chronische Erkrankung (z. B. Diabetes, Epilepsie)": "Chronic illness (e.g. diabetes, epilepsy)",
-  "Da ist mehr drin!": "There's more in it for you!",
+  "Da ist noch mehr drin!": "There's even more in it for you!",
   "Das dauert nur einen Moment": "This will only take a moment",
   "Das MehrDrin Team": "The MehrDrin team",
   "Das wartet auf dich.": "Here's what's waiting for you.",

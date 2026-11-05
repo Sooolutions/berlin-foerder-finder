@@ -81,7 +81,7 @@ const dict: Record<string, string> = {
   "Bitte versuche es später erneut.": "يرجى المحاولة لاحقاً.",
   "Bürokratische Herausforderungen (z. B. Ämter, Anträge, Unterstützungssysteme)": "صعوبات بيروقراطية (مثل الدوائر الرسمية، الطلبات، أنظمة الدعم)",
   "Chronische Erkrankung (z. B. Diabetes, Epilepsie)": "مرض مزمن (مثل السكري، الصرع)",
-  "Da ist mehr drin!": "هناك ما هو أكثر لك!",
+  "Da ist noch mehr drin!": "لا يزال هناك المزيد لك!",
   "Das dauert nur einen Moment": "سيستغرق هذا لحظة فقط",
   "Das MehrDrin Team": "فريق MehrDrin",
   "Das wartet auf dich.": "هذا ما ينتظرك.",

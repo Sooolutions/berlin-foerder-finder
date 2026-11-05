@@ -97,7 +97,7 @@ const Index = () => {
             className="relative z-10 text-center px-6 max-w-3xl mx-auto"
           >
             <h1 className="text-white !text-[42px] md:!text-[72px] font-black leading-[1.05] mb-6 drop-shadow-[0_4px_28px_rgba(0,0,0,0.75)]">
-              {t("Da ist mehr drin!")}
+              {t("Da ist noch mehr drin!")}
             </h1>
             <p className="text-white/90 !text-lg md:!text-xl max-w-xl mx-auto mb-10 !font-normal [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
               {t("Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.")}

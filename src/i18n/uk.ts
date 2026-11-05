@@ -81,7 +81,7 @@ const dict: Record<string, string> = {
   "Bitte versuche es später erneut.": "Будь ласка, спробуй пізніше.",
   "Bürokratische Herausforderungen (z. B. Ämter, Anträge, Unterstützungssysteme)": "Бюрократичні труднощі (напр. установи, заяви, системи підтримки)",
   "Chronische Erkrankung (z. B. Diabetes, Epilepsie)": "Хронічна хвороба (напр. діабет, епілепсія)",
-  "Da ist mehr drin!": "Тут є більше для тебе!",
+  "Da ist noch mehr drin!": "Тут є ще більше для тебе!",
   "Das dauert nur einen Moment": "Це займе лише мить",
   "Das MehrDrin Team": "Команда MehrDrin",
   "Das wartet auf dich.": "Ось що на тебе чекає.",
