@@ -27,3 +27,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Lokale Kopie der Angebotsdaten für npm run check:personas
+scripts/data/funding-snapshot.json
+
+# Temporäre Dateien von Vite
+vite.config.ts.timestamp-*

@@ -8,6 +8,7 @@ import {
   isMeaningfulTag,
   type ReasonGroup,
 } from '@/utils/answerMappingUtils';
+import { NO_ANSWER_TAGS } from "@/utils/tagConstants";
 import DetailSheet from './DetailSheet';
 import { ApplyButton, CategoryChip, CloseButton, DetailPanel, DetailRows } from './DetailParts';
 import { categoryOf, r, schemeOf } from './resultsTheme';
@@ -159,7 +160,8 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
   // Alle Antworten des durchlaufenen Pfads, in Reihenfolge der Fragen.
   // Angaben, die nur als Rahmen dienen (Alter filtert hart, neutrale Antworten
   // wie „Deutsch“ oder „keine Beeinträchtigung“), erscheinen heller.
-  const chips = extractSelections(answers);
+  // „Nichts davon“, „Möchte ich nicht sagen“ und „Weiß ich nicht“ sind keine Angaben
+  const chips = extractSelections(answers).filter((c) => !(NO_ANSWER_TAGS as readonly string[]).includes(c.tag));
   const seen = new Set<string>();
   const unique = chips.filter((c) => (seen.has(c.option) ? false : (seen.add(c.option), true)));
   if (!unique.length) return null;
@@ -549,13 +551,18 @@ const VISIBLE_PER_ROW = 6;
 const REST_KEY = '__rest__';
 
 const reasonTitle = (group: ReasonGroup<Funding>) =>
-  group.key === REST_KEY ? tr('Weitere Angebote für deine Altersgruppe') : tr('Weil du „{option}“ angeklickt hast', { option: group.option });
+  group.title
+    ? tr(group.title)
+    : group.key === REST_KEY ? tr('Weitere Angebote für deine Altersgruppe') : tr('Weil du „{option}“ angeklickt hast', { option: group.option });
 
 const ReasonHeading = ({ group, large = false }: { group: ReasonGroup<Funding>; large?: boolean }) => (
   <div style={{ padding: large ? '0 0 14px' : '26px 0 8px' }}>
     <div style={{ font: `800 ${large ? 20 : 18}px/1.25 ${FONT}`, color: '#111' }}>{reasonTitle(group)}</div>
+    {group.note && (
+      <div style={{ font: `500 ${large ? 14 : 13}px/1.4 ${FONT}`, color: '#5f5c56', marginTop: 4, maxWidth: 560 }}>{tr(group.note)}</div>
+    )}
     <div style={{ font: `500 ${large ? 13 : 12}px ${FONT}`, color: '#8d8d8d', marginTop: 3 }}>
-      {group.fundings.length} {group.fundings.length === 1 ? 'passendes Angebot' : 'passende Angebote'}
+      {group.fundings.length} {group.fundings.length === 1 ? tr('passendes Angebot') : tr('passende Angebote')}
     </div>
   </div>
 );

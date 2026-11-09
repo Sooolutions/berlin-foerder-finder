@@ -6,14 +6,16 @@
  *
  * Gesammelt werden:
  *  1. alle Texte in t("…") und tr("…") im Quellcode
- *  2. alle Fragen und Antwortlabels aus questionnaireData.ts
- *  3. alle Erklärtexte aus questionInfo.ts
+ *  2. alle Fragen, Fragevarianten, Antwortlabels und Zwischenüberschriften aus questionnaireData.ts
+ *  3. alle Erklärtexte aus questionInfo.ts und die Namen der Abschnitte (flow.ts)
  *  4. Kategorien und Fördertypen aus der Datenbank (CATEGORY_KEYS unten)
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { getAllQuestions } from "../src/data/questionnaireData";
+import { getAllQuestionnaireTexts } from "../src/data/questionnaireData";
 import { ALL_QUESTION_INFO } from "../src/data/questionInfo";
+import { SECTIONS } from "../src/questionnaire/flow";
+import { HINT_NOTE, HINT_TITLE } from "../src/utils/answerMappingUtils";
 import en from "../src/i18n/en";
 import tr from "../src/i18n/tr";
 import ar from "../src/i18n/ar";
@@ -48,10 +50,9 @@ for (const f of files) {
   const src = readFileSync(f, "utf8");
   for (const m of src.matchAll(re)) keys.add(m[2].replace(/\\(["'\\])/g, "$1"));
 }
-for (const q of getAllQuestions()) {
-  keys.add(q.question);
-  q.options.forEach((o) => keys.add(o.label));
-}
+getAllQuestionnaireTexts().forEach((k) => keys.add(k));
+SECTIONS.forEach((sec) => keys.add(sec.label));
+[HINT_TITLE, HINT_NOTE].forEach((k) => keys.add(k));
 ALL_QUESTION_INFO.forEach((k) => keys.add(k));
 CATEGORY_KEYS.forEach((k) => keys.add(k));
 EXTRA_KEYS.forEach((k) => keys.add(k));

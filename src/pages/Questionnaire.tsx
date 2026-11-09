@@ -1,5 +1,5 @@
 
-import QuestionnaireCard from "@/components/questionnaire/QuestionnaireCard";
+import QuestionnaireFeed from "@/components/questionnaire/QuestionnaireFeed";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
@@ -19,19 +19,17 @@ const Questionnaire = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Auf dem Handy übernimmt die Fragekarte Zurück und Schließen, damit alles auf einen Bildschirm passt */}
+      {/* Auf dem Handy übernimmt die Fortschrittsleiste des Feeds das Schließen */}
       <div className="hidden md:block">
         <Header backToHome />
       </div>
-      
-      <main className="flex-grow bg-gradient-to-br from-berlin-blue/5 via-white to-berlin-orange/5 py-3 md:py-8">
-        <div className="max-w-4xl mx-auto px-4 h-full flex items-center">
-          <div className="w-full">
-            <QuestionnaireCard />
-          </div>
+
+      <main className="flex-grow bg-[#fafaf8] pb-4">
+        <div className="max-w-4xl mx-auto px-4">
+          <QuestionnaireFeed />
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

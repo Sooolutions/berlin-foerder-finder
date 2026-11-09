@@ -14,7 +14,9 @@
     "translate": "node --env-file=.env --import tsx/esm scripts/translate.ts",
     "check:questionnaire": "node --import tsx/esm scripts/check-questionnaire.ts",
     "check:translations": "node --import tsx/esm scripts/check-translations.ts",
-    "check:matching": "node --import tsx/esm scripts/check-matching.ts"
+    "check:matching": "node --import tsx/esm scripts/check-matching.ts",
+    "check:flow": "node --import tsx/esm scripts/check-flow.ts",
+    "check:personas": "node --import tsx/esm scripts/check-personas.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.97.1",

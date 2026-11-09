@@ -17,6 +17,7 @@ export type Database = {
       funding: {
         Row: {
           amount: string | null
+          benefit_type: string | null
           application_deadline: string | null
           application_process: string | null
           categories: Database["public"]["Enums"]["funding_category"][] | null
@@ -35,6 +36,7 @@ export type Database = {
           organization: string
           requires_children: boolean | null
           requires_marriage: boolean | null
+          requires_benefits: string[] | null
           "Soft Tags": string[] | null
           tags: string[] | null
           title: string
@@ -44,6 +46,7 @@ export type Database = {
         }
         Insert: {
           amount?: string | null
+          benefit_type?: string | null
           application_deadline?: string | null
           application_process?: string | null
           categories?: Database["public"]["Enums"]["funding_category"][] | null
@@ -62,6 +65,7 @@ export type Database = {
           organization: string
           requires_children?: boolean | null
           requires_marriage?: boolean | null
+          requires_benefits?: string[] | null
           "Soft Tags"?: string[] | null
           tags?: string[] | null
           title: string
@@ -71,6 +75,7 @@ export type Database = {
         }
         Update: {
           amount?: string | null
+          benefit_type?: string | null
           application_deadline?: string | null
           application_process?: string | null
           categories?: Database["public"]["Enums"]["funding_category"][] | null
@@ -89,6 +94,7 @@ export type Database = {
           organization?: string
           requires_children?: boolean | null
           requires_marriage?: boolean | null
+          requires_benefits?: string[] | null
           "Soft Tags"?: string[] | null
           tags?: string[] | null
           title?: string

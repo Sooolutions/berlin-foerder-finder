@@ -22,6 +22,10 @@ export interface Funding {
   funding_type?: 'staatlich' | 'privat' | 'karitativ' | null;
   /** Bezirke, für die das Angebot gilt. Leer oder null bedeutet berlinweit. */
   district?: string[] | null;
+  benefit_type?: string | null;
+  requires_benefits?: string[] | null;
+  /** Begründung aus den Leistungsangaben, gesetzt von rankFundings */
+  benefitReason?: "bekommst" | "ausgeschlossen" | "zusaetzlich" | "voraussetzung" | "voraussetzung_fehlt";
   relevanceScore?: number;
 }
 
@@ -33,7 +37,7 @@ export const useFundingResults = (answers?: UserAnswers) => {
       // 1. Server: grober Altersfilter über min_age und max_age. Angebote ohne
       //    gepflegte Altersfelder kommen immer mit.
       let query = supabase.from('funding').select('*');
-      const ageAnswer = answers?.Q1;
+      const ageAnswer = answers?.alter;
       const ageRange = typeof ageAnswer === 'string' ? getAgeRange(ageAnswer) : null;
       if (ageRange) {
         query = query

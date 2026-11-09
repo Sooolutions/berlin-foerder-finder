@@ -42,6 +42,7 @@ FINANZEN: Finanzen_regelmäßig-knapp, Finanzen_Ersparnisse, Finanzen_Prekär, F
 GESUNDHEIT-DETAIL: Gesundheit_Unterstützung, Gesundheit_Anbindung, Gesundheit_Umgang, Gesundheit_Austausch, Beeinträchtigung_Körperlich, Beeinträchtigung_Psychisch, Beeinträchtigung_Chronisch, Beeinträchtigung_Sinne
 HERAUSFORDERUNG: Herausforderung_Finanzen, Herausforderung_Psyche, Herausforderung_Einsam, Herausforderung_Bürokratie, Herausforderung_Deutschland, Herausforderung_Schule, Herausforderung_Kinder, Herausforderung_Gesundheit, Herausforderung_Pflege, Herausforderung_Sozial, Herausforderung_Freizeit, Herausforderung_Vereinbarkeit, Herausforderung_Orientierung
 WUNSCH: Wunsch_Sozial, Wunsch_Kultur, Wunsch_Lernen, Wunsch_Ehrenamt, Wunsch_Beratung, Wunsch_Gründung
+HAUSHALT: Haushalt_Kinder_U6, Haushalt_Kinder_6_17, Haushalt_Schwanger, Haushalt_Alleinerziehend
 `;
 
 const SYSTEM_PROMPT = `Du bist ein Tagging-Assistent für eine Berliner Sozialleistungs-Plattform.

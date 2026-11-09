@@ -1,0 +1,726 @@
+{
+  "erstellt": "2026-11-08T20:35:26.581Z",
+  "angebote": 1191,
+  "personen": [
+    {
+      "id": "studentin",
+      "name": "Studentin, 21, WG, knapp bei Kasse",
+      "treffer": 389,
+      "ergebnisse": [
+        {
+          "label": "BAföG für Studierende",
+          "rang": 9,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Psychologische Beratung für Studierende",
+          "rang": 81,
+          "top10": false,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Terminservice 116117 (Arzttermine und Psychotherapie)",
+        "Bildungskredit des Bundes",
+        "Deutschlandstipendium",
+        "Studentendorf Schlachtensee und Studentendorf Adlershof",
+        "Studierendenwohnheime des Studierendenwerks Berlin",
+        "LARA, Fachstelle gegen sexualisierte Gewalt an Frauen",
+        "Mietpreisprüfstelle des Landes Berlin",
+        "Psychotherapeutenkammer Berlin, Hilfe bei der Therapieplatzsuche",
+        "BAföG-Amt des Studierendenwerks Berlin",
+        "Deutschlandsemesterticket an Berliner Hochschulen"
+      ]
+    },
+    {
+      "id": "alleinerziehend",
+      "name": "Alleinerziehende Mutter, 31, Teilzeit, Kind unter 6",
+      "treffer": 492,
+      "ergebnisse": [
+        {
+          "label": "Kinderzuschlag",
+          "rang": 110,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Wohngeld",
+          "rang": 174,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Unterhaltsvorschuss",
+          "rang": 27,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Kita-Gutschein",
+          "rang": 4,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Netzwerk Alleinerziehende",
+          "rang": 9,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Kinderkrankengeld",
+        "Pflegezeit und Familienpflegezeit",
+        "Kindertagespflege (Tagesmütter und Tagesväter)",
+        "Kita-Gutschein beantragen (berlinweit)",
+        "Kita-Navigator Berlin",
+        "Berliner Mieterverein",
+        "Beratung für Menschen mit Migrationshintergrund",
+        "Mietpreisprüfstelle des Landes Berlin",
+        "Anlauf- und Koordinierungsstellen für Alleinerziehende in den Bezirken",
+        "DGB Rechtsschutz Berlin – Gewerkschaftliche Rechtsberatung"
+      ]
+    },
+    {
+      "id": "syrer-familie",
+      "name": "Syrer, 41, arbeitssuchend, Familie mit Schulkindern",
+      "treffer": 580,
+      "ergebnisse": [
+        {
+          "label": "Integrationskurs",
+          "rang": 15,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Migrationsberatung",
+          "rang": 11,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Anerkennung ausländischer Abschlüsse",
+          "rang": 128,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Bildungs- und Teilhabepaket",
+          "rang": 303,
+          "top10": false,
+          "sichtbar": false
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Box66 Interkulturelles Beratungs- und Begegnungszentrum für Frauen und Familien",
+        "Berliner JobCoaching",
+        "MobiJob – Mobile Jobberatung für geflüchtete Menschen",
+        "Jobcenter Berlin Charlottenburg-Wilmersdorf",
+        "Digital Empowerment and Information Access for Refugee Women",
+        "Elisi Evi",
+        "Fachberatung Erfolg mit Sprache und Abschluss",
+        "Fachberatung Wege zum Berufsabschluss",
+        "Schule und mehr: Bildung für Berliner Frauen mit und ohne familiäre Migrationsgeschichte",
+        "TIO-Qualifizierungsprojekt"
+      ]
+    },
+    {
+      "id": "rentnerin",
+      "name": "Rentnerin, 74, allein, kleine Rente",
+      "treffer": 318,
+      "ergebnisse": [
+        {
+          "label": "Grundsicherung im Alter",
+          "rang": 61,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Wohngeld",
+          "rang": 6,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Besuchsdienst",
+          "rang": 43,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Grundrentenzuschlag",
+          "rang": 12,
+          "top10": false,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Heizkosten- und Nebenkostennachzahlung im Bedarfsmonat",
+        "Stromspar-Check Berlin",
+        "Seniorenklubs und Seniorentreffs (Spandau und andere Bezirke)",
+        "Aktive Wohnungsnotfallhilfe im Nachbarschaftshaus",
+        "Verbraucherzentrale Berlin",
+        "Wohngeldstelle Charlottenburg-Wilmersdorf (Wohnungsamt)",
+        "KulturLeben Berlin (kostenlose Kulturtickets)",
+        "Beratungsstelle für Überschuldete",
+        "Beratungstelle für Überschuldete",
+        "Schuldner- und Insolvenzberatung für den Berliner Justizvollzug"
+      ]
+    },
+    {
+      "id": "schueler",
+      "name": "Schüler, 13, Lernschwierigkeiten, Familie mit wenig Geld",
+      "treffer": 130,
+      "ergebnisse": [
+        {
+          "label": "Lernförderung über BuT",
+          "rang": 7,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Kostenlose Nachhilfe",
+          "rang": 4,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Bildungs- und Teilhabepaket",
+          "rang": 7,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Lern-Fair, kostenlose Lernunterstützung online",
+        "MENTOR Die Leselernhelfer",
+        "Hey, Alter! Berlin, Laptops für Schülerinnen und Schüler",
+        "Studenten bilden Schüler, kostenlose Nachhilfe",
+        "Teach First Deutschland",
+        "Berliner Lesepaten (VBKI)",
+        "Lernförderung / Nachhilfe (über BuT)",
+        "ANTON Lernapp für die Schule",
+        "Khan Academy auf Deutsch",
+        "serlo.org, kostenlose Lernplattform"
+      ]
+    },
+    {
+      "id": "pflegende-tochter",
+      "name": "Pflegende Tochter, 56, Vollzeit, Mutter mit Pflegegrad",
+      "treffer": 363,
+      "ergebnisse": [
+        {
+          "label": "Pflegeberatung (Stützpunkt oder Pflegetelefon)",
+          "rang": 2,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Pflegezeit und Familienpflegezeit",
+          "rang": 20,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Fachstelle pflegende Angehörige",
+          "rang": 1,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Ergänzende Hilfen zur Pflege (SGB XI/XII) - für pflegende Angehörige oder Pflegebedürftige",
+        "Pflegetelefon des Bundesfamilienministeriums",
+        "Pflegeunterstützungsgeld",
+        "Beratung bei Konflikt und Gewalt in der Pflege (Pflege in Not)",
+        "Psychosoziale Beratung für pflegende Angehörige (Das Fünfte Rad e.V.)",
+        "Kompetenzzentrum Pflegeunterstützung Berlin",
+        "Selbsthilfegruppen für pflegende Angehörige (SEKIS, Unionhilfswerk)",
+        "Fachstelle für pflegende Angehörige Berlin",
+        "Pflegestützpunkte Berlin",
+        "Kontaktstelle PflegeEngagement Charlottenburg-Wilmersdorf"
+      ]
+    },
+    {
+      "id": "wohnungslos",
+      "name": "Wohnungsloser Mann, 44, schläft draußen",
+      "treffer": 339,
+      "ergebnisse": [
+        {
+          "label": "Kältehilfe",
+          "rang": 91,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Bahnhofsmission",
+          "rang": 100,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Notübernachtung",
+          "rang": 108,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Soziale Wohnhilfe",
+          "rang": 4,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Bürgergeld",
+          "rang": 219,
+          "top10": false,
+          "sichtbar": false
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "motz & Co, Straßenzeitung und Hilfe für Wohnungslose",
+        "Anerkennung ausländischer Berufsabschlüsse (IHK Berlin)",
+        "Finanzberatung für Arbeitslose (Schuldnerberatung Berlin 24)",
+        "Soziale Wohnhilfe Friedrichshain-Kreuzberg",
+        "Ambulante Wohnhilfe",
+        "Ambulante Wohnhilfen",
+        "Ambulante Wohnhilfen Campus Ohlauer Straße",
+        "AMOS Soziale Hifen gGmbH Betreuungsbüro Kreuzberg",
+        "AWO Wohnungsnotfallhilfe / Brodenbacher Weg",
+        "Beratung und Betreuung Stephanstraße"
+      ]
+    },
+    {
+      "id": "student-psychisch",
+      "name": "Student, 27, Depression, BAföG",
+      "treffer": 448,
+      "ergebnisse": [
+        {
+          "label": "Psychologische Beratung für Studierende",
+          "rang": 172,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Therapieplatzsuche",
+          "rang": 1,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Sozialpsychiatrischer Dienst",
+          "rang": 227,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Berliner Krisendienst",
+          "rang": 294,
+          "top10": false,
+          "sichtbar": false
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Terminservice 116117 (Arzttermine und Psychotherapie)",
+        "Ambulante Wohnungslosenhilfe – salida BEW",
+        "IN VIA",
+        "BAföG-Amt des Studierendenwerks Berlin",
+        "Deutschlandsemesterticket an Berliner Hochschulen",
+        "Feministisches Netzwerk für Gesundheit Berlin",
+        "Koordinierungsstelle Gesundheitsförderung",
+        "Berliner Mieterverein",
+        "Bildungskredit des Bundes",
+        "Deutschlandstipendium"
+      ]
+    },
+    {
+      "id": "ukrainerin",
+      "name": "Ukrainerin, 29, Kleinkind, neu in Berlin",
+      "treffer": 571,
+      "ergebnisse": [
+        {
+          "label": "Anlaufstelle für Ukrainer:innen",
+          "rang": 61,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Integrationskurs",
+          "rang": 224,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Kita-Gutschein",
+          "rang": 1,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "FamilienServiceBüro Mitte (Elterngeld, Unterhaltsvorschuss, Kita-Gutschein)",
+        "Strukturstelle für berlinweite ergänzende flexible Kinderbetreuung",
+        "Jugendamt Charlottenburg-Wilmersdorf – Unterhaltsvorschusskasse",
+        "Landeskoordinierungsstelle I und II Alleinerziehende Berlin",
+        "Genossenschaftsförderung Berlin, Darlehen für Genossenschaftsanteile",
+        "Pankower Beratungsstellen für Familien- und Sozialleistungen",
+        "SOS-Familienzentrum Berlin Hellersdorf",
+        "Anlauf- und Koordinierungsstellen für Alleinerziehende in den Bezirken",
+        "AWO Wohnungsnotfallhilfe - Betreutes Wohnen für Frauen und Familien",
+        "Beistandschaft durch das Jugendamt"
+      ]
+    },
+    {
+      "id": "gruenderin",
+      "name": "Gründerin, 30, Businessplan in Arbeit",
+      "treffer": 197,
+      "ergebnisse": [
+        {
+          "label": "Berliner Startup Stipendium",
+          "rang": 9,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Vorgründungscoaching",
+          "rang": 2,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Existenzgründerdarlehen",
+          "rang": 6,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Businessplan-Wettbewerb Berlin-Brandenburg (BPW)",
+        "Berliner Vorgründungscoaching",
+        "EXIST-Gründungsstipendium",
+        "Gründerinnen und Unternehmerinnen erfolgreich im Team V",
+        "Organisatorische Unterstützung des Frauenfinanzierungsnetzwerkes Goldrausch",
+        "GründungsBONUS Plus – Zuschuss für Berliner Startups",
+        "Gründen in Berlin – Informationsportal für Gründer:innen",
+        "Schuldner- und Insolvenzberatung für Kleinstselbstständige",
+        "BSS Women – Berliner Startup Stipendium für Gründerinnen",
+        "Zuschüsse für Gründungen in Berlin (Übersicht der Senatsverwaltung)"
+      ]
+    },
+    {
+      "id": "azubi",
+      "name": "Auszubildender, 19, erste eigene Wohnung",
+      "treffer": 294,
+      "ergebnisse": [
+        {
+          "label": "Berufsausbildungsbeihilfe",
+          "rang": 24,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Wohngeld für Auszubildende",
+          "rang": 19,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Azubiwohnen",
+          "rang": 2,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Zuschuss zu den Unterkunftskosten für Azubis und Studierende",
+        "Azubiwohnen der GEWOBAG an der Landsberger Allee",
+        "Berliner Mieterverein",
+        "Conrad-Stiftung (Finanzielle Förderung für bedürftige Auszubildende)",
+        "Erstausstattung für die Wohnung (SGB II/XII)",
+        "BAföG-Amt des Studierendenwerks Berlin",
+        "Berliner Azubiwohnen",
+        "Deutschlandsemesterticket an Berliner Hochschulen",
+        "inberlinwohnen.de, Wohnungsportal der landeseigenen Wohnungsbaugesellschaften",
+        "Waisenrente in Schule, Ausbildung und Studium"
+      ]
+    },
+    {
+      "id": "erwerbsgemindert",
+      "name": "Erwerbsgeminderter Mann, 57, chronisch krank",
+      "treffer": 308,
+      "ergebnisse": [
+        {
+          "label": "Erwerbsminderungsrente",
+          "rang": 22,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Grundsicherung bei Erwerbsminderung",
+          "rang": 33,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Teilhabeberatung EUTB",
+          "rang": 3,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Stadtteilladen Coolrabi e.V.",
+        "Schwerbehindertenausweis beantragen (Versorgungsamt Berlin)",
+        "Ergänzende unabhängige Teilhabeberatung (EUTB) in Berlin",
+        "Beratungsstelle für Wohnungsnotfälle und Existenzsicherung",
+        "Beratungsstelle für Überschuldete",
+        "Beratungstelle für Überschuldete",
+        "Hilfe zum Lebensunterhalt (Sozialhilfe)",
+        "Schuldner- und Insolvenzberatung für den Berliner Justizvollzug",
+        "Allgemeine Unabhängige Sozialberatung in den Bezirken",
+        "Anlaufstelle und Beratungsangebote für Frauen mit Behinderung"
+      ]
+    },
+    {
+      "id": "familie-drei-kinder",
+      "name": "Vater, 38, drei Kinder, Alleinverdiener",
+      "treffer": 491,
+      "ergebnisse": [
+        {
+          "label": "Kinderzuschlag",
+          "rang": 15,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Wohngeld",
+          "rang": 214,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Bildungs- und Teilhabepaket",
+          "rang": 249,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Kita-Gutschein",
+          "rang": 6,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Berliner Mieterverein",
+        "Pflegezeit und Familienpflegezeit",
+        "Kinderkrankengeld",
+        "Mietpreisprüfstelle des Landes Berlin",
+        "DGB Rechtsschutz Berlin – Gewerkschaftliche Rechtsberatung",
+        "Jugendamt Charlottenburg-Wilmersdorf – Kita-Gutschein",
+        "Mutter-Kind- und Vater-Kind-Kuren (Müttergenesungswerk)",
+        "Pankower Beratungsstellen für Familien- und Sozialleistungen",
+        "Rechtsantragstelle Arbeitsgericht Berlin",
+        "SOS-Familienzentrum Berlin Hellersdorf"
+      ]
+    },
+    {
+      "id": "jugendliche-wohngruppe",
+      "name": "Jugendliche, 17, Wohngruppe, beginnt Ausbildung",
+      "treffer": 132,
+      "ergebnisse": [
+        {
+          "label": "Careleaver",
+          "rang": null,
+          "top10": false,
+          "sichtbar": false
+        },
+        {
+          "label": "Berufsausbildungsbeihilfe",
+          "rang": 6,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Azubiwohnen",
+          "rang": null,
+          "top10": false,
+          "sichtbar": false
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Berufsvorbereitende Bildungsmaßnahme",
+        "Ausbildungsgeld für junge Menschen mit Behinderung",
+        "Conrad-Stiftung (Finanzielle Förderung für bedürftige Auszubildende)",
+        "Erstausstattung für die Wohnung (SGB II/XII)",
+        "Eingliederungshilfe für junge Menschen mit Behinderung",
+        "Berufsausbildungsbeihilfe (BAB)",
+        "Wohngeld für Auszubildende",
+        "Ausbildung weltweit, Auslandsaufenthalte in der Ausbildung",
+        "Kindergeld",
+        "Ausbildungsvergütung"
+      ]
+    },
+    {
+      "id": "schwangere",
+      "name": "Schwangere, 20, wohnt bei den Eltern, ohne Ausbildung",
+      "treffer": 343,
+      "ergebnisse": [
+        {
+          "label": "Bundesstiftung Mutter und Kind",
+          "rang": 123,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Schwangerschaftsberatung",
+          "rang": 21,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Elterngeld",
+          "rang": 119,
+          "top10": false,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Jobcenter Berlin Charlottenburg-Wilmersdorf",
+        "Berliner Beratungsstelle Berufskrankheiten",
+        "Notunterkünfte SleepIn (KuB Berlin)",
+        "Suchtberatung Vista gGmbH",
+        "WERTRAUM",
+        "Insolvenzgeld",
+        "Queraufstieg Berlin, Beratung bei Studienzweifeln",
+        "Jugendberufsagentur Berlin, Standort Charlottenburg-Wilmersdorf",
+        "Jobcenter Berlin – Beratung und Förderung für Bürgergeld-Beziehende",
+        "Fachberatung berufliche Nachqualifizierung"
+      ]
+    },
+    {
+      "id": "rentner-ehrenamt",
+      "name": "Rentner, 68, Eigentum, sucht Aufgabe",
+      "treffer": 156,
+      "ergebnisse": [
+        {
+          "label": "Ehrenamtsvermittlung",
+          "rang": 5,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Bildungsangebote für Senior:innen",
+          "rang": 1,
+          "top10": true,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Bildungsangebote für Seniorinnen und Senioren (pro seniores e.V., VHS)",
+        "Musikschule Béla Bartók Pankow, Sozialermäßigung",
+        "Musikschule Fanny Hensel Mitte, Sozialermäßigung",
+        "Berliner Lesepaten (VBKI)",
+        "Ehrenamt finden mit vostel Berlin",
+        "Seniorenvertretungen in den Berliner Bezirken",
+        "Seniorenuniversitäten und Seniorenakademien Berlin",
+        "Ehrenamtskarte Berlin",
+        "Digital-Kompass Standorte in Berlin",
+        "Musikschulen der Berliner Bezirke"
+      ]
+    },
+    {
+      "id": "arbeitslos-alg1",
+      "name": "Arbeitssuchende, 33, ALG I, will sich weiterbilden",
+      "treffer": 353,
+      "ergebnisse": [
+        {
+          "label": "Arbeitslosengeld I",
+          "rang": 130,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Bildungsgutschein",
+          "rang": 75,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Bewerbungstraining",
+          "rang": 30,
+          "top10": false,
+          "sichtbar": true
+        },
+        {
+          "label": "Weiterbildungsprämie",
+          "rang": 13,
+          "top10": false,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Jobcenter Berlin Charlottenburg-Wilmersdorf",
+        "Leistungen zur Eingliederung in Arbeit",
+        "Berliner Beratungsstelle Berufskrankheiten",
+        "Fachberatung berufliche Nachqualifizierung",
+        "Fachberatung Gesundheit, Pflege und Soziales (Beratung zu Bildung und Beruf)",
+        "Kostenlose Mietberatung Neukölln",
+        "Kostenlose Mieter- und WBS-Beratung Friedrichshain-Kreuzberg",
+        "Kostenlose Mieterberatung Lichtenberg",
+        "Stadtteilladen Coolrabi e.V.",
+        "WERTRAUM"
+      ]
+    },
+    {
+      "id": "kleinstselbststaendiger",
+      "name": "Kleinstselbstständiger, 52, Einnahmen eingebrochen",
+      "treffer": 242,
+      "ergebnisse": [
+        {
+          "label": "Beratung für Kleinstselbstständige",
+          "rang": 1,
+          "top10": true,
+          "sichtbar": true
+        },
+        {
+          "label": "Beratung für Selbstständige (ver.di, COMPETENZentrum)",
+          "rang": 87,
+          "top10": false,
+          "sichtbar": true
+        }
+      ],
+      "verstoesse": [],
+      "top10": [
+        "Beratungsstelle für Kleinstselbstständige – Berliner Stadtmission",
+        "Kostenlose Mieterberatung Marzahn-Hellersdorf",
+        "Wohnungstauschportal der landeseigenen Wohnungsbaugesellschaften",
+        "Kreativwirtschaftsberatung Berlin – Kostenlose Beratung für Freiberufler:innen",
+        "Berliner Mietspiegel",
+        "inberlinwohnen.de, Wohnungsportal der landeseigenen Wohnungsbaugesellschaften",
+        "Soziale Wohnhilfe Friedrichshain-Kreuzberg",
+        "Ambulante Wohnhilfe",
+        "Ambulante Wohnhilfen",
+        "Ambulante Wohnhilfen Campus Ohlauer Straße"
+      ]
+    }
+  ]
+}

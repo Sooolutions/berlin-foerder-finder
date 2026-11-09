@@ -1,7 +1,10 @@
 
 import { UserAnswers } from "@/context/QuestionnaireContext";
-import { getOptionLabel, getQuestionData } from "@/data/questionnaireData";
+import { getOptionLabel, getQuestionData, getQuestionText, picked } from "@/data/questionnaireData";
 import { tr } from "@/i18n/LanguageContext";
+import { benefitEffect, type BenefitEffect } from "@/questionnaire/benefits";
+import { deriveProfile, deriveTags, type DerivedTag } from "@/questionnaire/derive";
+import { computePath } from "@/questionnaire/flow";
 import { ACTIVITY_TAGS, AGE_TAGS, EXCLUDED_FROM_SCORING, NATIONALITY_TAGS } from "@/utils/tagConstants";
 
 /**
@@ -24,12 +27,13 @@ export const getAgeRange = (ageAnswer: string): { minAge: number; maxAge: number
  * Wer zurückgeht und z. B. von "Studium" auf "Arbeiten" wechselt, hat noch die
  * alte Studiums-Antwort im Speicher. Ohne diesen Filter würden solche verwaisten
  * Antworten weiter in die Ergebnisse einfließen.
- * Die Reihenfolge folgt dem Fragenverlauf.
+ * Der Pfad wird aus den Antworten selbst berechnet (computePath), die
+ * Fragenhistorie wird dafür nicht mehr gebraucht. Die Reihenfolge folgt dem
+ * Fragenverlauf.
  */
-export const getActiveAnswers = (answers: UserAnswers, history?: string[]): UserAnswers => {
-  if (!history || history.length === 0) return answers;
+export const getActiveAnswers = (answers: UserAnswers): UserAnswers => {
   const active: UserAnswers = {};
-  history.forEach((questionId) => {
+  computePath(answers).steps.forEach(({ questionId }) => {
     if (answers[questionId] !== undefined) active[questionId] = answers[questionId];
   });
   return active;
@@ -60,8 +64,8 @@ export const extractSelections = (answers: UserAnswers): AnswerSelection[] => {
       if (option) {
         selections.push({
           questionId,
-          question: tr(questionData.question),
-          option: getOptionLabel(questionId, option.id),
+          question: tr(getQuestionText(questionId, answers)),
+          option: getOptionLabel(questionId, option.id, answers),
           tag: option.id,
         });
       }
@@ -76,6 +80,21 @@ export const extractSelections = (answers: UserAnswers): AnswerSelection[] => {
  */
 export const extractTagsFromAnswers = (answers: UserAnswers): string[] =>
   Array.from(new Set(extractSelections(answers).map((s) => s.tag)));
+
+/**
+ * Alle Tags eines Antwortprofils für das Matching: die angeklickten und die
+ * abgeleiteten (src/questionnaire/derive.ts). factors enthält den
+ * Gewichtsfaktor abgeleiteter Tags.
+ */
+export const extractProfileTags = (answers: UserAnswers): { tags: string[]; factors: Map<string, number>; derived: DerivedTag[] } => {
+  const { derived, boosts } = deriveProfile(answers);
+  const direct = extractTagsFromAnswers(answers);
+  return {
+    tags: Array.from(new Set([...direct, ...derived.map((d) => d.tag)])),
+    factors: new Map([...derived.map((d) => [d.tag, d.factor] as [string, number]), ...boosts]),
+    derived,
+  };
+};
 
 
 /* ------------------------------------------------------------------ *
@@ -119,6 +138,10 @@ const ACTIVITY_COMPAT: Record<string, string[]> = {
  * soll Familienangebote sehen, wer nebenbei pflegt, Pflegeangebote.
  */
 const CHALLENGE_IMPLIES_ACTIVITY: Record<string, string> = {
+  Haushalt_Kinder_U6: 'Familie',
+  Haushalt_Kinder_6_17: 'Familie',
+  Haushalt_Schwanger: 'Familie',
+  Haushalt_Alleinerziehend: 'Familie',
   Herausforderung_Kinder: 'Familie',
   Herausforderung_Vereinbarkeit: 'Familie',
   Herausforderung_Pflege: 'Pflege',
@@ -138,6 +161,8 @@ export const tagFamily = (tag: string): string => {
   if (NATIONALITY_SET.has(tag)) return 'origin';
   if (prefix === 'Herausforderung') return 'challenge';
   if (prefix === 'Wunsch') return 'wish';
+  if (prefix === 'Haushalt') return 'household';
+  if (prefix === 'Leistung') return 'benefit';
   return prefix;
 };
 
@@ -155,6 +180,8 @@ const COMPATIBLE: Record<string, string[]> = {
   WG: ['Miete', 'WG', 'Wohnheim'],
   Wohnheim: ['Miete', 'WG', 'Wohnheim'],
   Wohnen_Familie: ['Wohnen_Familie', 'WG', 'Wohnheim'],
+  // Wer in einer Einrichtung lebt, zieht oft bald aus: Azubiwohnen, Wohnheim und WG passen
+  Betreuung: ['Betreuung', 'Wohnheim', 'WG'],
   Prekär: ['Prekär', 'Ohne_Bekannte', 'Ohne_Not', 'Ohne_Öffentlich', 'Ohne_Fahrzeug', 'Ohne_Nichts'],
   Syrisch: ['Syrisch', 'Drittstaat'],
   Ukrainisch: ['Ukrainisch', 'Drittstaat'],
@@ -175,14 +202,24 @@ export interface MatchableFunding {
   min_age?: number | null;
   max_age?: number | null;
   district?: string[] | null;
+  /** Leistung, die das Angebot selbst ist (Spalte benefit_type) */
+  benefit_type?: string | null;
+  /** Leistungen, von denen das Angebot eine voraussetzt (Spalte requires_benefits) */
+  requires_benefits?: string[] | null;
 }
 
 /** Altersgruppe und Staatsangehörigkeit aus den Antworten. */
 export const getProfileBasics = (answers: UserAnswers): { age: string | null; nationality: string | null } => {
   const tags = extractTagsFromAnswers(answers);
+  // Die Staatsangehörigkeit wird nur erfragt, wer „Ankommen in Deutschland“
+  // als Herausforderung nennt. Ohne diese Angabe gelten migrationsspezifische
+  // Angebote als nicht passend, wie bisher bei „Deutsch“. „Möchte ich nicht
+  // sagen“ lässt alle zu.
+  const migration = picked(answers, 'herausforderungen', 'Herausforderung_Deutschland');
+  const nationality = tags.find((t) => NATIONALITY_SET.has(t)) ?? (migration ? null : 'Deutsch');
   return {
     age: tags.find((t) => AGE_TAG_SET.has(t)) ?? null,
-    nationality: tags.find((t) => NATIONALITY_SET.has(t)) ?? null,
+    nationality,
   };
 };
 
@@ -247,12 +284,29 @@ function getTagWeight(tag: string): number {
   if (NATIONALITY_WEIGHTS[tag]) return NATIONALITY_WEIGHTS[tag];
   const prefix = tag.split('_')[0];
   if (activityRoot(tag)) return 3;
-  if (['Herausforderung', 'Gesundheit'].includes(prefix)) return 2;
-  if (['Finanzen', 'Miete', 'Eigentum', 'Prekär', 'Ohne', 'WG', 'Wohnheim', 'Heim', 'Betreuung'].includes(prefix)) return 2;
-  if (prefix === 'Beeinträchtigung') return 1.5;
+  // Eine Schwangerschaft verändert die Lebenslage so stark wie eine Tätigkeit
+  if (tag === 'Haushalt_Schwanger') return 3;
+  if (['Herausforderung', 'Gesundheit', 'Haushalt'].includes(prefix)) return 2;
+  // Wohnform als bloßer Status zählt weniger als eine Notlage
+  if (['Miete', 'Eigentum', 'WG', 'Wohnheim'].includes(prefix)) return 1;
+  if (['Finanzen', 'Prekär', 'Ohne', 'Heim', 'Betreuung'].includes(prefix)) return 2;
+  if (prefix === 'Beeinträchtigung') return 2;
   if (prefix === 'Wunsch') return 1.5;
   return 1;
 }
+
+/**
+ * Verwandte Tags, die in der Punktzahl als Teiltreffer zählen. Angebote für
+ * Drittstaatsangehörige passen auch bei syrischer, türkischer oder
+ * ukrainischer Staatsangehörigkeit, Angebote für starke Beeinträchtigung zu
+ * jeder angegebenen Art.
+ */
+const SCORING_COMPAT: Record<string, string[]> = {
+  Syrisch: ['Drittstaat'],
+  Ukrainisch: ['Drittstaat'],
+  Türkisch: ['Drittstaat'],
+  ...Object.fromEntries(IMPAIRMENT_TYPES.map((t) => [t, ['Beeinträchtigung_Stark']])),
+};
 
 /** Wie häufig jeder Tag im aktuellen Datenbestand vorkommt. */
 export type TagFrequencies = { total: number; counts: Map<string, number> };
@@ -292,6 +346,8 @@ export const computeRelevanceScore = (
   fundingTags: string[],
   userTags: string[],
   freq?: TagFrequencies,
+  /** Gewichtsfaktoren abgeleiteter Tags (extractProfileTags) */
+  factors?: Map<string, number>,
 ): number => {
   const meaningful = Array.from(new Set(userTags.filter(isMeaningfulTag)));
   if (!fundingTags || fundingTags.length === 0 || meaningful.length === 0) return 0;
@@ -300,11 +356,29 @@ export const computeRelevanceScore = (
   let matchedWeight = 0;
   let totalWeight = 0;
   let matchCount = 0;
-  meaningful.forEach((tag) => {
-    const w = getTagWeight(tag) * rarity(tag, freq);
+  const weightOf = (tag: string) => getTagWeight(tag) * rarity(tag, freq) * (factors?.get(tag) ?? 1);
+
+  // Mehrere Tätigkeiten sind Alternativen: Das Gewicht der Tätigkeit zählt
+  // einmal und gilt als erfüllt, wenn das Angebot zu einer davon passt.
+  const roots = meaningful.filter((t) => (ACTIVITY_TAGS as readonly string[]).includes(t));
+  const others = meaningful.filter((t) => !roots.includes(t));
+  if (roots.length > 0) {
+    totalWeight += Math.max(...roots.map(weightOf));
+    const hit = roots.filter((t) => offer.has(t));
+    if (hit.length > 0) {
+      matchedWeight += Math.max(...hit.map(weightOf));
+      matchCount++;
+    }
+  }
+  others.forEach((tag) => {
+    const w = weightOf(tag);
     totalWeight += w;
     if (offer.has(tag)) {
       matchedWeight += w;
+      matchCount++;
+    } else if ((SCORING_COMPAT[tag] ?? []).some((t) => offer.has(t))) {
+      // Verwandter Tag, etwa „Drittstaat“ bei syrischer Staatsangehörigkeit
+      matchedWeight += w * 0.6;
       matchCount++;
     }
   });
@@ -352,7 +426,8 @@ export interface FitInfo {
  * für finanzielle Notlagen.
  */
 export const makeFitAnalyzer = (answers: UserAnswers) => {
-  const all = extractSelections(answers).filter((s) => !AGE_TAG_SET.has(s.tag));
+  const derived = deriveTags(answers).map((d) => ({ tag: d.tag }));
+  const all = [...extractSelections(answers), ...derived].filter((s) => !AGE_TAG_SET.has(s.tag));
   const userByFamily = new Map<string, Set<string>>();
   all.forEach((s) => {
     const fam = tagFamily(s.tag);
@@ -478,7 +553,22 @@ export interface ReasonGroup<T> {
   question: string;
   tag: string;
   fundings: T[];
+  /** Eigene Überschrift statt „Weil du … angeklickt hast“ (deutscher Text, wird übersetzt) */
+  title?: string;
+  /** Erläuterung unter der Überschrift (deutscher Text, wird übersetzt) */
+  note?: string;
 }
+
+/** Leistungsbezogene Begründung, die rankFundings an ein Angebot hängt. */
+export type BenefitReason = BenefitEffect['reason'];
+
+/** Angebote, die wegen der Leistungsangaben trotz anderer Tätigkeit passen. */
+const benefitRelevant = (f: { benefitReason?: BenefitReason }) =>
+  f.benefitReason === 'zusaetzlich' || f.benefitReason === 'voraussetzung';
+
+/** Überschrift und Hinweis der Zeile für vermutlich zusätzliche Leistungen. */
+export const HINT_TITLE = 'Das steht dir vielleicht zusätzlich zu';
+export const HINT_NOTE = 'Nach deinen Angaben bekommst du diese Leistungen noch nicht. Ob ein Anspruch besteht, prüft die zuständige Stelle.';
 
 /**
  * Reihenfolge der Gruppen: akute Notlagen zuerst, dann die konkreten
@@ -490,8 +580,8 @@ const groupPriority = (tag: string): number => {
   const [prefix, sub] = tag.split('_');
   if (tag === 'Prekär' || prefix === 'Ohne') return 0;
   if (sub && activityRoot(tag)) return 1;
-  if (['Gesundheit', 'Herausforderung', 'Beeinträchtigung'].includes(prefix)) return 2;
-  if (prefix === 'Finanzen' || NATIONALITY_SET.has(tag)) return 3;
+  if (['Gesundheit', 'Herausforderung', 'Beeinträchtigung', 'Haushalt'].includes(prefix)) return 2;
+  if (prefix === 'Finanzen' || prefix === 'Leistung' || NATIONALITY_SET.has(tag)) return 3;
   if ((ACTIVITY_TAGS as readonly string[]).includes(tag)) return 4;
   if (prefix === 'Wunsch') return 5;
   return 6;
@@ -516,7 +606,7 @@ const FILL_PER_ROW = 6;
  * Jedes Angebot erscheint nur einmal, und zwar in der spezifischsten passenden
  * Zeile. Zeilen ohne Treffer entfallen.
  */
-export function buildReasonGroups<T extends { id: string; title?: string; tags: string[] | null; relevanceScore?: number }>(
+export function buildReasonGroups<T extends { id: string; title?: string; tags: string[] | null; relevanceScore?: number; district?: string[] | null; benefit_type?: string | null; requires_benefits?: string[] | null; benefitReason?: BenefitReason }>(
   fundings: T[],
   answers: UserAnswers,
   options: { exclude?: Set<string> } = {}
@@ -524,22 +614,55 @@ export function buildReasonGroups<T extends { id: string; title?: string; tags: 
   const used = new Set<string>(options.exclude ?? []);
   const fitOf = makeFitAnalyzer(answers);
 
+  // Abgeleitete Tags gehören zur Antwort, aus der sie folgen. So zeigt die
+  // Zeile „Weil du … oft knapp angeklickt hast“ auch Angebote für finanzielle
+  // Belastung.
+  const derived = deriveTags(answers);
+  const tagsOf = (questionId: string, tag: string) => [
+    tag,
+    ...derived.filter((d) => d.sources.some((src) => src.questionId === questionId && src.optionId === tag)).map((d) => d.tag),
+  ];
   const seenTags = new Set<string>();
   const selections = extractSelections(answers)
-    .filter((s) => isMeaningfulTag(s.tag))
+    .filter((s) => isMeaningfulTag(s.tag) || tagsOf(s.questionId, s.tag).length > 1)
     .filter((s) => (seenTags.has(s.tag) ? false : (seenTags.add(s.tag), true)))
     .map((s, order) => ({ ...s, order, family: tagFamily(s.tag) }))
     .sort((a, b) => groupPriority(a.tag) - groupPriority(b.tag) || a.order - b.order);
 
   const scored = fundings
     .map((f) => ({ f, fit: fitOf(f.tags) }))
-    .filter(({ fit }) => !contradictsSituation(fit))
+    .filter(({ f, fit }) => benefitRelevant(f) || !contradictsSituation(fit))
     .sort((a, b) => (b.f.relevanceScore ?? 0) - (a.f.relevanceScore ?? 0));
 
   const groups: ReasonGroup<T>[] = [];
+
+  // Zuerst: Leistungen, die nach den Angaben vermutlich zusätzlich in Frage
+  // kommen. Je Leistung genügt das berlinweite Angebot, die Bezirksstellen
+  // (etwa zwölf Wohngeldstellen) erscheinen dann nicht zusätzlich. Gibt es
+  // kein berlinweites, bleibt die am besten passende Bezirksstelle.
+  const hintPool = scored.filter(({ f }) => f.benefitReason === 'zusaetzlich' && !used.has(f.id)).map(({ f }) => f);
+  const hints: T[] = [];
+  const byType = new Map<string, T[]>();
+  hintPool.forEach((f) => {
+    const k = f.benefit_type ?? f.id;
+    byType.set(k, [...(byType.get(k) ?? []), f]);
+  });
+  byType.forEach((list) => {
+    const citywide = list.filter((f) => !f.district?.length);
+    hints.push(...(citywide.length ? citywide : list.slice(0, 1)));
+    list.forEach((f) => used.add(f.id));
+  });
+  hints.sort((a, b) => (b.relevanceScore ?? 0) - (a.relevanceScore ?? 0));
+  if (hints.length > 0) {
+    groups.push({ key: 'hint:zusaetzlich', option: '', question: '', tag: '', fundings: hints, title: HINT_TITLE, note: HINT_NOTE });
+  }
+
   selections.forEach((s) => {
-    const candidates = scored.filter(({ f }) => !used.has(f.id) && (f.tags ?? []).includes(s.tag));
-    const confirmedEntries = candidates.filter(({ fit }) => [...fit.matchedFamilies].some((fam) => fam !== s.family));
+    const rowTags = tagsOf(s.questionId, s.tag).filter(isMeaningfulTag);
+    // Bei einer bezogenen Leistung gehören auch Angebote dazu, die sie voraussetzen
+    const requiresThis = (f: T) => s.tag.startsWith('Leistung_') && (f.requires_benefits ?? []).includes(s.tag);
+    const candidates = scored.filter(({ f }) => !used.has(f.id) && (requiresThis(f) || rowTags.some((t) => (f.tags ?? []).includes(t))));
+    const confirmedEntries = candidates.filter(({ f, fit }) => requiresThis(f) || [...fit.matchedFamilies].some((fam) => fam !== s.family));
     const neutral = candidates
       .filter((c) => !confirmedEntries.includes(c))
       .sort((a, b) => a.fit.contradictions - b.fit.contradictions || (b.f.relevanceScore ?? 0) - (a.f.relevanceScore ?? 0));
@@ -556,6 +679,14 @@ export function buildReasonGroups<T extends { id: string; title?: string; tags: 
 /* ------------------------------------------------------------------ *
  * Gesamtablauf
  * ------------------------------------------------------------------ */
+
+/**
+ * Vorrang bei akuter Wohnungslosigkeit (Punkte auf die Relevanz). Angebote
+ * für genau die angegebene Lage, etwa draußen schlafen, stehen vor allgemeinen
+ * Angeboten bei Wohnungslosigkeit, beide vor allem anderen.
+ */
+const ACUTE_BONUS = 40;
+const ACUTE_BONUS_GENERAL = 15;
 
 /** Mindestzahl an Ergebnissen, darunter wird mit allgemeinen Anlaufstellen ergänzt. */
 export const MIN_RESULTS = 5;
@@ -575,17 +706,42 @@ const GENERAL_HELP_TAGS = ['Wunsch_Beratung', 'Sonstiges_Beratung', 'Herausforde
  *    Anlaufstellen ergänzt, die die harten Kriterien ebenfalls erfüllen. Sie
  *    erhalten relevanceScore 0.
  */
-export function rankFundings<T extends MatchableFunding & { title?: string; relevanceScore?: number }>(
+export function rankFundings<T extends MatchableFunding & { title?: string; relevanceScore?: number; benefitReason?: BenefitReason }>(
   fundings: T[],
   answers: UserAnswers,
 ): T[] {
-  const userTags = extractTagsFromAnswers(answers);
+  const { tags: userTags, factors } = extractProfileTags(answers);
+  const { benefits, acute } = deriveProfile(answers);
+  const acuteTags = new Set(userTags.filter((t) => t.startsWith('Ohne_') && t !== 'Ohne_Nichts'));
   const freq = computeTagFrequencies(fundings);
   const eligible = makeEligibilityCheck(answers);
   const fitOf = makeFitAnalyzer(answers);
 
-  const candidates = fundings.filter((f) => eligible(f) && !contradictsSituation(fitOf(f.tags)));
-  const scored = candidates.map((f) => ({ ...f, relevanceScore: computeRelevanceScore(f.tags ?? [], userTags, freq) }));
+  // Leistungsangaben (benefits.ts): Ein vermutlich zusätzlicher Anspruch oder
+  // eine erfüllte Voraussetzung macht ein Angebot passend, auch wenn es für
+  // eine andere Tätigkeit verschlagwortet ist. Bereits bezogene oder
+  // ausgeschlossene Leistungen rücken nach hinten.
+  const candidates = fundings
+    .filter((f) => eligible(f))
+    .map((f) => ({ f, effect: benefitEffect(f, benefits) }))
+    .filter(({ f, effect }) => {
+      const fit = fitOf(f.tags);
+      // Eine andere Wohnform schließt weiterhin aus (z. B. Lastenzuschuss nur für Eigentum)
+      if (benefitRelevant({ benefitReason: effect.reason })) return !fit.housingConflict;
+      return !contradictsSituation(fit);
+    });
+  const scored = candidates.map(({ f, effect }) => {
+    const base = computeRelevanceScore(f.tags ?? [], userTags, freq, factors);
+    // Bei akuter Wohnungslosigkeit stehen Notangebote vor allem anderen, und
+    // unter ihnen die für genau diese Lage (etwa draußen schlafen)
+    const offerTags = f.tags ?? [];
+    const acuteBonus = !acute ? 0
+      : offerTags.some((t) => acuteTags.has(t)) ? ACUTE_BONUS
+      : offerTags.includes('Prekär') ? ACUTE_BONUS_GENERAL : 0;
+    const bonus = effect.bonus + acuteBonus;
+    const score = base > 0 || bonus > 0 ? Math.max(1, Math.round(base * effect.factor + bonus)) : 0;
+    return { ...f, relevanceScore: score, benefitReason: effect.reason };
+  });
 
   const byTitle = (a: T, b: T) => (a.title ?? '').localeCompare(b.title ?? '', 'de');
   let results = scored

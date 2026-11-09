@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getNextQuestionId as computeNextQuestionId } from "@/utils/questionnaireRouting";
+import { FIRST_QUESTION_ID, nextStep } from "@/questionnaire/flow";
+import { resetSectionTracking, trackSection } from "@/questionnaire/tracking";
 
-// v2: Antworten werden als Options-ids gespeichert (vorher deutsche Anzeigetexte).
-// Der neue Schlüssel verhindert, dass alte Sitzungsdaten falsch gelesen werden.
-const QUESTIONNAIRE_ANSWERS_KEY = "questionnaireAnswers_v2";
-const QUESTIONNAIRE_HISTORY_KEY = "questionnaireHistory_v2";
+// v3: neuer Fragebogen mit eigenen Frage-ids (November 2026). Der neue
+// Schlüssel verhindert, dass alte Sitzungsdaten falsch gelesen werden.
+const QUESTIONNAIRE_ANSWERS_KEY = "questionnaireAnswers_v3";
+const QUESTIONNAIRE_HISTORY_KEY = "questionnaireHistory_v3";
 
 /** Gespeicherte Antworten je Frage, als Options-ids (siehe questionnaireData.ts). */
 export type UserAnswers = Record<string, string | string[]>;
@@ -13,7 +14,9 @@ interface QuestionnaireContextType {
   currentQuestionId: string;
   answers: Record<string, string | string[]>;
   updateAnswer: (questionId: string, answer: string | string[]) => void;
-  goToNextQuestion: (answerOverride?: string) => void;
+  /** Ersetzt alle Antworten auf einmal (Feed, nach Bereinigung) */
+  replaceAnswers: (answers: UserAnswers) => void;
+  goToNextQuestion: (answerOverride?: string | string[]) => void;
   goToPreviousQuestion: () => void;
   resetQuestionnaire: () => void;
   questionHistory: string[];
@@ -26,9 +29,9 @@ const QuestionnaireContext = createContext<QuestionnaireContextType | undefined>
 const initialAnswers: Record<string, string | string[]> = {};
 
 export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [currentQuestionId, setCurrentQuestionId] = useState<string>("Q1");
+  const [currentQuestionId, setCurrentQuestionId] = useState<string>(FIRST_QUESTION_ID);
   const [answers, setAnswers] = useState<Record<string, string | string[]>>(initialAnswers);
-  const [questionHistory, setQuestionHistory] = useState<string[]>(["Q1"]);
+  const [questionHistory, setQuestionHistory] = useState<string[]>([FIRST_QUESTION_ID]);
   const [isLastQuestion, setIsLastQuestion] = useState<boolean>(false);
 
   // Load from sessionStorage on mount
@@ -71,17 +74,22 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
     }));
   };
 
-  // Go to next question with optional answer override
-  const goToNextQuestion = (answerOverride?: string) => {
-    const nextQuestionId = computeNextQuestionId(currentQuestionId, answers, answerOverride);
+  const replaceAnswers = (next: UserAnswers) => setAnswers(next);
 
-    if (nextQuestionId === "END") {
+  // Go to next question with optional answer override
+  const goToNextQuestion = (answerOverride?: string | string[]) => {
+    const next = nextStep(currentQuestionId, answers, answerOverride);
+
+    if (!next) {
       setIsLastQuestion(true);
       return;
     }
     
-    setCurrentQuestionId(nextQuestionId);
-    setQuestionHistory(prev => [...prev, nextQuestionId]);
+    // Abschnittsmessung: neuer Abschnitt erreicht (zählt einmal pro Durchlauf)
+    trackSection(next.section);
+
+    setCurrentQuestionId(next.questionId);
+    setQuestionHistory(prev => [...prev, next.questionId]);
     setIsLastQuestion(false);
   };
 
@@ -97,10 +105,11 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
 
   // Reset questionnaire to beginning
   const resetQuestionnaire = () => {
-    setCurrentQuestionId("Q1");
+    setCurrentQuestionId(FIRST_QUESTION_ID);
     setAnswers({});
-    setQuestionHistory(["Q1"]);
+    setQuestionHistory([FIRST_QUESTION_ID]);
     setIsLastQuestion(false);
+    resetSectionTracking();
     
     // Clear sessionStorage
     try {
@@ -117,6 +126,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
         currentQuestionId,
         answers,
         updateAnswer,
+        replaceAnswers,
         goToNextQuestion,
         goToPreviousQuestion,
         resetQuestionnaire,

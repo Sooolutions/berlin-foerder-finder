@@ -43,9 +43,9 @@ class GridErrorBoundary extends Component<
 
 const Results = () => {
   const navigate = useNavigate();
-  const { answers, questionHistory } = useQuestionnaire();
+  const { answers } = useQuestionnaire();
   // Nur Antworten des tatsächlich durchlaufenen Pfads zählen
-  const activeAnswers = useMemo(() => getActiveAnswers(answers, questionHistory), [answers, questionHistory]);
+  const activeAnswers = useMemo(() => getActiveAnswers(answers), [answers]);
   const { data: rawFundings, isLoading, error } = useFundingResults(activeAnswers);
   // Texte in der gewählten Sprache, Matching und Reihenfolge bleiben unverändert
   const translated = useFundingTranslations(rawFundings ?? NO_FUNDINGS);

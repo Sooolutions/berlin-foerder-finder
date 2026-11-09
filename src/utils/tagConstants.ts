@@ -25,6 +25,12 @@ export const GESUNDHEIT_DETAIL_TAGS = ["Gesundheit_Unterstützung", "Gesundheit_
 export const HERAUSFORDERUNG_TAGS = ["Herausforderung_Finanzen", "Herausforderung_Psyche", "Herausforderung_Einsam", "Herausforderung_Bürokratie", "Herausforderung_Deutschland", "Herausforderung_Schule", "Herausforderung_Kinder", "Herausforderung_Gesundheit", "Herausforderung_Pflege", "Herausforderung_Sozial", "Herausforderung_Freizeit", "Herausforderung_Vereinbarkeit", "Herausforderung_Orientierung"] as const;
 export const WUNSCH_TAGS = ["Wunsch_Sozial", "Wunsch_Kultur", "Wunsch_Lernen", "Wunsch_Ehrenamt", "Wunsch_Beratung", "Wunsch_Gründung"] as const;
 export const OHNE_DETAIL_TAGS = ["Ohne_Not", "Ohne_Bekannte", "Ohne_Öffentlich", "Ohne_Fahrzeug", "Ohne_Nichts"] as const;
+/** Haushalt. Allein, Partner und Erwachsene dienen nur der Ableitung, Kinder, Schwangerschaft und Alleinerziehend tragen auch Angebote. */
+export const HAUSHALT_TAGS = ["Haushalt_Allein", "Haushalt_Partner", "Haushalt_Kinder_U6", "Haushalt_Kinder_6_17", "Haushalt_Erwachsene", "Haushalt_Schwanger", "Haushalt_Alleinerziehend"] as const;
+/** Bezogene Leistungen. Sie werden über die Felder benefit_type und requires_benefits abgeglichen, nicht über Tags. */
+export const LEISTUNG_TAGS = ["Leistung_Bürgergeld", "Leistung_ALG1", "Leistung_Wohngeld", "Leistung_Kinderzuschlag", "Leistung_BAföG", "Leistung_Rente", "Leistung_Grundsicherung", "Leistung_AsylbLG", "Leistung_Keine"] as const;
+/** Antworten ohne Inhalt: „Nichts davon“, „Möchte ich nicht sagen“, „Weiß ich nicht“. */
+export const NO_ANSWER_TAGS = ["Nichts", "KeineAngabe", "Unbekannt"] as const;
 
 export const ALL_VALID_TAGS = new Set<string>([
   ...AGE_TAGS, ...NATIONALITY_TAGS, ...ACTIVITY_TAGS, ...HOUSING_TAGS,
@@ -35,6 +41,7 @@ export const ALL_VALID_TAGS = new Set<string>([
   ...RENTE_DETAIL_TAGS, ...ERWERBSUNFAEHIG_DETAIL_TAGS, ...SONSTIGES_DETAIL_TAGS,
   ...FINANZEN_TAGS, ...HEALTH_TAGS, ...GESUNDHEIT_DETAIL_TAGS,
   ...HERAUSFORDERUNG_TAGS, ...WUNSCH_TAGS, ...OHNE_DETAIL_TAGS,
+  ...HAUSHALT_TAGS, ...LEISTUNG_TAGS, ...NO_ANSWER_TAGS,
 ]);
 
 /**
@@ -46,7 +53,8 @@ export const ALL_VALID_TAGS = new Set<string>([
 export const EXCLUDED_FROM_SCORING = new Set<string>([
   "Beeinträchtigung_Nein", "Finanzen_regelmäßig-gut", "Ohne_Nichts",
   "Deutsch", "Wohnen_Familie", "Sonstiges",
-  ...AGE_TAGS,
+  "Haushalt_Allein", "Haushalt_Partner", "Haushalt_Erwachsene",
+  ...AGE_TAGS, ...LEISTUNG_TAGS, ...NO_ANSWER_TAGS,
 ]);
 
 export function validateTags(tags: string[]): { valid: string[]; invalid: string[] } {
