@@ -447,6 +447,17 @@ const dict: Record<string, string> = {
   "Ändern": "Değiştir",
   "Übernehmen": "Uygula",
   "Übersprungen": "Atlandı",
+  "Alle passenden Angebote finden": "Sana uyan tüm teklifleri bul",
+  "Finde passende Förderungen, Angebote und Unterstützung für deine Lebenssituation in Berlin. Kostenlos und vertraulich.": "Berlin'deki yaşam durumuna uygun destekleri, hizmetleri ve yardımları bul. Ücretsiz ve gizli.",
+  "Gebaut in Berlin.": "Berlin'de geliştirildi.",
+  "In 5 Sprachen": "5 dilde",
+  "Inhalte und Fragenpfad": "İçerik ve soru akışı",
+  "Kommunikation und Netzwerk": "İletişim ve ağ",
+  "Kostenlos": "Ücretsiz",
+  "Ohne Anmeldung": "Kayıt gerekmez",
+  "So funktioniert's": "Nasıl çalışır",
+  "Technik und Plattform": "Teknik ve platform",
+  "Wer dahinter steht": "Arkasında kim var",
 };
 
 export default dict;

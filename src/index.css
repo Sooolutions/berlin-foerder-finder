@@ -1,45 +1,79 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Designsystem MehrDrin
+ * Alle Farben, Schriften und Radien laufen über diese Variablen. Tailwind
+ * (shadcn) liest die HSL-Werte, Fragebogen und Ergebnisse lesen die
+ * --md-* Werte direkt in ihren Inline-Styles. Eine Variante der Seite
+ * unterscheidet sich im Kern nur durch diesen Block.
+ */
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --foreground: 0 0% 7%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 0 0% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 7%;
 
-    --primary: 212 67% 59%; /* Blue - #4F90DE */
+    --primary: 212 67% 59%; /* #4F90DE */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 213 71% 88%; /* Light Blue - #CADEF5 */
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 213 71% 88%; /* #CADEF5 */
+    --secondary-foreground: 0 0% 7%;
 
-    --accent: 39 100% 73%; /* Yellow - #FFCA76 */
-    --accent-foreground: 0 0% 0%;
+    --accent: 39 100% 73%; /* #FFCA76 */
+    --accent-foreground: 0 0% 7%;
 
-    --destructive: 356 76% 70%; /* Red - #EE7A82 */
+    --destructive: 356 76% 70%; /* #EE7A82 */
     --destructive-foreground: 0 0% 100%;
 
-    --muted: 213 71% 95%;
-    --muted-foreground: 212 30% 40%;
+    --muted: 40 20% 96%;
+    --muted-foreground: 30 4% 40%;
 
-    --border: 213 50% 85%;
-    --input: 213 50% 85%;
+    --border: 40 12% 89%;
+    --input: 40 12% 89%;
     --ring: 212 67% 59%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
-    /* Custom Colors */
     --mehrdrin-blue: 212 67% 59%;
     --mehrdrin-yellow: 39 100% 73%;
     --mehrdrin-red: 356 76% 70%;
     --mehrdrin-lightblue: 213 71% 88%;
+
+    /* Direkte Farbwerte für Inline-Styles */
+    --md-font: 'Outfit', system-ui, -apple-system, sans-serif;
+    --md-font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+    --md-display-weight: 800;
+    --md-brand: #4f90de;
+    --md-brand-ink: #2f6fb0;
+    --md-brand-tint: #eef4fc;
+    --md-kicker: #e2636c;
+    --md-sun: #ffca76;
+    --md-ink: #111111;
+    --md-ink-2: #403d39;
+    --md-ink-3: #6d6a65;
+    --md-ink-4: #8b8781;
+    --md-ink-5: #b3afa8;
+    --md-paper: #fafaf8;
+    --md-surface: #ffffff;
+    --md-chip: #f2f1ee;
+    --md-line: #eceae5;
+    --md-line-strong: #e2e0db;
+    --md-shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.04), 0 1px 1px rgba(17, 17, 17, 0.02);
+    --md-shadow-md: 0 10px 30px -12px rgba(17, 17, 17, 0.18), 0 2px 6px rgba(17, 17, 17, 0.04);
+    --md-shadow-lg: 0 24px 60px -24px rgba(17, 17, 17, 0.28);
+    --md-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --md-origin: left;
+  }
+
+  [dir='rtl'] {
+    --md-origin: right;
   }
 }
 
@@ -48,35 +82,170 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /*
+   * Grundschrift sitzt auf body und wird vererbt. Früher war jedes p, span,
+   * a und li hart auf 18px gesetzt, das hat Größenangaben an Elternelementen
+   * überschrieben und überall !important-Korrekturen erzwungen.
+   */
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--md-font);
+    font-size: 17px;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--md-font-display);
+    text-wrap: balance;
+    letter-spacing: -0.015em;
   }
 
   h1 {
-    font-family: 'Outfit', sans-serif;
     font-weight: 900;
-    font-size: 63px;
-    line-height: 1.1;
+    font-size: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
+    line-height: 1.05;
   }
 
   h2 {
-    font-family: 'Outfit', sans-serif;
     font-weight: 700;
-    font-size: 40px;
-    line-height: 1.2;
+    font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
+    line-height: 1.15;
   }
 
   h3 {
-    font-family: 'Outfit', sans-serif;
     font-weight: 600;
-    font-size: 24px;
+    font-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.4rem);
+    line-height: 1.3;
   }
 
-  p, span, a, li {
-    font-family: 'Outfit', sans-serif;
-    font-size: 18px;
-    font-weight: 400;
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--md-brand);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2.5px solid var(--md-brand);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Kleine Überzeile über Abschnitten */
+  .md-kicker {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--md-kicker);
+  }
+
+  /* Glanz, der beim Hover über einen Button läuft */
+  .md-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .md-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--md-ease);
+  }
+  .md-shine:hover::after {
+    transform: translateX(120%);
+  }
+
+  /* Antwortoptionen im Fragebogen */
+  .md-option {
+    transition: border-color 0.2s, background-color 0.2s, transform 0.25s var(--md-ease), box-shadow 0.25s var(--md-ease), opacity 0.2s;
+  }
+  .md-option:hover:not(:disabled):not([aria-pressed='true']) {
+    border-color: color-mix(in srgb, var(--md-brand) 45%, var(--md-line));
+    transform: translateY(-1px);
+    box-shadow: var(--md-shadow-sm);
+  }
+  .md-option:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+  .md-option[aria-pressed='true'] .md-option-mark {
+    animation: md-pop 0.35s var(--md-ease);
+  }
+  .md-lift {
+    transition: transform 0.25s var(--md-ease), box-shadow 0.25s var(--md-ease), border-color 0.2s;
+  }
+  .md-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--md-shadow-sm);
+  }
+  .md-press {
+    transition: transform 0.2s var(--md-ease), filter 0.2s, background-color 0.2s;
+  }
+  .md-press:hover:not(:disabled) {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+  }
+  .md-press:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  /* Einblenden beim Erscheinen, mit Verzögerung über --md-delay */
+  .md-rise {
+    animation: md-rise 0.6s var(--md-ease) both;
+    animation-delay: var(--md-delay, 0ms);
+  }
+
+  /* Ladeplatzhalter */
+  .md-skeleton {
+    background: linear-gradient(90deg, var(--md-chip) 0%, var(--md-line) 50%, var(--md-chip) 100%);
+    background-size: 200% 100%;
+    animation: md-shimmer 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes md-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes md-pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes md-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
   }
 }
 
@@ -91,30 +260,9 @@
   }
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -123,32 +271,23 @@
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-.animate-slide-in-left {
-  animation: slideInLeft 0.6s ease-out forwards;
-}
-
-.animate-slide-in-right {
-  animation: slideInRight 0.6s ease-out forwards;
+  animation: fadeInUp 0.8s var(--md-ease) forwards;
 }
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Responsive typography */
-@media (max-width: 768px) {
-  h1 {
-    font-size: 36px;
+/* Wer weniger Bewegung eingestellt hat, bekommt keine dekorativen Animationen */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
-  
-  h2 {
-    font-size: 28px;
-  }
-
-  h3 {
-    font-size: 20px;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

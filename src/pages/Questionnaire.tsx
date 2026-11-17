@@ -21,10 +21,10 @@ const Questionnaire = () => {
     <div className="min-h-screen flex flex-col">
       {/* Auf dem Handy übernimmt die Fortschrittsleiste des Feeds das Schließen */}
       <div className="hidden md:block">
-        <Header backToHome />
+        <Header backToHome sticky={false} />
       </div>
 
-      <main className="flex-grow bg-[#fafaf8] pb-4">
+      <main className="flex-grow bg-[var(--md-paper)] pb-4 md:pt-4">
         <div className="max-w-4xl mx-auto px-4">
           <QuestionnaireFeed />
         </div>

@@ -53,7 +53,7 @@ const Results = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-[var(--md-paper)]">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-12">
           <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
@@ -69,7 +69,7 @@ const Results = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-[var(--md-paper)]">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-12">
           <div className="text-center my-12 max-w-md mx-auto">
@@ -89,7 +89,7 @@ const Results = () => {
 
   if (!fundings || fundings.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-[var(--md-paper)]">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-12">
           <div className="text-center my-12 max-w-2xl mx-auto">
@@ -121,7 +121,7 @@ const Results = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-[var(--md-paper)]">
       <Header />
       <main className="flex-grow container mx-auto px-4 lg:px-8 py-8">
         {/* Page header */}

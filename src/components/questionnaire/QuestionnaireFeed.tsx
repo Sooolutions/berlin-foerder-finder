@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useQuestionnaire, type UserAnswers } from '@/context/QuestionnaireContext';
 import { getOptionLabel, getQuestionData, getQuestionText, getVisibleOptions } from '@/data/questionnaireData';
@@ -6,7 +7,7 @@ import { getQuestionInfo } from '@/data/questionInfo';
 import { computePath, nextSectionAfter, sanitizeAnswers, SECTIONS } from '@/questionnaire/flow';
 import { trackSection } from '@/questionnaire/tracking';
 import { getLang, tr } from '@/i18n/LanguageContext';
-import { ACCENT, FONT, iconButton, InfoButton, IntroOverlay, KICKER } from './QuestionnaireParts';
+import { ACCENT, DFONT, FONT, iconButton, InfoButton, IntroOverlay, KICKER } from './QuestionnaireParts';
 
 /**
  * Fragebogen als durchgehender Feed (Phase 4 des Umbaus, November 2026).
@@ -41,29 +42,30 @@ const OptionButton = ({
     onClick={onClick}
     disabled={disabled}
     aria-pressed={selected}
+    className="md-option"
     style={{
       display: 'flex',
       alignItems: 'center',
       gap: 12,
-      padding: '13px 14px',
+      padding: '14px 16px',
       textAlign: 'start',
-      borderRadius: 13,
-      border: `2px solid ${selected ? ACCENT : '#ececec'}`,
-      background: selected ? '#eef4fc' : '#fff',
+      borderRadius: 14,
+      border: `2px solid ${selected ? ACCENT : 'var(--md-line)'}`,
+      background: selected ? 'var(--md-brand-tint)' : 'var(--md-surface)',
       opacity: disabled ? 0.45 : 1,
       cursor: disabled ? 'not-allowed' : 'pointer',
-      transition: 'border-color .18s, background .18s, opacity .18s',
       width: '100%',
     }}
   >
     <span
       aria-hidden
+      className="md-option-mark"
       style={{
         width: 20,
         height: 20,
         flex: 'none',
         borderRadius: multi ? 6 : '50%',
-        border: `2px solid ${selected ? ACCENT : '#cfcfcf'}`,
+        border: `2px solid ${selected ? ACCENT : 'var(--md-line-strong)'}`,
         background: selected ? ACCENT : '#fff',
         display: 'flex',
         alignItems: 'center',
@@ -80,7 +82,7 @@ const OptionButton = ({
     </span>
     <span
       lang={getLang()}
-      style={{ flex: 1, minWidth: 0, font: `600 15.5px/1.3 ${FONT}`, color: '#111', hyphens: 'auto', overflowWrap: 'anywhere' }}
+      style={{ flex: 1, minWidth: 0, font: `600 15.5px/1.3 ${FONT}`, color: 'var(--md-ink)', hyphens: 'auto', overflowWrap: 'anywhere' }}
     >
       {label}
     </span>
@@ -120,18 +122,21 @@ const QuestionBlock = ({
   const single = !multi ? (answers[questionId] as string | undefined) : undefined;
 
   return (
-    <div
+    <motion.div
       id={`frage-${questionId}`}
       role="group"
       aria-labelledby={`titel-${questionId}`}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       style={{
         scrollMarginTop: SCROLL_MARGIN,
-        background: '#fff',
-        border: `1px solid ${editing ? ACCENT : '#eceae5'}`,
-        borderRadius: 16,
-        padding: '18px 16px 16px',
-        marginTop: 10,
-        boxShadow: '0 1px 2px rgba(0,0,0,.03)',
+        background: 'var(--md-surface)',
+        border: `1px solid ${editing ? ACCENT : 'var(--md-line)'}`,
+        borderRadius: 20,
+        padding: 'clamp(18px, 3vw, 26px)',
+        marginTop: 12,
+        boxShadow: 'var(--md-shadow-md)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
@@ -139,20 +144,20 @@ const QuestionBlock = ({
           id={`titel-${questionId}`}
           data-frage-titel
           tabIndex={-1}
-          style={{ flex: 1, font: `800 22px/1.18 ${FONT}`, color: '#111', margin: 0, outline: 'none' }}
+          style={{ flex: 1, font: `var(--md-display-weight) clamp(21px, 2.4vw, 26px)/1.18 ${DFONT}`, letterSpacing: '-0.01em', color: 'var(--md-ink)', margin: 0, outline: 'none' }}
         >
           {tr(getQuestionText(questionId, answers))}
         </h2>
         <InfoButton text={tr(getQuestionInfo(questionId))} resetKey={questionId} size={34} />
       </div>
-      <div style={{ font: `400 14px/1.45 ${FONT}`, color: '#8b8781', margin: '6px 0 14px' }}>
+      <div style={{ font: `400 14px/1.45 ${FONT}`, color: 'var(--md-ink-4)', margin: '6px 0 14px' }}>
         {multi ? tr('Wähle bis zu {n} Optionen.', { n: max }) : tr('Wähle die Option, die am besten passt.')}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 250px), 1fr))', gap: 8 }}>
         {visible.map((o, i) => {
           const header = showGroups && o.group && o.group !== visible[i - 1]?.group ? (
-            <div key={`g-${o.group}`} style={{ gridColumn: '1 / -1', font: `700 12px ${FONT}`, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8b8781', marginTop: i > 0 ? 8 : 0 }}>
+            <div key={`g-${o.group}`} style={{ gridColumn: '1 / -1', font: `700 12px ${FONT}`, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--md-ink-4)', marginTop: i > 0 ? 8 : 0 }}>
               {tr(o.group)}
             </div>
           ) : null;
@@ -177,6 +182,7 @@ const QuestionBlock = ({
           {multi && (
             <button
               type="button"
+              className="md-press"
               disabled={draft.length === 0}
               onClick={() => onCommit(draft)}
               style={{
@@ -185,8 +191,8 @@ const QuestionBlock = ({
                 font: `700 16px ${FONT}`,
                 padding: 14,
                 borderRadius: 13,
-                background: draft.length ? ACCENT : '#ececec',
-                color: draft.length ? '#fff' : '#adadad',
+                background: draft.length ? ACCENT : 'var(--md-line)',
+                color: draft.length ? '#fff' : 'var(--md-ink-5)',
                 cursor: draft.length ? 'pointer' : 'default',
               }}
             >
@@ -194,7 +200,7 @@ const QuestionBlock = ({
             </button>
           )}
           {editing && (
-            <button type="button" onClick={onCancel} style={{ border: 0, background: 'none', font: `600 15px ${FONT}`, color: '#6d6a65', cursor: 'pointer', padding: 8 }}>
+            <button type="button" onClick={onCancel} style={{ border: 0, background: 'none', font: `600 15px ${FONT}`, color: 'var(--md-ink-3)', cursor: 'pointer', padding: 8 }}>
               {tr('Abbrechen')}
             </button>
           )}
@@ -205,7 +211,7 @@ const QuestionBlock = ({
           )}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
@@ -216,8 +222,12 @@ const AnsweredRow = ({ questionId, answers, onEdit }: { questionId: string; answ
   const ids = asList(answers[questionId]);
   const text = ids.length ? ids.map((id) => getOptionLabel(questionId, id, answers)).join(', ') : tr('Übersprungen');
   return (
-    <button
+    <motion.button
       type="button"
+      className="md-lift"
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       onClick={onEdit}
       aria-label={`${tr(getQuestionText(questionId, answers))} ${text}. ${tr('Ändern')}`}
       style={{
@@ -226,20 +236,20 @@ const AnsweredRow = ({ questionId, answers, onEdit }: { questionId: string; answ
         gap: 12,
         width: '100%',
         textAlign: 'start',
-        background: '#fff',
-        border: '1px solid #eceae5',
-        borderRadius: 13,
-        padding: '10px 14px',
+        background: 'var(--md-surface)',
+        border: '1px solid var(--md-line)',
+        borderRadius: 14,
+        padding: '11px 16px',
         marginTop: 8,
         cursor: 'pointer',
       }}
     >
       <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: 'block', font: `500 12.5px/1.35 ${FONT}`, color: '#8b8781' }}>{tr(getQuestionText(questionId, answers))}</span>
-        <span lang={getLang()} style={{ display: 'block', font: `700 14.5px/1.35 ${FONT}`, color: '#111', marginTop: 2, overflowWrap: 'anywhere' }}>{text}</span>
+        <span style={{ display: 'block', font: `500 12.5px/1.35 ${FONT}`, color: 'var(--md-ink-4)' }}>{tr(getQuestionText(questionId, answers))}</span>
+        <span lang={getLang()} style={{ display: 'block', font: `700 14.5px/1.35 ${FONT}`, color: 'var(--md-ink)', marginTop: 2, overflowWrap: 'anywhere' }}>{text}</span>
       </span>
       <span style={{ flex: 'none', font: `600 13px ${FONT}`, color: ACCENT }}>{tr('Ändern')}</span>
-    </button>
+    </motion.button>
   );
 };
 
@@ -286,22 +296,33 @@ const QuestionnaireFeed = () => {
   };
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto' }}>
+    <div style={{ maxWidth: 720, margin: '0 auto' }}>
       {/* Fortschritt nach Abschnitten, klebt oben */}
       <div
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 20,
-          background: 'rgba(250,250,248,.94)',
-          backdropFilter: 'blur(6px)',
+          background: 'color-mix(in srgb, var(--md-paper) 92%, transparent)',
+          backdropFilter: 'blur(10px)',
           padding: '12px 0 10px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ flex: 1, display: 'flex', gap: 5 }} aria-hidden>
             {SECTIONS.map((s, i) => (
-              <div key={s.id} style={{ flex: 1, height: 4, borderRadius: 99, background: started && i <= sectionIndex ? ACCENT : '#e4e4e4', transition: 'background .3s' }} />
+              <div key={s.id} style={{ flex: 1, height: 5, borderRadius: 99, background: 'var(--md-line-strong)', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    height: '100%',
+                    borderRadius: 99,
+                    background: ACCENT,
+                    transformOrigin: 'var(--md-origin, left)',
+                    transform: `scaleX(${started && (i < sectionIndex || path.complete) ? 1 : started && i === sectionIndex ? 0.5 : 0})`,
+                    transition: 'transform .6s cubic-bezier(.22,1,.36,1)',
+                  }}
+                />
+              </div>
             ))}
           </div>
           <button type="button" onClick={() => navigate('/')} aria-label={tr('Fragebogen verlassen')} style={{ ...iconButton(34), fontSize: 15 }}>
@@ -326,7 +347,8 @@ const QuestionnaireFeed = () => {
             if (steps.length === 0) return null;
             return (
               <section key={sec.id} aria-labelledby={`abschnitt-${sec.id}`} style={{ marginTop: 18 }}>
-                <div id={`abschnitt-${sec.id}`} style={{ font: `700 12px ${FONT}`, letterSpacing: '.06em', textTransform: 'uppercase', color: '#8b8781' }}>
+                <div id={`abschnitt-${sec.id}`} style={{ display: 'flex', alignItems: 'center', gap: 8, font: `700 12px ${FONT}`, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--md-ink-4)' }}>
+                  <span aria-hidden style={{ width: 6, height: 6, borderRadius: 99, background: sec.id === current?.section ? ACCENT : 'var(--md-ink-5)' }} />
                   {tr(sec.label)}
                 </div>
                 {steps.map((s) => {
@@ -351,22 +373,39 @@ const QuestionnaireFeed = () => {
           })}
 
           {upcoming && (
-            <div style={{ marginTop: 22, font: `600 13px ${FONT}`, color: '#b3afa8' }}>
+            <div style={{ marginTop: 22, font: `600 13px ${FONT}`, color: 'var(--md-ink-5)' }}>
               {tr('Als Nächstes')} · {tr(SECTIONS.find((s) => s.id === upcoming)?.label ?? '')}
             </div>
           )}
 
           {path.complete && (
-            <div style={{ marginTop: 22, background: '#fff', border: '1px solid #eceae5', borderRadius: 16, padding: 18, textAlign: 'center' }}>
-              <div style={{ font: `800 20px ${FONT}`, color: '#111', marginBottom: 12 }}>{tr('Alles beantwortet')}</div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{ marginTop: 22, background: 'var(--md-surface)', border: '1px solid var(--md-line)', borderRadius: 20, padding: 24, textAlign: 'center', boxShadow: 'var(--md-shadow-md)' }}
+            >
+              <motion.div
+                aria-hidden
+                initial={{ scale: 0, rotate: -30 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 16, delay: 0.1 }}
+                style={{ width: 52, height: 52, margin: '0 auto 12px', borderRadius: 99, background: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </motion.div>
+              <div style={{ font: `var(--md-display-weight) 22px ${DFONT}`, color: 'var(--md-ink)', marginBottom: 14 }}>{tr('Alles beantwortet')}</div>
               <button
                 type="button"
+                className="md-press md-shine"
                 onClick={() => navigate('/results')}
                 style={{ width: '100%', border: 0, font: `700 16px ${FONT}`, padding: 14, borderRadius: 13, background: ACCENT, color: '#fff', cursor: 'pointer' }}
               >
                 {tr('Ergebnisse ansehen')}
               </button>
-            </div>
+            </motion.div>
           )}
 
           {/* Platz, damit auch die letzte Frage ganz nach oben scrollen kann */}

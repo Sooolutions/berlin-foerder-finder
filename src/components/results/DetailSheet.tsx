@@ -57,7 +57,7 @@ const DetailSheet = ({ funding, onClose }: { funding: Funding | null; onClose: (
               width: 40,
               height: 4,
               borderRadius: 99,
-              background: '#e0ddd7',
+              background: 'var(--md-line-strong)',
               margin: '0 auto',
             }}
           />
@@ -78,7 +78,7 @@ const DetailSheet = ({ funding, onClose }: { funding: Funding | null; onClose: (
             <div
               style={{
                 font: "800 29px/1.14 'Outfit', system-ui, sans-serif",
-                color: '#111',
+                color: 'var(--md-ink)',
                 margin: '14px 0 7px',
               }}
             >
@@ -98,9 +98,9 @@ const DetailSheet = ({ funding, onClose }: { funding: Funding | null; onClose: (
           <div
             style={{
               font: "400 15.5px/1.68 'Outfit', system-ui, sans-serif",
-              color: '#403d39',
+              color: 'var(--md-ink-2)',
               paddingBottom: 20,
-              borderBottom: '1px solid #f0eeea',
+              borderBottom: '1px solid var(--md-line)',
             }}
           >
             {funding.description}

@@ -17,7 +17,8 @@ import { tr } from '@/i18n/LanguageContext';
 
 type Mode = 'overview' | 'story';
 
-const FONT = "'Outfit', system-ui, sans-serif";
+const FONT = 'var(--md-font)';
+const DFONT = 'var(--md-font-display)';
 
 /* ------------------------------------------------------------------ *
  * Umschalter: zeigt immer das Symbol der jeweils ANDEREN Ansicht
@@ -33,9 +34,9 @@ const ModeToggle = ({ mode, onToggle, large = false }: { mode: Mode; onToggle: (
       height: large ? 46 : 40,
       flex: 'none',
       borderRadius: r(-3),
-      border: '1px solid #e5e3de',
+      border: '1px solid var(--md-line-strong)',
       background: '#fff',
-      color: '#3f3d39',
+      color: 'var(--md-ink-2)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -100,9 +101,9 @@ const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: stri
         padding: '5px 10px',
         paddingInlineEnd: 28,
         borderRadius: r(-6),
-        border: `1.5px solid ${active ? '#4F90DE' : '#d9d6cf'}`,
-        background: active ? '#eef4fc' : '#fff',
-        color: active ? '#2f6fbf' : '#3f3d39',
+        border: `1.5px solid ${active ? 'var(--md-brand)' : 'var(--md-line-strong)'}`,
+        background: active ? 'var(--md-brand-tint)' : '#fff',
+        color: active ? 'var(--md-brand-ink)' : 'var(--md-ink-2)',
         font: `700 11.5px ${FONT}`,
         cursor: 'pointer',
       }}
@@ -164,11 +165,17 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
   const chips = extractSelections(answers).filter((c) => !(NO_ANSWER_TAGS as readonly string[]).includes(c.tag));
   const seen = new Set<string>();
   const unique = chips.filter((c) => (seen.has(c.option) ? false : (seen.add(c.option), true)));
+  // Auf dem Handy zuerst nur wenige Angaben, damit die Treffer sichtbar bleiben
+  const [expanded, setExpanded] = useState(false);
+  const isNarrow = typeof window !== 'undefined' && window.matchMedia?.('(max-width: 1023px)').matches;
+  const LIMIT = 3;
   if (!unique.length) return null;
+  const shown = isNarrow && !expanded ? unique.slice(0, LIMIT) : unique;
+  const hiddenCount = unique.length - shown.length;
 
   return (
     <>
-      {unique.map((c) => {
+      {shown.map((c) => {
         const meaningful = isMeaningfulTag(c.tag);
         return (
           <span
@@ -178,9 +185,9 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
               font: `600 11.5px ${FONT}`,
               padding: '5px 10px',
               borderRadius: r(-6),
-              background: meaningful ? '#f2f1ed' : '#fafaf8',
-              color: meaningful ? '#5f5c56' : '#a3a09a',
-              border: `1px ${meaningful ? 'solid' : 'dashed'} #e3e0d9`,
+              background: meaningful ? 'var(--md-chip)' : 'var(--md-paper)',
+              color: meaningful ? 'var(--md-ink-3)' : 'var(--md-ink-5)',
+              border: `1px ${meaningful ? 'solid' : 'dashed'} var(--md-line-strong)`,
               maxWidth: 260,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -191,6 +198,23 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
           </span>
         );
       })}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          style={{
+            font: `700 11.5px ${FONT}`,
+            padding: '5px 10px',
+            borderRadius: r(-6),
+            background: 'var(--md-brand-tint)',
+            color: 'var(--md-brand-ink)',
+            border: 0,
+            cursor: 'pointer',
+          }}
+        >
+          +{hiddenCount} {tr('weitere')}
+        </button>
+      )}
     </>
   );
 };
@@ -236,7 +260,7 @@ const StoryCard = ({ funding, onOpen }: { funding: Funding; onOpen: () => void }
       </div>
 
       <div>
-        <div style={{ font: `800 30px/1.1 ${FONT}`, marginBottom: 10 }}>{funding.title}</div>
+        <div style={{ font: `var(--md-display-weight) 30px/1.1 ${DFONT}`, marginBottom: 10 }}>{funding.title}</div>
         <div style={{ font: `600 14px ${FONT}`, opacity: 0.75, marginBottom: 12 }}>
           {funding.organization}
         </div>
@@ -314,10 +338,10 @@ const ExpandableCard = ({
       >
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           <CategoryChip funding={funding} label={categoryOf(funding)} />
-          <div style={{ font: `800 20px/1.18 ${FONT}`, color: '#111', margin: '13px 0 7px' }}>
+          <div style={{ font: `var(--md-display-weight) 20px/1.18 ${DFONT}`, color: 'var(--md-ink)', margin: '13px 0 7px' }}>
             {funding.title}
           </div>
-          <div style={{ font: `400 13.5px/1.55 ${FONT}`, color: '#6d6a65', flex: 1 }}>
+          <div style={{ font: `400 13.5px/1.55 ${FONT}`, color: 'var(--md-ink-3)', flex: 1 }}>
             {funding.organization}
           </div>
           {funding.amount && (
@@ -343,7 +367,7 @@ const ExpandableCard = ({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 18 }}>
         <div>
           <CategoryChip funding={funding} label={categoryOf(funding)} />
-          <div style={{ font: `800 30px/1.12 ${FONT}`, color: '#111', margin: '14px 0 7px' }}>
+          <div style={{ font: `var(--md-display-weight) 30px/1.12 ${DFONT}`, color: 'var(--md-ink)', margin: '14px 0 7px' }}>
             {funding.title}
           </div>
           <div style={{ font: `600 14px ${FONT}`, color: scheme.accent }}>{funding.organization}</div>
@@ -361,7 +385,7 @@ const ExpandableCard = ({
               alignItems: 'start',
             }}
           >
-            <div style={{ font: `400 16px/1.7 ${FONT}`, color: '#403d39' }}>{funding.description}</div>
+            <div style={{ font: `400 16px/1.7 ${FONT}`, color: 'var(--md-ink-2)' }}>{funding.description}</div>
             <DetailRows funding={funding} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 22 }}>
@@ -394,9 +418,9 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
     flex: 'none',
     borderRadius: '50%',
     background: '#fff',
-    border: '1px solid #e2e2e2',
+    border: '1px solid var(--md-line-strong)',
     fontSize: 24,
-    color: '#111',
+    color: 'var(--md-ink)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -417,12 +441,12 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
-      <div style={{ font: `600 13px ${FONT}`, color: '#9a9a9a' }}>
+      <div style={{ font: `600 13px ${FONT}`, color: 'var(--md-ink-4)' }}>
         {tr('Fokus-Modus — ein Angebot nach dem anderen')}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 20, maxWidth: '100%' }}>
-        <button type="button" onClick={() => step(-1)} style={{ ...arrow, border: '1px solid #e2e2e2' }}>
+        <button type="button" onClick={() => step(-1)} style={{ ...arrow, border: '1px solid var(--md-line-strong)' }}>
           <span className="inline-block rtl:-scale-x-100">‹</span>
         </button>
 
@@ -465,7 +489,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
           </div>
 
           <div>
-            <div style={{ font: `800 35px/1.08 ${FONT}`, marginBottom: 12 }}>{funding.title}</div>
+            <div style={{ font: `var(--md-display-weight) 35px/1.08 ${DFONT}`, marginBottom: 12 }}>{funding.title}</div>
             <div style={{ font: `600 16px ${FONT}`, opacity: 0.75, marginBottom: 14 }}>
               {funding.organization}
             </div>
@@ -480,7 +504,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
                     alignItems: 'start',
                   }}
                 >
-                  <div style={{ font: `400 15.5px/1.7 ${FONT}`, color: '#403d39' }}>
+                  <div style={{ font: `400 15.5px/1.7 ${FONT}`, color: 'var(--md-ink-2)' }}>
                     {funding.description}
                   </div>
                   <DetailRows funding={funding} />
@@ -537,7 +561,7 @@ const DesktopStory = ({ fundings }: { fundings: Funding[] }) => {
         </button>
       </div>
 
-      <div style={{ font: `700 14px ${FONT}`, color: '#9a9a9a' }}>
+      <div style={{ font: `700 14px ${FONT}`, color: 'var(--md-ink-4)' }}>
         {index + 1} / {fundings.length}
       </div>
     </div>
@@ -557,11 +581,11 @@ const reasonTitle = (group: ReasonGroup<Funding>) =>
 
 const ReasonHeading = ({ group, large = false }: { group: ReasonGroup<Funding>; large?: boolean }) => (
   <div style={{ padding: large ? '0 0 14px' : '26px 0 8px' }}>
-    <div style={{ font: `800 ${large ? 20 : 18}px/1.25 ${FONT}`, color: '#111' }}>{reasonTitle(group)}</div>
+    <div style={{ font: `var(--md-display-weight) ${large ? 20 : 18}px/1.25 ${DFONT}`, color: 'var(--md-ink)' }}>{reasonTitle(group)}</div>
     {group.note && (
-      <div style={{ font: `500 ${large ? 14 : 13}px/1.4 ${FONT}`, color: '#5f5c56', marginTop: 4, maxWidth: 560 }}>{tr(group.note)}</div>
+      <div style={{ font: `500 ${large ? 14 : 13}px/1.4 ${FONT}`, color: 'var(--md-ink-3)', marginTop: 4, maxWidth: 560 }}>{tr(group.note)}</div>
     )}
-    <div style={{ font: `500 ${large ? 13 : 12}px ${FONT}`, color: '#8d8d8d', marginTop: 3 }}>
+    <div style={{ font: `500 ${large ? 13 : 12}px ${FONT}`, color: 'var(--md-ink-4)', marginTop: 3 }}>
       {group.fundings.length} {group.fundings.length === 1 ? tr('passendes Angebot') : tr('passende Angebote')}
     </div>
   </div>
@@ -572,7 +596,7 @@ const RailCard = ({ funding, onOpen }: { funding: Funding; onOpen: () => void })
   return (
     <div
       onClick={onOpen}
-      className="snap-start"
+      className="snap-start md-lift"
       style={{
         flex: 'none',
         width: 178,
@@ -590,8 +614,8 @@ const RailCard = ({ funding, onOpen }: { funding: Funding; onOpen: () => void })
       <CategoryChip funding={funding} label={categoryOf(funding)} />
       <div
         style={{
-          font: `800 17px/1.2 ${FONT}`,
-          color: '#111',
+          font: `var(--md-display-weight) 17px/1.2 ${DFONT}`,
+          color: 'var(--md-ink)',
           marginTop: 'auto',
           display: '-webkit-box',
           WebkitLineClamp: 3,
@@ -604,7 +628,7 @@ const RailCard = ({ funding, onOpen }: { funding: Funding; onOpen: () => void })
       <div
         style={{
           font: `500 12px ${FONT}`,
-          color: '#8d8d8d',
+          color: 'var(--md-ink-4)',
           marginTop: 5,
           whiteSpace: 'nowrap',
           overflow: 'hidden',
@@ -627,9 +651,9 @@ const MoreCard = ({ hidden, onClick }: { hidden: number; onClick: () => void }) 
       width: 120,
       height: 152,
       borderRadius: r(),
-      border: '1px dashed #d6d3cc',
-      background: '#faf9f6',
-      color: '#3f3d39',
+      border: '1px dashed var(--md-line-strong)',
+      background: 'var(--md-paper)',
+      color: 'var(--md-ink-2)',
       font: `700 14px/1.3 ${FONT}`,
       cursor: 'pointer',
     }}
@@ -703,7 +727,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
     return (
       <div style={{ padding: '20px 0' }}>
         <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} />
-        <div style={{ textAlign: 'center', padding: '50px 20px', font: `500 16px ${FONT}`, color: '#6d6a65' }}>
+        <div style={{ textAlign: 'center', padding: '50px 20px', font: `500 16px ${FONT}`, color: 'var(--md-ink-3)' }}>
           {tr('Für deine Angaben haben wir noch keine passenden Angebote gefunden.')}
         </div>
       </div>
@@ -727,19 +751,19 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
             justifyContent: 'space-between',
             gap: 12,
             padding: '4px 0 14px',
-            borderBottom: '1px solid #f0f0f0',
+            borderBottom: '1px solid var(--md-chip)',
             marginBottom: 16,
           }}
         >
           <div>
-            <div style={{ font: `800 23px ${FONT}`, color: '#111' }}>{tr('Deine Ergebnisse')}</div>
+            <div style={{ font: `var(--md-display-weight) 23px ${DFONT}`, color: 'var(--md-ink)' }}>{tr('Deine Ergebnisse')}</div>
             <div
               style={{
                 display: 'flex',
                 alignItems: 'baseline',
                 gap: 7,
                 font: `500 13px ${FONT}`,
-                color: '#9a9a9a',
+                color: 'var(--md-ink-4)',
                 marginTop: 4,
               }}
             >
@@ -772,7 +796,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
               }}
             >
               <CategoryChip funding={hero} label={tr('Top-Treffer')} />
-              <div style={{ font: `800 25px/1.14 ${FONT}`, margin: '13px 0 8px' }}>{hero.title}</div>
+              <div style={{ font: `var(--md-display-weight) 25px/1.14 ${DFONT}`, margin: '13px 0 8px' }}>{hero.title}</div>
               <div style={{ font: `400 14px/1.55 ${FONT}`, opacity: 0.78, marginBottom: 16 }}>
                 {hero.description}
               </div>
@@ -808,7 +832,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
             {/* Weitere Top-Treffer */}
             {ranked.length > 0 && (
               <>
-                <div style={{ font: `800 18px ${FONT}`, color: '#111', padding: '24px 0 11px' }}>
+                <div style={{ font: `var(--md-display-weight) 18px ${DFONT}`, color: 'var(--md-ink)', padding: '24px 0 11px' }}>
                   {tr('Weitere Top-Treffer')}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -818,7 +842,9 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                       <div
                         key={funding.id}
                         onClick={() => setSheetFunding(funding)}
+                        className="md-rise"
                         style={{
+                          ['--md-delay' as string]: `${80 + i * 60}ms`,
                           display: 'flex',
                           gap: 13,
                           alignItems: 'center',
@@ -840,14 +866,14 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            font: `800 15px ${FONT}`,
+                            font: `var(--md-display-weight) 15px ${DFONT}`,
                           }}
                         >
                           {i + 2}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ font: `800 16px/1.25 ${FONT}`, color: '#111' }}>{funding.title}</div>
-                          <div style={{ font: `500 12.5px ${FONT}`, color: '#8b8781', marginTop: 4 }}>
+                          <div style={{ font: `var(--md-display-weight) 16px/1.25 ${DFONT}`, color: 'var(--md-ink)' }}>{funding.title}</div>
+                          <div style={{ font: `500 12.5px ${FONT}`, color: 'var(--md-ink-4)', marginTop: 4 }}>
                             {funding.organization}
                             {funding.amount ? ` · ${funding.amount}` : ''}
                           </div>
@@ -915,7 +941,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                 font: `600 13px ${FONT}`,
                 letterSpacing: '.04em',
                 textTransform: 'uppercase',
-                color: '#4F90DE',
+                color: 'var(--md-brand)',
               }}
             >
               {tr('Deine Ergebnisse')}
@@ -925,8 +951,8 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                 display: 'flex',
                 alignItems: 'baseline',
                 gap: 16,
-                font: `800 32px ${FONT}`,
-                color: '#111',
+                font: `var(--md-display-weight) 32px ${DFONT}`,
+                color: 'var(--md-ink)',
                 marginTop: 3,
               }}
             >
@@ -936,7 +962,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
               <span style={{ font: 'inherit' }}>
                 {tr('Angebote passen zu dir')}
                 {district && (
-                  <span style={{ display: 'block', font: `600 16px ${FONT}`, color: '#8d8d8d', marginTop: 4 }}>
+                  <span style={{ display: 'block', font: `600 16px ${FONT}`, color: 'var(--md-ink-4)', marginTop: 4 }}>
                     {tr('berlinweit und in {district}', { district })}
                   </span>
                 )}
@@ -966,6 +992,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
               {/* Top-Treffer — klappt an Ort und Stelle auf */}
               <div
                 onClick={() => toggleCard(hero.id)}
+                className="md-rise md-lift"
                 style={{
                   borderRadius: r(3),
                   padding: openId === hero.id ? 28 : '30px 32px',
@@ -985,7 +1012,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                     >
                       <div>
                         <CategoryChip funding={hero} label={tr('Top-Treffer')} />
-                        <div style={{ font: `800 32px/1.1 ${FONT}`, color: '#111', margin: '14px 0 7px' }}>
+                        <div style={{ font: `var(--md-display-weight) 32px/1.1 ${DFONT}`, color: 'var(--md-ink)', margin: '14px 0 7px' }}>
                           {hero.title}
                         </div>
                         <div style={{ font: `600 14px ${FONT}`, color: heroScheme.accent }}>
@@ -1009,7 +1036,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                             alignItems: 'start',
                           }}
                         >
-                          <div style={{ font: `400 16px/1.7 ${FONT}`, color: '#403d39' }}>
+                          <div style={{ font: `400 16px/1.7 ${FONT}`, color: 'var(--md-ink-2)' }}>
                             {hero.description}
                           </div>
                           <DetailRows funding={hero} />
@@ -1026,7 +1053,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                   >
                     <CategoryChip funding={hero} label={tr('Top-Treffer')} />
                     <div>
-                      <div style={{ font: `800 33px/1.1 ${FONT}`, margin: '0 0 10px' }}>{hero.title}</div>
+                      <div style={{ font: `var(--md-display-weight) 33px/1.1 ${DFONT}`, margin: '0 0 10px' }}>{hero.title}</div>
                       <div
                         style={{ font: `400 16px/1.6 ${FONT}`, opacity: 0.78, marginBottom: 22, maxWidth: 420 }}
                       >
@@ -1067,7 +1094,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
               {/* Rangliste — jede Zeile klappt an Ort und Stelle auf */}
               {openId !== hero.id && ranked.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ font: `800 17px ${FONT}`, color: '#111' }}>{tr('Weitere Top-Treffer')}</div>
+                  <div style={{ font: `var(--md-display-weight) 17px ${DFONT}`, color: 'var(--md-ink)' }}>{tr('Weitere Top-Treffer')}</div>
                   {ranked.map((funding, i) => {
                     const scheme = schemeOf(funding);
                     const isOpen = openId === funding.id;
@@ -1075,7 +1102,9 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                       <div
                         key={funding.id}
                         onClick={() => toggleCard(funding.id)}
+                        className="md-rise md-lift"
                         style={{
+                          ['--md-delay' as string]: `${120 + i * 70}ms`,
                           padding: isOpen ? 18 : 14,
                           border: `1px solid ${scheme.cardBorder}`,
                           background: scheme.cardBg,
@@ -1096,19 +1125,19 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              font: `800 15px ${FONT}`,
+                              font: `var(--md-display-weight) 15px ${DFONT}`,
                             }}
                           >
                             {i + 2}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ font: `800 ${isOpen ? 19 : 16}px/1.25 ${FONT}`, color: '#111' }}>
+                            <div style={{ font: `var(--md-display-weight) ${isOpen ? 19 : 16}px/1.25 ${DFONT}`, color: 'var(--md-ink)' }}>
                               {funding.title}
                             </div>
                             <div
                               style={{
                                 font: `${isOpen ? 600 : 500} 12.5px ${FONT}`,
-                                color: isOpen ? scheme.accent : '#8b8781',
+                                color: isOpen ? scheme.accent : 'var(--md-ink-4)',
                                 marginTop: 4,
                               }}
                             >
@@ -1134,9 +1163,9 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                               <div
                                 style={{
                                   font: `400 14.5px/1.65 ${FONT}`,
-                                  color: '#403d39',
+                                  color: 'var(--md-ink-2)',
                                   paddingBottom: 18,
-                                  borderBottom: '1px solid #f0eeea',
+                                  borderBottom: '1px solid var(--md-line)',
                                 }}
                               >
                                 {funding.description}
@@ -1192,9 +1221,9 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                         marginTop: 14,
                         padding: '10px 18px',
                         borderRadius: r(-3),
-                        border: '1px solid #e5e3de',
+                        border: '1px solid var(--md-line-strong)',
                         background: '#fff',
-                        color: '#3f3d39',
+                        color: 'var(--md-ink-2)',
                         font: `700 14px ${FONT}`,
                         cursor: 'pointer',
                       }}

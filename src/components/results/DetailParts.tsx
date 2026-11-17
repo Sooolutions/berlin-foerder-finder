@@ -18,7 +18,7 @@ export const DetailRows = ({ funding }: { funding: Funding }) => {
           key={row.label}
           style={{
             padding: i === 0 ? '0 0 17px' : '17px 0',
-            borderBottom: '1px solid #f0eeea',
+            borderBottom: '1px solid var(--md-line)',
           }}
         >
           <div
@@ -26,7 +26,7 @@ export const DetailRows = ({ funding }: { funding: Funding }) => {
               font: "600 11px 'Outfit', system-ui, sans-serif",
               letterSpacing: '.09em',
               textTransform: 'uppercase',
-              color: '#9c9891',
+              color: 'var(--md-ink-4)',
               marginBottom: 6,
             }}
           >
@@ -50,7 +50,7 @@ export const DetailRows = ({ funding }: { funding: Funding }) => {
                 font: row.strong
                   ? "700 19px/1.3 'Outfit', system-ui, sans-serif"
                   : "400 15px/1.62 'Outfit', system-ui, sans-serif",
-                color: row.strong ? scheme.accent : '#403d39',
+                color: row.strong ? scheme.accent : 'var(--md-ink-2)',
               }}
             >
               {row.value}
@@ -145,8 +145,8 @@ export const CloseButton = ({
       flex: 'none',
       border: 0,
       borderRadius: '50%',
-      background: onDark ? 'rgba(255,255,255,.25)' : '#f4f2ee',
-      color: onDark ? '#fff' : '#6b6862',
+      background: onDark ? 'rgba(255,255,255,.25)' : 'var(--md-chip)',
+      color: onDark ? '#fff' : 'var(--md-ink-3)',
       fontSize: 15,
       display: 'flex',
       alignItems: 'center',

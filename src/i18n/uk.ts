@@ -447,6 +447,17 @@ const dict: Record<string, string> = {
   "Ändern": "Змінити",
   "Übernehmen": "Застосувати",
   "Übersprungen": "Пропущено",
+  "Alle passenden Angebote finden": "Знайти всі відповідні пропозиції",
+  "Finde passende Förderungen, Angebote und Unterstützung für deine Lebenssituation in Berlin. Kostenlos und vertraulich.": "Знайди підтримку, послуги та допомогу, що відповідають твоїй ситуації в Берліні. Безкоштовно й конфіденційно.",
+  "Gebaut in Berlin.": "Створено в Берліні.",
+  "In 5 Sprachen": "5 мовами",
+  "Inhalte und Fragenpfad": "Зміст і шлях запитань",
+  "Kommunikation und Netzwerk": "Комунікація та мережа",
+  "Kostenlos": "Безкоштовно",
+  "Ohne Anmeldung": "Без реєстрації",
+  "So funktioniert's": "Як це працює",
+  "Technik und Plattform": "Техніка та платформа",
+  "Wer dahinter steht": "Хто за цим стоїть",
 };
 
 export default dict;

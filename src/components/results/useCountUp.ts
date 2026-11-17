@@ -48,7 +48,7 @@ export const useCountUp = (target: number, stepMs = 105) => {
     display: 'inline-block',
     fontWeight: 800,
     transform: `scale(${scale})`,
-    color: done ? '#4F90DE' : '#b0aeaa',
+    color: done ? 'var(--md-brand)' : 'var(--md-ink-5)',
     transition: 'transform .19s cubic-bezier(.34,1.6,.5,1), color .35s',
   };
 

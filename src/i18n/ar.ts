@@ -447,6 +447,17 @@ const dict: Record<string, string> = {
   "Ändern": "تغيير",
   "Übernehmen": "اعتماد",
   "Übersprungen": "تم التخطي",
+  "Alle passenden Angebote finden": "اعثر على كل العروض المناسبة لك",
+  "Finde passende Förderungen, Angebote und Unterstützung für deine Lebenssituation in Berlin. Kostenlos und vertraulich.": "اعثر على الدعم والخدمات والمساعدات المناسبة لوضعك في برلين. مجانًا وبسرية.",
+  "Gebaut in Berlin.": "صُنع في برلين.",
+  "In 5 Sprachen": "بخمس لغات",
+  "Inhalte und Fragenpfad": "المحتوى ومسار الأسئلة",
+  "Kommunikation und Netzwerk": "التواصل والشبكة",
+  "Kostenlos": "مجاني",
+  "Ohne Anmeldung": "بدون تسجيل",
+  "So funktioniert's": "كيف يعمل",
+  "Technik und Plattform": "التقنية والمنصة",
+  "Wer dahinter steht": "من يقف وراء ذلك",
 };
 
 export default dict;

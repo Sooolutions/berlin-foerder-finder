@@ -448,6 +448,17 @@ const en: Record<string, string> = {
   "Ändern": "Change",
   "Übernehmen": "Apply",
   "Übersprungen": "Skipped",
+  "Alle passenden Angebote finden": "Find all offers that fit you",
+  "Finde passende Förderungen, Angebote und Unterstützung für deine Lebenssituation in Berlin. Kostenlos und vertraulich.": "Find funding, services and support that fit your situation in Berlin. Free and confidential.",
+  "Gebaut in Berlin.": "Built in Berlin.",
+  "In 5 Sprachen": "In 5 languages",
+  "Inhalte und Fragenpfad": "Content and question path",
+  "Kommunikation und Netzwerk": "Communication and network",
+  "Kostenlos": "Free",
+  "Ohne Anmeldung": "No sign-up",
+  "So funktioniert's": "How it works",
+  "Technik und Plattform": "Technology and platform",
+  "Wer dahinter steht": "Who is behind it",
 };
 
 export default en;

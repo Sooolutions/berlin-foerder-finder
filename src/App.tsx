@@ -18,11 +18,14 @@ import Impressum from "./pages/Impressum";
 import Datenschutz from "./pages/Datenschutz";
 import ConstructionNotice from "@/components/layout/ConstructionNotice";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { MotionConfig } from "framer-motion";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    {/* Wer weniger Bewegung eingestellt hat, bekommt nur Überblendungen */}
+    <MotionConfig reducedMotion="user">
     <LanguageProvider>
     <TooltipProvider>
       <Toaster />
@@ -48,6 +51,7 @@ const App = () => (
       <SpeedInsights />
     </TooltipProvider>
     </LanguageProvider>
+    </MotionConfig>
   </QueryClientProvider>
 );
 
