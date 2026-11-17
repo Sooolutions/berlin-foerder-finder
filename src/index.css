@@ -224,7 +224,10 @@
     animation-direction: normal;
   }
 
-  /* Karussell: bei reduzierter Bewegung steht es still und lässt sich wischen */
+  /* Karussell: schneidet an seinen Rändern ab, bei reduzierter Bewegung steht es still und lässt sich wischen */
+  .md-carousel {
+    overflow: hidden;
+  }
   @media (prefers-reduced-motion: reduce) {
     .md-carousel {
       overflow-x: auto;

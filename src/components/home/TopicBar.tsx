@@ -41,18 +41,19 @@ const TopicBar = ({ topics }: { topics: TopicCount[] }) => {
   const { t } = useLanguage();
 
   return (
-    <section className="bg-[var(--md-ink)] px-4 py-10 md:py-12">
-      <div className="mx-auto max-w-7xl">
-        <p className="mb-6 text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-white/50">
+    <section className="bg-[var(--md-ink)] py-10 md:py-12">
+      <div>
+        <p className="mb-6 px-4 text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-white/50">
           {t("Angebote nach Themen")}
         </p>
         {/* Ein Band, das langsam von links nach rechts läuft und beim Darüberfahren anhält */}
-        <div className="md-carousel group relative -mx-4 md:mx-0">
+        <div className="md-carousel group relative">
           <ul
             className="md-marquee-track md-marquee-rev flex w-max gap-3 py-1 group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
-            style={{ animationDuration: "55s" }}
+            style={{ animationDuration: "165s" }}
           >
-            {(topics.length ? [...topics, ...topics] : Array.from({ length: 16 }, () => null)).map((topic, i) => {
+            {/* Jede Hälfte enthält die Themen dreimal, so ist das Band auch auf sehr breiten Bildschirmen voll */}
+            {(topics.length ? Array.from({ length: 6 }, () => topics).flat() : Array.from({ length: 16 }, () => null)).map((topic, i) => {
               if (!topic) {
                 return <li key={i} className="h-[52px] w-40 flex-none animate-pulse rounded-full bg-white/10" />;
               }
@@ -75,8 +76,8 @@ const TopicBar = ({ topics }: { topics: TopicCount[] }) => {
               );
             })}
           </ul>
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 start-0 w-16 bg-gradient-to-r from-[var(--md-ink)] to-transparent md:w-32 rtl:bg-gradient-to-l" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 end-0 w-16 bg-gradient-to-l from-[var(--md-ink)] to-transparent md:w-32 rtl:bg-gradient-to-r" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 start-0 w-[12vw] min-w-12 bg-gradient-to-r from-[var(--md-ink)] to-transparent rtl:bg-gradient-to-l" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 end-0 w-[12vw] min-w-12 bg-gradient-to-l from-[var(--md-ink)] to-transparent rtl:bg-gradient-to-r" />
         </div>
       </div>
     </section>

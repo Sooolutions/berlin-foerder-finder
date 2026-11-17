@@ -588,16 +588,16 @@ const Index = () => {
               {/* Rollenkarten, mit Foto und LinkedIn, sofern vorhanden */}
               <div className="grid gap-3">
                 {[
-                  { label: t("Technik und Plattform"), color: "var(--md-brand)", photo: teamTechnik, href: "https://www.linkedin.com/in/jonas-helm-ba66aa2a9" },
+                  { label: t("Technik und Plattform"), color: "var(--md-brand)", text: "var(--md-brand)", photo: teamTechnik, href: "https://www.linkedin.com/in/jonas-helm-ba66aa2a9" },
                   // TODO: Foto für Kommunikation und Netzwerk ergänzen (src/assets/team/kommunikation.jpg)
-                  { label: t("Kommunikation und Netzwerk"), color: "var(--md-sun)", photo: null, href: "https://www.linkedin.com/in/max-reschke/" },
-                  { label: t("Inhalte und Fragenpfad"), color: "var(--md-kicker)", photo: null, href: null },
+                  { label: t("Kommunikation und Netzwerk"), color: "var(--md-sun)", text: "#b07600", photo: null, href: "https://www.linkedin.com/in/max-reschke/" },
+                  { label: t("Inhalte und Fragenpfad"), color: "var(--md-kicker)", text: "var(--md-kicker)", photo: null, href: null },
                 ].map((role, i) => {
                   const inner = (
                     <>
                       <span
-                        className="relative flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-full ring-[3px] ring-offset-2 ring-offset-[var(--md-surface)]"
-                        style={{ background: role.color, ["--tw-ring-color" as string]: role.color }}
+                        className="relative flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-full"
+                        style={{ background: role.color }}
                         aria-hidden
                       >
                         {role.photo ? (
@@ -606,7 +606,7 @@ const Index = () => {
                           <User className="h-6 w-6 text-white" strokeWidth={2.4} />
                         )}
                       </span>
-                      <span className="flex-1 text-[17px] font-semibold">{role.label}</span>
+                      <span className="flex-1 text-[17px] font-bold" style={{ color: role.text }}>{role.label}</span>
                     </>
                   );
                   const cls =
