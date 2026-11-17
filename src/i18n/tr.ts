@@ -458,6 +458,7 @@ const dict: Record<string, string> = {
   "So funktioniert's": "Nasıl çalışır",
   "Technik und Plattform": "Teknik ve platform",
   "Wer dahinter steht": "Arkasında kim var",
+  "Angebote in Berlin": "Berlin'de teklif",
 };
 
 export default dict;

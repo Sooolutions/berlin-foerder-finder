@@ -12,6 +12,8 @@ interface HeaderProps {
   overlay?: boolean;
   /** klebt beim Scrollen oben, blendet sich beim Runterscrollen aus */
   sticky?: boolean;
+  /** liegt transparent über einem hellen Hero und bekommt beim Scrollen Glas */
+  floating?: boolean;
 }
 
 /** Scrollzustand: über der Kante und Richtung, mit etwas Toleranz gegen Zittern */
@@ -39,7 +41,7 @@ const useScrollState = (enabled: boolean) => {
   return { scrolled, hidden };
 };
 
-const Header = ({ backToHome = false, overlay = false, sticky = true }: HeaderProps) => {
+const Header = ({ backToHome = false, overlay = false, sticky = true, floating = false }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -47,7 +49,8 @@ const Header = ({ backToHome = false, overlay = false, sticky = true }: HeaderPr
   const { scrolled, hidden } = useScrollState(sticky);
 
   // Über dem Hero hell auf dunkel, sonst die normale helle Leiste
-  const onDark = overlay && !scrolled && !menuOpen;
+  const transparentTop = (overlay || floating) && !scrolled && !menuOpen;
+  const onDark = overlay && transparentTop;
 
   useEffect(() => {
     setMenuOpen(false);
@@ -65,7 +68,7 @@ const Header = ({ backToHome = false, overlay = false, sticky = true }: HeaderPr
     { to: "/blog", label: t("blog") },
   ];
 
-  const position = sticky ? (overlay ? "fixed" : "sticky") : "relative";
+  const position = sticky ? (overlay || floating ? "fixed" : "sticky") : "relative";
 
   return (
     <>
@@ -76,8 +79,8 @@ const Header = ({ backToHome = false, overlay = false, sticky = true }: HeaderPr
       >
         <header
           className={`container mx-auto rounded-2xl border px-4 py-2.5 sm:px-5 transition-[background-color,border-color,box-shadow,color] duration-300 ${
-            onDark
-              ? "border-transparent bg-transparent text-white"
+            transparentTop
+              ? `border-transparent bg-transparent ${onDark ? "text-white" : "text-foreground"}`
               : "border-border/70 bg-background/80 text-foreground shadow-[var(--md-shadow-sm)] backdrop-blur-xl backdrop-saturate-150"
           }`}
         >

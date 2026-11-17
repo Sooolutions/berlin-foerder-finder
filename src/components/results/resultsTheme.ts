@@ -41,9 +41,9 @@ const build = (h: number, s: number, accent: string, ink: string, g1: string, g2
 });
 
 export const SCHEMES: Record<FundingType, Scheme> = {
-  staatlich: build(212, 52, '#3a75ad', '#17324e', '#5a9be6', '#2f6fb0'),
-  karitativ: build(38, 58, '#8f6b26', '#3d2e0f', '#f5b955', '#c9871a'),
-  privat: build(354, 52, '#b0606a', '#462126', '#ef8b91', '#c0444d'),
+  staatlich: build(226, 70, '#2f5bea', '#14215e', '#4c74f5', '#1d3cb4'),
+  karitativ: build(40, 85, '#a86d00', '#3d2a00', '#ffc23d', '#e09a00'),
+  privat: build(7, 70, '#d2402c', '#4a1610', '#f47a68', '#d2402c'),
 };
 
 const FALLBACK: FundingType[] = ['staatlich', 'karitativ', 'privat'];

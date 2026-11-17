@@ -11,63 +11,63 @@
  */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 7%;
+    /* Variante B: warmes Papier, Kobaltblau, Sonnengelb, Koralle */
+    --background: 38 52% 95%;
+    --foreground: 234 37% 12%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 7%;
+    --card: 40 100% 99%;
+    --card-foreground: 234 37% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
+    --popover: 40 100% 99%;
+    --popover-foreground: 234 37% 12%;
 
-    --primary: 212 67% 59%; /* #4F90DE */
+    --primary: 226 81% 55%; /* #2f5bea */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 213 71% 88%; /* #CADEF5 */
-    --secondary-foreground: 0 0% 7%;
+    --secondary: 228 100% 94%;
+    --secondary-foreground: 234 37% 12%;
 
-    --accent: 39 100% 73%; /* #FFCA76 */
-    --accent-foreground: 0 0% 7%;
+    --accent: 42 100% 62%; /* #ffc23d */
+    --accent-foreground: 234 37% 12%;
 
-    --destructive: 356 76% 70%; /* #EE7A82 */
+    --destructive: 7 84% 62%; /* #f0604d */
     --destructive-foreground: 0 0% 100%;
 
-    --muted: 40 20% 96%;
-    --muted-foreground: 30 4% 40%;
+    --muted: 38 40% 90%;
+    --muted-foreground: 234 8% 40%;
 
-    --border: 40 12% 89%;
-    --input: 40 12% 89%;
-    --ring: 212 67% 59%;
+    --border: 37 30% 86%;
+    --input: 37 30% 86%;
+    --ring: 226 81% 55%;
 
-    --radius: 0.875rem;
+    --radius: 1.25rem;
 
-    --mehrdrin-blue: 212 67% 59%;
-    --mehrdrin-yellow: 39 100% 73%;
-    --mehrdrin-red: 356 76% 70%;
-    --mehrdrin-lightblue: 213 71% 88%;
+    --mehrdrin-blue: 226 81% 55%;
+    --mehrdrin-yellow: 42 100% 62%;
+    --mehrdrin-red: 7 84% 62%;
+    --mehrdrin-lightblue: 228 100% 94%;
 
-    /* Direkte Farbwerte für Inline-Styles */
     --md-font: 'Outfit', system-ui, -apple-system, sans-serif;
-    --md-font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+    --md-font-display: 'Bricolage Grotesque', 'Outfit', system-ui, sans-serif;
     --md-display-weight: 800;
-    --md-brand: #4f90de;
-    --md-brand-ink: #2f6fb0;
-    --md-brand-tint: #eef4fc;
-    --md-kicker: #e2636c;
-    --md-sun: #ffca76;
-    --md-ink: #111111;
-    --md-ink-2: #403d39;
-    --md-ink-3: #6d6a65;
-    --md-ink-4: #8b8781;
-    --md-ink-5: #b3afa8;
-    --md-paper: #fafaf8;
-    --md-surface: #ffffff;
-    --md-chip: #f2f1ee;
-    --md-line: #eceae5;
-    --md-line-strong: #e2e0db;
-    --md-shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.04), 0 1px 1px rgba(17, 17, 17, 0.02);
-    --md-shadow-md: 0 10px 30px -12px rgba(17, 17, 17, 0.18), 0 2px 6px rgba(17, 17, 17, 0.04);
-    --md-shadow-lg: 0 24px 60px -24px rgba(17, 17, 17, 0.28);
+    --md-brand: #2f5bea;
+    --md-brand-ink: #1d3cb4;
+    --md-brand-tint: #e8edff;
+    --md-kicker: #e8513d;
+    --md-sun: #ffc23d;
+    --md-ink: #14162b;
+    --md-ink-2: #34364a;
+    --md-ink-3: #5b5d70;
+    --md-ink-4: #84828c;
+    --md-ink-5: #afaba4;
+    --md-paper: #f7f2ea;
+    --md-surface: #fffdf9;
+    --md-chip: #efe8dc;
+    --md-line: #e8e0d3;
+    --md-line-strong: #dbd1c1;
+    --md-shadow-sm: 0 1px 0 rgba(20, 22, 43, 0.04), 0 1px 3px rgba(20, 22, 43, 0.05);
+    --md-shadow-md: 0 14px 34px -14px rgba(20, 22, 43, 0.22), 0 2px 6px rgba(20, 22, 43, 0.04);
+    --md-shadow-lg: 0 30px 70px -28px rgba(20, 22, 43, 0.35);
     --md-ease: cubic-bezier(0.22, 1, 0.36, 1);
     --md-origin: left;
   }
@@ -105,7 +105,7 @@
   h3 {
     font-family: var(--md-font-display);
     text-wrap: balance;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.025em;
   }
 
   h1 {
@@ -115,13 +115,13 @@
   }
 
   h2 {
-    font-weight: 700;
+    font-weight: 800;
     font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
     line-height: 1.15;
   }
 
   h3 {
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.4rem);
     line-height: 1.3;
   }
@@ -131,8 +131,8 @@
   }
 
   ::selection {
-    background: var(--md-brand);
-    color: #fff;
+    background: var(--md-sun);
+    color: var(--md-ink);
   }
 
   :focus-visible {
@@ -209,6 +209,14 @@
     animation-delay: var(--md-delay, 0ms);
   }
 
+  /* Laufband */
+  .md-marquee-track {
+    animation: md-marquee 48s linear infinite;
+  }
+  [dir='rtl'] .md-marquee-track {
+    animation-direction: reverse;
+  }
+
   /* Ladeplatzhalter */
   .md-skeleton {
     background: linear-gradient(90deg, var(--md-chip) 0%, var(--md-line) 50%, var(--md-chip) 100%);
@@ -225,6 +233,15 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes md-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 

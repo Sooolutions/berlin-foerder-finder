@@ -458,6 +458,7 @@ const dict: Record<string, string> = {
   "So funktioniert's": "Як це працює",
   "Technik und Plattform": "Техніка та платформа",
   "Wer dahinter steht": "Хто за цим стоїть",
+  "Angebote in Berlin": "пропозицій у Берліні",
 };
 
 export default dict;

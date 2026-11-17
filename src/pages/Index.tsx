@@ -3,14 +3,14 @@ import Footer from "@/components/layout/Footer";
 import { ArrowRight, ArrowUpRight, Check, ClipboardList, Compass, Plus, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { schemeOf } from "@/components/results/resultsTheme";
 import ScrollReveal from "@/components/home/ScrollReveal";
 import Counter from "@/components/home/Counter";
-import heroImg from "@/assets/hero-wallet.jpg";
-import heroImgMobile from "@/assets/hero-wallet-mobile.jpg";
+import OfferStack from "@/components/home/OfferStack";
+import Marquee from "@/components/home/Marquee";
 import { useLanguage, tr } from "@/i18n/LanguageContext";
 import { useFundingTranslations } from "@/hooks/useFundingTranslations";
 
@@ -72,15 +72,11 @@ const TeaserSkeleton = () => (
 
 const Index = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [rawTeasers, setFundingTeasers] = useState<FundingTeaser[]>([]);
   const fundingTeasers = useFundingTranslations(rawTeasers);
   const [offerCount, setOfferCount] = useState<number | null>(null);
 
-  // Leichter Parallax-Effekt auf dem Heldenbild
-  const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 800], [0, 140]);
-  const heroFade = useTransform(scrollY, [0, 500], [1, 0]);
 
   useEffect(() => {
     const fetchRandomFunding = async () => {
@@ -90,136 +86,178 @@ const Index = () => {
       if (data && !error) {
         setOfferCount(count ?? data.length);
         const shuffled = [...(data as unknown as FundingTeaser[])].sort(() => 0.5 - Math.random());
-        setFundingTeasers(shuffled.slice(0, 5));
+        setFundingTeasers(shuffled.slice(0, 16));
       }
     };
     fetchRandomFunding();
   }, []);
 
   const startQuestionnaire = () => navigate("/questionnaire");
+  const marqueeItems = fundingTeasers.slice(4, 16).map((f) => f.title);
   const trust = [t("Kostenlos"), t("Ohne Anmeldung"), t("In 5 Sprachen")];
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
-      <Header overlay />
+      <Header floating />
 
       <main className="flex-grow">
-        {/* Hero */}
-        <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[var(--md-ink)] pb-24 pt-28">
-          <motion.div className="absolute inset-0" style={{ y: heroY }}>
-            <motion.picture
-              initial={{ scale: 1.12, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 2.2, ease: EASE }}
-              className="block h-full w-full"
-            >
-              <source media="(max-aspect-ratio: 3/4)" srcSet={heroImgMobile} />
-              <img src={heroImg} alt="" aria-hidden="true" className="h-full w-full object-cover object-center" />
-            </motion.picture>
-            <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/80" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_30%,rgba(0,0,0,0.6)_100%)]" />
-          </motion.div>
+        {/* Hero: helles Papier, große Schrift, rechts echte Angebote als Kartenstapel */}
+        <section className="relative overflow-hidden bg-[var(--md-paper)] pb-20 pt-32 md:pb-28 md:pt-40">
+          {/* Weiche Farbflächen im Hintergrund */}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -end-40 -top-40 h-[38rem] w-[38rem] rounded-full opacity-60 blur-3xl"
+            style={{ background: "radial-gradient(closest-side, var(--md-brand-tint), transparent)" }}
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-48 -start-32 h-[30rem] w-[30rem] rounded-full opacity-50 blur-3xl"
+            style={{ background: "radial-gradient(closest-side, var(--md-sun), transparent)" }}
+            animate={{ scale: [1, 1.12, 1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          />
 
-          <motion.div style={{ opacity: heroFade }} className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-            <RevealTitle
-              text={t("Da ist noch mehr drin!")}
-              className="mb-6 !text-[clamp(2.75rem,1.5rem+5.5vw,5.5rem)] font-black leading-[1.02] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)]"
-            />
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: EASE, delay: 0.55 }}
-              className="mx-auto mb-10 max-w-xl text-lg text-white/85 md:text-xl [text-shadow:0_2px_12px_rgba(0,0,0,0.6)]"
-            >
-              {t("Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.")}
-            </motion.p>
+          <div className="container relative mx-auto grid max-w-6xl items-center gap-16 px-6 lg:grid-cols-[1.1fr_1fr]">
+            <div className="text-center lg:text-start">
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: EASE }}
+                className="mb-7 inline-flex items-center gap-2 rounded-full border border-[var(--md-line-strong)] bg-[var(--md-surface)] py-1.5 pe-4 ps-1.5 text-[14px] font-semibold text-[var(--md-ink-2)] shadow-[var(--md-shadow-sm)]"
+              >
+                <span className="rounded-full bg-[var(--md-ink)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--md-sun)]">
+                  {offerCount ? Math.floor(offerCount / 10) * 10 + "+" : "…"}
+                </span>
+                {t("Angebote in Berlin")}
+              </motion.div>
+
+              <div className="relative inline-block">
+                <RevealTitle
+                  text={t("Da ist noch mehr drin!")}
+                  className="!text-[clamp(3rem,1.6rem+6vw,6.25rem)] font-extrabold leading-[0.95] tracking-[-0.045em] text-[var(--md-ink)]"
+                />
+                {/* Handgezeichneter Strich unter der Überschrift */}
+                <svg aria-hidden viewBox="0 0 420 24" preserveAspectRatio="none" className="absolute -bottom-4 start-0 h-5 w-[70%] lg:w-[60%] rtl:-scale-x-100">
+                  <motion.path
+                    d="M4 16 C 80 4, 160 6, 230 12 S 360 20, 416 8"
+                    fill="none"
+                    stroke="var(--md-sun)"
+                    strokeWidth="9"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.9, ease: "easeInOut", delay: 0.75 }}
+                  />
+                </svg>
+              </div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: EASE, delay: 0.55 }}
+                className="mx-auto mb-10 mt-10 max-w-lg text-[19px] leading-relaxed text-[var(--md-ink-3)] md:text-[21px] lg:mx-0"
+              >
+                {t("Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.")}
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: EASE, delay: 0.7 }}
+                className="flex flex-col items-center gap-3 sm:flex-row lg:justify-start sm:justify-center"
+              >
+                <button
+                  type="button"
+                  onClick={startQuestionnaire}
+                  className="md-shine group inline-flex items-center gap-3 rounded-full bg-[var(--md-ink)] py-2 pe-2 ps-7 text-[17px] font-semibold text-white shadow-[var(--md-shadow-md)] transition-transform duration-300 hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  {t("Jetzt herausfinden")}
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--md-sun)] text-[var(--md-ink)] transition-transform duration-500 group-hover:rotate-[-45deg] rtl:group-hover:rotate-[45deg]">
+                    <ArrowRight className="h-5 w-5 rtl:-scale-x-100" strokeWidth={2.5} />
+                  </span>
+                </button>
+                <a
+                  href="#so-gehts"
+                  className="inline-flex items-center gap-2 rounded-full px-5 py-3.5 text-[16px] font-semibold text-[var(--md-ink-2)] underline decoration-[var(--md-line-strong)] decoration-2 underline-offset-[6px] transition-colors hover:decoration-[var(--md-brand)]"
+                >
+                  {t("So funktioniert's")}
+                </a>
+              </motion.div>
+
+              <motion.ul
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 1 }}
+                className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] font-medium text-[var(--md-ink-3)] lg:justify-start"
+              >
+                {trust.map((label) => (
+                  <li key={label} className="inline-flex items-center gap-1.5">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--md-brand)] text-white">
+                      <Check className="h-3 w-3" strokeWidth={3.5} />
+                    </span>
+                    {label}
+                  </li>
+                ))}
+              </motion.ul>
+            </div>
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: EASE, delay: 0.7 }}
-              className="flex flex-col items-center justify-center gap-3 sm:flex-row"
+              initial={{ opacity: 0, y: 40, rotate: 4 }}
+              animate={{ opacity: 1, y: 0, rotate: 0 }}
+              transition={{ duration: 1.1, ease: EASE, delay: 0.3 }}
+              className="relative px-9 pt-10 sm:px-4"
             >
-              <button
-                type="button"
-                onClick={startQuestionnaire}
-                className="md-shine group inline-flex items-center gap-2.5 rounded-full bg-primary px-8 py-4 text-[17px] font-semibold text-primary-foreground shadow-[0_12px_40px_-8px_hsl(var(--primary)/0.7)] transition-transform duration-300 hover:-translate-y-0.5 active:translate-y-0"
+              <OfferStack offers={fundingTeasers.slice(0, 4)} />
+              {/* Aufkleber */}
+              <motion.div
+                aria-hidden
+                initial={{ scale: 0, rotate: -20 }}
+                animate={{ scale: 1, rotate: -8 }}
+                transition={{ type: "spring", stiffness: 260, damping: 14, delay: 1.2 }}
+                className="absolute start-0 top-2 z-50 flex h-20 w-20 sm:h-24 sm:w-24 flex-col items-center justify-center rounded-full bg-[var(--md-sun)] text-center text-[13px] font-extrabold leading-tight text-[var(--md-ink)] shadow-[var(--md-shadow-md)] md:-start-6"
+                style={{ fontFamily: "var(--md-font-display)" }}
               >
-                {t("Jetzt herausfinden")}
-                <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" strokeWidth={2.5} />
-              </button>
-              <a
-                href="#so-gehts"
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-4 text-[16px] font-medium text-white backdrop-blur-md transition-colors hover:bg-white/20"
-              >
-                {t("So funktioniert's")}
-              </a>
+                <Check className="mb-0.5 h-5 w-5" strokeWidth={3} />
+                {t("Kostenlos")}
+              </motion.div>
             </motion.div>
-
-            <motion.ul
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 1 }}
-              className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] text-white/75"
-            >
-              {trust.map((label) => (
-                <li key={label} className="inline-flex items-center gap-1.5">
-                  <Check className="h-4 w-4 text-[var(--md-sun)]" strokeWidth={3} />
-                  {label}
-                </li>
-              ))}
-            </motion.ul>
-          </motion.div>
-
-          {/* Scroll-Hinweis: Linie mit wanderndem Punkt */}
-          <div aria-hidden className="absolute bottom-7 left-1/2 z-10 h-12 w-px -translate-x-1/2 overflow-hidden bg-white/20">
-            <motion.span
-              className="absolute left-0 top-0 h-4 w-px bg-white"
-              animate={{ y: [-16, 48] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            />
           </div>
         </section>
 
-        {/* Erkennungsmomente */}
+        <Marquee items={marqueeItems} />
+
+        {/* Erkennungsmomente als Sprechblasen */}
         <section className="relative overflow-hidden px-4 py-28 md:py-36">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-6 -translate-x-1/2 select-none font-black leading-[0.8] text-[hsl(var(--secondary))] opacity-70"
-            style={{ fontSize: "clamp(8rem, 18vw, 14rem)", fontFamily: "var(--md-font-display)" }}
-          >
-            “
-          </span>
-          <div className="container relative mx-auto max-w-3xl text-center">
-            <div className="mb-14 space-y-8 md:space-y-10">
-              <ScrollReveal>
-                <p className="text-2xl font-medium leading-snug text-muted-foreground/60 md:text-4xl">
-                  {t("„Schon wieder knapp vor dem Monatsende?“")}
-                </p>
-              </ScrollReveal>
-              <ScrollReveal delay={0.12}>
-                <p className="text-2xl font-medium leading-snug text-muted-foreground md:text-4xl">
-                  {t("„Irgendwo gibt's bestimmt was für mich — aber wann soll ich das rausfinden?“")}
-                </p>
-              </ScrollReveal>
-              <ScrollReveal delay={0.24}>
-                <p className="text-2xl font-semibold leading-snug text-foreground md:text-4xl">
-                  {t("„Den Antrag hab ich angefangen. Liegt noch irgendwo.“")}
-                </p>
-              </ScrollReveal>
+          <div className="container relative mx-auto max-w-4xl">
+            <div className="mb-16 flex flex-col gap-5">
+              {[
+                { text: t("„Schon wieder knapp vor dem Monatsende?“"), cls: "self-start bg-[var(--md-surface)] text-[var(--md-ink-2)] rounded-bl-md rtl:rounded-bl-[1.75rem] rtl:rounded-br-md", rot: -2 },
+                { text: t("„Irgendwo gibt's bestimmt was für mich — aber wann soll ich das rausfinden?“"), cls: "self-end bg-[var(--md-brand-tint)] text-[var(--md-brand-ink)] rounded-br-md rtl:rounded-br-[1.75rem] rtl:rounded-bl-md", rot: 1.5 },
+                { text: t("„Den Antrag hab ich angefangen. Liegt noch irgendwo.“"), cls: "self-start bg-[var(--md-ink)] text-white rounded-bl-md rtl:rounded-bl-[1.75rem] rtl:rounded-br-md md:ms-16", rot: -1 },
+              ].map((q, i) => (
+                <ScrollReveal key={i} delay={i * 0.14} className={`max-w-[34rem] ${q.cls.includes("self-end") ? "self-end" : "self-start"}`}>
+                  <motion.p
+                    whileHover={{ rotate: 0, scale: 1.02 }}
+                    style={{ rotate: q.rot, fontFamily: "var(--md-font-display)" }}
+                    className={`rounded-[1.75rem] border border-[var(--md-line)] px-7 py-5 text-[22px] font-bold leading-snug tracking-[-0.015em] shadow-[var(--md-shadow-sm)] md:text-[28px] ${q.cls}`}
+                  >
+                    {q.text}
+                  </motion.p>
+                </ScrollReveal>
+              ))}
             </div>
-            <ScrollReveal delay={0.36}>
-              <p className="inline-flex items-center gap-3 text-xl font-semibold text-primary md:text-2xl">
-                <span className="h-px w-10 bg-primary/40" />
+            <ScrollReveal delay={0.4} className="text-center">
+              <p className="inline-block -rotate-1 rounded-full bg-[var(--md-sun)] px-6 py-3 text-[20px] font-extrabold text-[var(--md-ink)] md:text-[24px]" style={{ fontFamily: "var(--md-font-display)" }}>
                 {t("Genau dafür ist MehrDrin da.")}
-                <span className="h-px w-10 bg-primary/40" />
               </p>
             </ScrollReveal>
           </div>
         </section>
 
         {/* So geht's */}
-        <section id="so-gehts" className="scroll-mt-24 bg-[var(--md-paper)] px-4 py-24 md:py-28">
+        <section id="so-gehts" className="scroll-mt-24 bg-[var(--md-surface)] px-4 py-24 md:py-28">
           <div className="container mx-auto max-w-5xl">
             <ScrollReveal>
               <p className="md-kicker mb-16 text-center !text-primary">
@@ -238,12 +276,16 @@ const Index = () => {
               />
               {steps().map(({ Icon, title, desc }, i) => (
                 <ScrollReveal key={title} delay={0.1 + i * 0.15}>
-                  <div className="group relative h-full rounded-3xl bg-background p-8 text-center shadow-[var(--md-shadow-sm)] ring-1 ring-border/70 transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[var(--md-shadow-md)]">
-                    <div className="relative z-10 mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground transition-transform duration-500 group-hover:rotate-[-6deg] group-hover:scale-110">
+                  <div className="group relative h-full overflow-hidden rounded-3xl bg-[var(--md-paper)] p-8 text-center shadow-[var(--md-shadow-sm)] ring-1 ring-border/70 transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[var(--md-shadow-md)]">
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute end-6 top-4 select-none text-[64px] font-extrabold leading-none text-[var(--md-chip)] transition-colors duration-500 group-hover:text-[var(--md-sun)]"
+                      style={{ fontFamily: "var(--md-font-display)" }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className="relative z-10 mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--md-ink)] text-[var(--md-sun)] transition-transform duration-500 group-hover:rotate-[-6deg] group-hover:scale-110">
                       <Icon className="h-6 w-6" strokeWidth={2.2} />
-                      <span className="absolute -end-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--md-sun)] text-[12px] font-bold text-foreground">
-                        {i + 1}
-                      </span>
                     </div>
                     <h3 className="mb-2">{title}</h3>
                     <p className="text-[15px] text-muted-foreground">{desc}</p>
@@ -255,7 +297,7 @@ const Index = () => {
         </section>
 
         {/* Angebote */}
-        <section className="px-4 py-24 md:py-28">
+        <section className="bg-[var(--md-paper)] px-4 py-24 md:py-28">
           <div className="container mx-auto max-w-6xl">
             <div className="mb-14 flex flex-col items-center text-center">
               <ScrollReveal>
@@ -271,7 +313,7 @@ const Index = () => {
             </div>
 
             <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
-              {(fundingTeasers.length ? fundingTeasers : Array.from({ length: 5 }, () => null)).map((funding, i) => {
+              {(fundingTeasers.length ? fundingTeasers.slice(4, 9) : Array.from({ length: 5 }, () => null)).map((funding, i) => {
                 if (!funding) {
                   return (
                     <div key={`s-${i}`} className="w-[260px] flex-none snap-start md:w-auto">
@@ -295,7 +337,7 @@ const Index = () => {
                       >
                         {funding.categories?.[0] ? t(funding.categories[0]) : funding.organization}
                       </span>
-                      <h3 className="mb-2 line-clamp-2 !text-[17px] font-semibold text-foreground">{funding.title}</h3>
+                      <h3 lang={lang} className="mb-2 line-clamp-2 !text-[17px] font-semibold text-foreground [hyphens:auto]">{funding.title}</h3>
                       <p className="line-clamp-3 text-sm text-muted-foreground">{funding.description}</p>
                       <span
                         className="mt-auto flex h-9 w-9 translate-y-1 items-center justify-center self-end rounded-full pt-0 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
@@ -326,7 +368,7 @@ const Index = () => {
         </section>
 
         {/* Zahlen */}
-        <section className="relative overflow-hidden bg-[var(--md-ink)] px-4 py-24 text-white">
+        <section className="relative overflow-hidden bg-[var(--md-brand)] px-4 py-24 text-white">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.07]"
@@ -337,18 +379,18 @@ const Index = () => {
           />
           <div className="container relative mx-auto grid max-w-5xl grid-cols-1 gap-14 text-center md:grid-cols-3 md:gap-8">
             <ScrollReveal>
-              <Counter to={offerCount ?? 0} className="mb-3 block text-6xl font-black tracking-tight md:text-7xl" />
-              <p className="text-white/60">{t("Angebote, staatlich und nicht-staatlich")}</p>
+              <Counter to={offerCount ?? 0} className="mb-3 block text-6xl font-extrabold tracking-[-0.04em] text-[var(--md-sun)] md:text-8xl" />
+              <p className="text-white/80">{t("Angebote, staatlich und nicht-staatlich")}</p>
             </ScrollReveal>
             <ScrollReveal delay={0.15}>
-              <Counter to={10} className="mb-3 block text-6xl font-black tracking-tight md:text-7xl" />
-              <p className="text-white/60">{t("kurze Fragen bis zu deiner Übersicht")}</p>
+              <Counter to={10} className="mb-3 block text-6xl font-extrabold tracking-[-0.04em] text-[var(--md-sun)] md:text-8xl" />
+              <p className="text-white/80">{t("kurze Fragen bis zu deiner Übersicht")}</p>
             </ScrollReveal>
             <ScrollReveal delay={0.3}>
-              <span className="mb-3 block text-6xl font-black tracking-tight md:text-7xl">
-                1-2<span className="ms-1 align-top text-2xl text-[var(--md-sun)]">min</span>
+              <span className="mb-3 block text-6xl font-extrabold tracking-[-0.04em] text-[var(--md-sun)] md:text-8xl">
+                1-2<span className="ms-1 align-top text-2xl text-white">min</span>
               </span>
-              <p className="text-white/60">{t("bis du weißt, was für dich drin ist")}</p>
+              <p className="text-white/80">{t("bis du weißt, was für dich drin ist")}</p>
             </ScrollReveal>
           </div>
         </section>
@@ -384,7 +426,7 @@ const Index = () => {
         </section>
 
         {/* FAQ */}
-        <section className="bg-[var(--md-paper)] px-4 py-24">
+        <section className="bg-[var(--md-surface)] px-4 py-24">
           <div className="container mx-auto">
             <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-[2fr_3fr]">
               <ScrollReveal className="lg:sticky lg:top-28">
@@ -414,27 +456,27 @@ const Index = () => {
         </section>
 
         {/* Abschluss */}
-        <section className="relative overflow-hidden bg-primary px-4 py-28">
+        <section className="relative overflow-hidden bg-[var(--md-sun)] px-4 py-32">
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute -start-24 -top-24 h-96 w-96 rounded-full bg-white/15 blur-3xl"
+            className="pointer-events-none absolute -start-24 -top-24 h-96 w-96 rounded-full bg-white/50 blur-3xl"
             animate={{ x: [0, 60, 0], y: [0, 30, 0] }}
             transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute -bottom-32 -end-16 h-[28rem] w-[28rem] rounded-full bg-[var(--md-sun)]/30 blur-3xl"
+            className="pointer-events-none absolute -bottom-32 -end-16 h-[28rem] w-[28rem] rounded-full bg-[#ff9d2e]/40 blur-3xl"
             animate={{ x: [0, -50, 0], y: [0, -20, 0] }}
             transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
           />
           <ScrollReveal>
             <div className="container relative mx-auto max-w-3xl text-center">
-              <h2 className="mb-5 text-primary-foreground">{t("Finde jetzt heraus, was dir zusteht.")}</h2>
-              <p className="mb-9 text-lg text-primary-foreground/85">{t("In nur wenigen Minuten zu deinen passenden Förderungen.")}</p>
+              <h2 className="mb-5 !text-[clamp(2.25rem,1.4rem+3.5vw,4.25rem)] !leading-[1] text-[var(--md-ink)]">{t("Finde jetzt heraus, was dir zusteht.")}</h2>
+              <p className="mb-10 text-lg text-[var(--md-ink-2)]">{t("In nur wenigen Minuten zu deinen passenden Förderungen.")}</p>
               <button
                 type="button"
                 onClick={startQuestionnaire}
-                className="md-shine group inline-flex items-center gap-2.5 rounded-full bg-white px-10 py-4 text-[18px] font-semibold text-primary shadow-xl transition-transform duration-300 hover:-translate-y-0.5"
+                className="md-shine group inline-flex items-center gap-2.5 rounded-full bg-[var(--md-ink)] px-10 py-4 text-[18px] font-bold text-white shadow-xl transition-transform duration-300 hover:-translate-y-0.5"
               >
                 {t("Jetzt starten")}
                 <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100" />

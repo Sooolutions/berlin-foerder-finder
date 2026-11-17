@@ -459,6 +459,7 @@ const en: Record<string, string> = {
   "So funktioniert's": "How it works",
   "Technik und Plattform": "Technology and platform",
   "Wer dahinter steht": "Who is behind it",
+  "Angebote in Berlin": "offers in Berlin",
 };
 
 export default en;
