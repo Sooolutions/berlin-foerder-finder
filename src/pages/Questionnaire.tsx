@@ -24,10 +24,8 @@ const Questionnaire = () => {
         <Header backToHome sticky={false} />
       </div>
 
-      <main className="flex-grow bg-[var(--md-paper)] pb-4 md:pt-4">
-        <div className="max-w-4xl mx-auto px-4">
-          <QuestionnaireFeed />
-        </div>
+      <main className="flex-grow overflow-x-hidden bg-[var(--md-paper)] md:pt-2">
+        <QuestionnaireFeed />
       </main>
 
       <Footer />

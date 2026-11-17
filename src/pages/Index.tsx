@@ -1,9 +1,9 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, Compass, Linkedin, Plus, Send, User } from "lucide-react";
+import { ArrowDown, ArrowRight, Check, ClipboardList, Compass, Plus, Send, User } from "lucide-react";
 import teamTechnik from "@/assets/team/technik.jpg";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -32,19 +32,19 @@ const steps = () => [
     Icon: ClipboardList,
     title: tr("Fragen beantworten"),
     desc: tr("Ein paar kurze Fragen zu deiner Lebenssituation."),
-    detail: tr("Viele Hilfen gelten nur für bestimmte Gruppen, etwa für Studierende, Familien mit Kindern oder Menschen mit geringem Einkommen. Deshalb fragen wir nach deinem Alter, deiner Tätigkeit, deinem Haushalt und deiner Wohnsituation, nach deinen Finanzen und möglichen Sozialleistungen, nach deiner Gesundheit und danach, was dich gerade beschäftigt. Über das Fragezeichen bei den Fragen erfährst du, wofür wir sie brauchen. Deine Antworten bleiben in deinem Browser und sind weg, sobald du das Fenster schließt."),
+    detail: tr("Viele Hilfen gibt es nur für bestimmte Gruppen. Darum fragen wir nach Alter, Tätigkeit, Haushalt, Wohnen, Finanzen, Gesundheit und dem, was dich gerade beschäftigt. Deine Antworten bleiben in deinem Browser."),
   },
   {
     Icon: Compass,
     title: tr("Angebote entdecken"),
     desc: tr("Wir zeigen dir passende Förderungen und Unterstützung."),
-    detail: tr("Wir gleichen deine Antworten mit über tausend Angeboten aus ganz Berlin ab. Was klar nicht zu dir passt, etwa wegen deines Alters, fällt heraus. Was besonders gut zu deiner Lage passt, rückt nach oben. Du siehst zuerst deine Top Treffer und darunter weitere passende Angebote. Du kannst nach deinem Bezirk filtern und erkennst an der Farbe, ob ein Angebot staatlich, gemeinnützig oder privat ist."),
+    detail: tr("Wir gleichen deine Antworten mit über tausend Angeboten aus ganz Berlin ab. Was nicht zu dir passt, fällt heraus, was besonders gut passt, steht oben. Die Farbe zeigt dir das Thema, filtern kannst du nach Bezirk."),
   },
   {
     Icon: Send,
     title: tr("Förderung beantragen"),
     desc: tr("Direkt zur richtigen Anlaufstelle — ohne Umwege."),
-    detail: tr("Zu jedem Angebot gehört ein Link, der dich direkt zur zuständigen Stelle führt, also zur Antragsseite, zum Formular oder zur Beratungsstelle. So landest du nicht auf einer allgemeinen Startseite, sondern genau dort, wo du den nächsten Schritt machen kannst. Wenn ein Antrag kompliziert ist, findest du unter deinen Treffern oft auch Beratungsstellen, die dir beim Ausfüllen helfen."),
+    detail: tr("Jedes Angebot hat einen Link, der dich direkt zur zuständigen Stelle bringt, also zur Antragsseite, zum Formular oder zur Beratung. Bei komplizierten Anträgen findest du unter deinen Treffern oft auch Hilfe beim Ausfüllen."),
   },
 ];
 
@@ -112,6 +112,25 @@ const TeaserSkeleton = () => (
   </div>
 );
 
+/**
+ * Legt mehrere Texte in dieselbe Rasterzelle und zeigt nur einen davon.
+ * Die Zelle ist so hoch wie der längste Text, so sind alle Kacheln gleich hoch.
+ */
+const Stacked = ({ texts, active, className }: { texts: string[]; active: number; className?: string }) => (
+  <div className="grid">
+    {texts.map((text, j) => (
+      <p
+        key={j}
+        className={`[grid-area:1/1] ${className ?? ""}`}
+        style={{ visibility: j === active ? "visible" : "hidden" }}
+        aria-hidden={j !== active || undefined}
+      >
+        {text}
+      </p>
+    ))}
+  </div>
+);
+
 /** Schritt-Kachel, die beim Anklicken einen erklärenden Text aufklappt */
 const StepTile = ({
   index,
@@ -119,12 +138,17 @@ const StepTile = ({
   title,
   desc,
   detail,
+  allDescs,
+  allDetails,
 }: {
   index: number;
   Icon: typeof ClipboardList;
   title: string;
   desc: string;
   detail: string;
+  /** Alle Kurz- und Erklärtexte, unsichtbar übereinander gelegt, damit jede Kachel gleich hoch wird */
+  allDescs: string[];
+  allDetails: string[];
 }) => {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -152,7 +176,7 @@ const StepTile = ({
         <Icon className="h-7 w-7" strokeWidth={2.2} />
       </div>
       <h3 className="mb-2 !text-[clamp(1.3rem,1.1rem+0.6vw,1.6rem)]">{title}</h3>
-      <p className="text-[16px] text-muted-foreground">{desc}</p>
+      <Stacked texts={allDescs} active={index} className="text-[16px] text-muted-foreground" />
 
       <AnimatePresence initial={false}>
         {open && (
@@ -165,7 +189,9 @@ const StepTile = ({
             transition={{ duration: 0.45, ease: EASE }}
             className="overflow-hidden"
           >
-            <p className="mt-5 border-t border-[var(--md-line)] pt-5 text-start text-[15.5px] leading-relaxed text-[var(--md-ink-2)]">{detail}</p>
+            <div className="mt-5 border-t border-[var(--md-line)] pt-5">
+              <Stacked texts={allDetails} active={index} className="text-start text-[15.5px] leading-relaxed text-[var(--md-ink-2)]" />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -179,6 +205,27 @@ const StepTile = ({
     </button>
   );
 };
+
+/** Pfeil zwischen zwei Schritten, nebeneinander nach rechts, untereinander nach unten */
+const StepArrow = ({ delay }: { delay: number }) => (
+  <motion.div
+    aria-hidden
+    className="flex justify-center md:mt-[3.4rem] md:self-start"
+    initial={{ opacity: 0, scale: 0.6 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ duration: 0.5, ease: EASE, delay }}
+  >
+    <motion.span
+      className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--md-sun)] text-[var(--md-ink)] shadow-[var(--md-shadow-sm)]"
+      animate={{ x: [0, 4, 0] }}
+      transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <ArrowRight className="hidden h-5 w-5 md:block rtl:-scale-x-100" strokeWidth={2.6} />
+      <ArrowDown className="h-5 w-5 md:hidden" strokeWidth={2.6} />
+    </motion.span>
+  </motion.div>
+);
 
 /** Angebotskarte im Karussell */
 const OfferCard = ({
@@ -250,8 +297,7 @@ const Index = () => {
         setTopics(
           [...counts.entries()]
             .map(([name, count]) => ({ name, count }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 8),
+            .sort((a, b) => b.count - a.count),
         );
       }
     };
@@ -429,11 +475,14 @@ const Index = () => {
                 {t("Kein Amt. Keine Warteschlange. Nur deine Möglichkeiten.")}
               </p>
             </ScrollReveal>
-            <div className="relative grid grid-cols-1 items-start gap-6 md:grid-cols-3">
-              {steps().map((step, i) => (
-                <ScrollReveal key={step.title} delay={0.1 + i * 0.15}>
-                  <StepTile index={i} {...step} />
-                </ScrollReveal>
+            <div className="relative grid grid-cols-1 items-start gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:gap-4">
+              {steps().map((step, i, all) => (
+                <Fragment key={step.title}>
+                  <ScrollReveal delay={0.1 + i * 0.15}>
+                    <StepTile index={i} {...step} allDescs={all.map((x) => x.desc)} allDetails={all.map((x) => x.detail)} />
+                  </ScrollReveal>
+                  {i < all.length - 1 && <StepArrow delay={0.35 + i * 0.15} />}
+                </Fragment>
               ))}
             </div>
           </div>
@@ -558,13 +607,6 @@ const Index = () => {
                         )}
                       </span>
                       <span className="flex-1 text-[17px] font-semibold">{role.label}</span>
-                      {role.href && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--md-brand-tint)] px-3 py-1.5 text-[13px] font-semibold text-[var(--md-brand-ink)] transition-colors duration-300 group-hover:bg-[#0a66c2] group-hover:text-white">
-                          <Linkedin className="h-3.5 w-3.5" strokeWidth={2.4} />
-                          LinkedIn
-                          <ArrowUpRight className="h-3.5 w-3.5" />
-                        </span>
-                      )}
                     </>
                   );
                   const cls =

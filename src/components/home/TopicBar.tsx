@@ -42,32 +42,42 @@ const TopicBar = ({ topics }: { topics: TopicCount[] }) => {
 
   return (
     <section className="bg-[var(--md-ink)] px-4 py-10 md:py-12">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         <p className="mb-6 text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-white/50">
           {t("Angebote nach Themen")}
         </p>
-        <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:justify-center md:overflow-visible md:px-0">
-          {(topics.length ? topics : Array.from({ length: 8 }, () => null)).map((topic, i) => {
-            if (!topic) {
-              return <li key={i} className="h-[52px] w-40 flex-none animate-pulse rounded-full bg-white/10" />;
-            }
-            const Icon = ICONS[topic.name] ?? Sparkle;
-            return (
-              <li key={topic.name} className="flex-none snap-start">
-                <Link
-                  to="/questionnaire"
-                  className="group flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] py-2 pe-5 ps-2 text-white transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[var(--md-sun)]/60 hover:bg-white/[0.08]"
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-[var(--md-sun)] transition-colors duration-300 group-hover:bg-[var(--md-sun)] group-hover:text-[var(--md-ink)]">
-                    <Icon className="h-[18px] w-[18px]" strokeWidth={2.2} />
-                  </span>
-                  <span className="whitespace-nowrap text-[16px] font-semibold">{t(topic.name)}</span>
-                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[12px] font-bold tabular-nums text-white/70">{topic.count}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        {/* Ein Band, das langsam von links nach rechts läuft und beim Darüberfahren anhält */}
+        <div className="md-carousel group relative -mx-4 md:mx-0">
+          <ul
+            className="md-marquee-track md-marquee-rev flex w-max gap-3 py-1 group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
+            style={{ animationDuration: "55s" }}
+          >
+            {(topics.length ? [...topics, ...topics] : Array.from({ length: 16 }, () => null)).map((topic, i) => {
+              if (!topic) {
+                return <li key={i} className="h-[52px] w-40 flex-none animate-pulse rounded-full bg-white/10" />;
+              }
+              const Icon = ICONS[topic.name] ?? Sparkle;
+              const copy = i >= topics.length;
+              return (
+                <li key={`${topic.name}-${i}`} className="flex-none" aria-hidden={copy || undefined}>
+                  <Link
+                    to="/questionnaire"
+                    tabIndex={copy ? -1 : undefined}
+                    className="group/t flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.04] py-2 pe-5 ps-2 text-white transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[var(--md-sun)]/60 hover:bg-white/[0.08]"
+                  >
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-[var(--md-sun)] transition-colors duration-300 group-hover/t:bg-[var(--md-sun)] group-hover/t:text-[var(--md-ink)]">
+                      <Icon className="h-[18px] w-[18px]" strokeWidth={2.2} />
+                    </span>
+                    <span className="whitespace-nowrap text-[16px] font-semibold">{t(topic.name)}</span>
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[12px] font-bold tabular-nums text-white/70">{topic.count}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 start-0 w-16 bg-gradient-to-r from-[var(--md-ink)] to-transparent md:w-32 rtl:bg-gradient-to-l" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 end-0 w-16 bg-gradient-to-l from-[var(--md-ink)] to-transparent md:w-32 rtl:bg-gradient-to-r" />
+        </div>
       </div>
     </section>
   );

@@ -11,6 +11,21 @@ export const DFONT = 'var(--md-font-display)';
 export const ACCENT = 'var(--md-brand)';
 export const KICKER = 'var(--md-kicker)';
 
+/** Jeder Abschnitt hat seine eigene Farbe, sie zieht sich durch Karte, Auswahl und Fortschritt */
+export const SECTION_COLORS: Record<string, string> = {
+  person: '#2f5bea',
+  zuhause: '#0e8a8f',
+  geld: '#b07600',
+  gesundheit: '#138a5b',
+  anliegen: '#6d4ce6',
+  wuensche: '#d23c7f',
+};
+export const sectionColor = (id?: string | null) => (id && SECTION_COLORS[id]) || '#2f5bea';
+
+/** Akzent der Seite, auf der man gerade ist, gesetzt über --q-accent */
+export const QA = 'var(--q-accent, var(--md-brand))';
+export const QTINT = 'color-mix(in srgb, var(--q-accent, var(--md-brand)) 10%, var(--md-surface))';
+
 export const iconButton = (size = 38): React.CSSProperties => ({
   width: size,
   height: size,
@@ -101,11 +116,7 @@ export const InfoButton = ({ text, resetKey, size = 38 }: { text: string; resetK
  * Einstieg vor der ersten Frage
  * ------------------------------------------------------------------ */
 export const IntroOverlay = ({ onStart, inline = false }: { onStart: () => void; inline?: boolean }) => {
-  const points = [
-    tr('Fünf kurze Abschnitte, rund zwei Minuten'),
-    tr('Keine Anmeldung, keine Namen, keine Kontaktdaten'),
-    tr('Über das Fragezeichen erfährst du, warum wir etwas fragen'),
-  ];
+  const points = [tr('Rund zwei Minuten'), tr('Keine Anmeldung, keine Namen, keine Kontaktdaten')];
   return (
     <div
       role="dialog"
@@ -116,25 +127,36 @@ export const IntroOverlay = ({ onStart, inline = false }: { onStart: () => void;
         position: inline ? 'relative' : 'absolute',
         inset: inline ? undefined : 0,
         zIndex: 30,
-        background: inline ? '#fff' : 'rgba(255,255,255,.96)',
-        borderRadius: inline ? 22 : undefined,
-        boxShadow: inline ? 'var(--md-shadow-md)' : undefined,
+        background: inline ? 'var(--md-surface)' : 'rgba(255,255,255,.96)',
+        borderRadius: inline ? 28 : undefined,
+        boxShadow: inline ? 'var(--md-shadow-lg)' : undefined,
         border: inline ? '1px solid var(--md-line)' : undefined,
         backdropFilter: inline ? undefined : 'blur(4px)',
         display: 'flex',
         flexDirection: 'column',
         overflowY: 'auto',
+        maxWidth: 560,
+        margin: '0 auto',
       }}
     >
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(24px, 4vw, 40px) clamp(22px, 4vw, 40px) 12px' }}>
-        <div style={{ font: `700 13px ${FONT}`, letterSpacing: '.06em', textTransform: 'uppercase', color: KICKER, marginBottom: 9 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(26px, 4vw, 42px) clamp(22px, 4vw, 42px) 12px' }}>
+        <div
+          aria-hidden
+          style={{ width: 56, height: 56, borderRadius: 18, background: 'var(--md-ink)', color: 'var(--md-sun)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}
+        >
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+            <rect x="4" y="11" width="16" height="10" rx="2.5" />
+            <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+          </svg>
+        </div>
+        <div style={{ font: `700 13px ${FONT}`, letterSpacing: '.06em', textTransform: 'uppercase', color: KICKER, marginBottom: 8 }}>
           {tr("Bevor es losgeht")}
         </div>
-        <div id="intro-title" style={{ font: `var(--md-display-weight) clamp(26px, 3.2vw, 34px)/1.1 ${DFONT}`, letterSpacing: '-0.015em', color: 'var(--md-ink)', marginBottom: 14 }}>
-          {tr("Nur Fragen, die für deine Förderung zählen")}
+        <div id="intro-title" style={{ font: `var(--md-display-weight) clamp(30px, 4vw, 40px)/1.05 ${DFONT}`, letterSpacing: '-0.025em', color: 'var(--md-ink)', marginBottom: 12 }}>
+          {tr("Wir speichern nichts.")}
         </div>
-        <div style={{ font: `400 15.5px/1.55 ${FONT}`, color: 'var(--md-ink-3)', marginBottom: 20 }}>
-          {tr("Wir stellen dir nur Fragen, die relevant sind, um dir passende Förderungen und Angebote anzuzeigen. Nichts davon speichern wir. Deine Antworten nutzen wir ausschließlich, um unsere Datenbank passend zu deiner Situation zu filtern.")}
+        <div style={{ font: `400 16.5px/1.5 ${FONT}`, color: 'var(--md-ink-3)', marginBottom: 20 }}>
+          {tr("Deine Antworten bleiben nur in diesem Browserfenster und werden gelöscht, sobald du es schließt.")}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
           {points.map((p) => (
@@ -158,9 +180,6 @@ export const IntroOverlay = ({ onStart, inline = false }: { onStart: () => void;
               <span style={{ font: `600 14.5px ${FONT}`, color: 'var(--md-ink)' }}>{p}</span>
             </div>
           ))}
-        </div>
-        <div style={{ font: `400 12.5px/1.5 ${FONT}`, color: 'var(--md-ink-4)', marginTop: 18 }}>
-          {tr("Deine Antworten bleiben nur in diesem Browserfenster und werden gelöscht, sobald du es schließt.")}
         </div>
       </div>
       <div style={{ padding: '12px clamp(22px, 4vw, 40px) clamp(22px, 4vw, 36px)', flex: 'none' }}>

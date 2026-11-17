@@ -216,6 +216,13 @@
   [dir='rtl'] .md-marquee-track {
     animation-direction: reverse;
   }
+  /* Läuft in die Gegenrichtung, also von links nach rechts */
+  .md-marquee-track.md-marquee-rev {
+    animation-direction: reverse;
+  }
+  [dir='rtl'] .md-marquee-track.md-marquee-rev {
+    animation-direction: normal;
+  }
 
   /* Karussell: bei reduzierter Bewegung steht es still und lässt sich wischen */
   @media (prefers-reduced-motion: reduce) {

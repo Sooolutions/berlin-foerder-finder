@@ -40,19 +40,32 @@ const build = (h: number, s: number, accent: string, ink: string, g1: string, g2
   heroBg: `linear-gradient(150deg, hsl(${h}, ${s}%, 95%), hsl(${h}, ${s}%, 88%))`,
 });
 
-export const SCHEMES: Record<FundingType, Scheme> = {
-  staatlich: build(226, 70, '#2f5bea', '#14215e', '#4c74f5', '#1d3cb4'),
-  karitativ: build(40, 85, '#a86d00', '#3d2a00', '#ffc23d', '#e09a00'),
-  privat: build(7, 70, '#d2402c', '#4a1610', '#f47a68', '#d2402c'),
+/**
+ * Jede Kategorie hat ihre eigene Farbe, damit gleiche Farbe immer gleiches
+ * Thema bedeutet. Reihenfolge der Kategorien entspricht der Datenbank.
+ */
+export const CATEGORY_SCHEMES: Record<string, Scheme> = {
+  Soziales: build(7, 72, '#d9452f', '#4a1610', '#f47a68', '#d9452f'),
+  Gesundheit: build(152, 55, '#138a5b', '#0b3a27', '#3fbf8a', '#138a5b'),
+  Bildung: build(226, 75, '#2f5bea', '#14215e', '#5f82f2', '#2f5bea'),
+  Familie: build(330, 65, '#d23c7f', '#4d1530', '#ec74a8', '#d23c7f'),
+  Wohnen: build(182, 60, '#0e8a8f', '#0b3b3d', '#3dbcc0', '#0e8a8f'),
+  Arbeit: build(25, 85, '#d9690f', '#4a2306', '#f59a4f', '#d9690f'),
+  'Finanzielle Unterstützung': build(42, 90, '#b07600', '#3d2a00', '#ffc23d', '#d99400'),
+  Integration: build(258, 70, '#6d4ce6', '#2a1966', '#987cf2', '#6d4ce6'),
+  Kultur: build(292, 55, '#a43fc4', '#3f1650', '#c97ae0', '#a43fc4'),
+  Wirtschaft: build(208, 35, '#3d6382', '#1c2f40', '#6f93b0', '#3d6382'),
+  Sport: build(88, 65, '#5a8a10', '#263a07', '#8dbf3a', '#5a8a10'),
 };
 
-const FALLBACK: FundingType[] = ['staatlich', 'karitativ', 'privat'];
+const PALETTE = Object.values(CATEGORY_SCHEMES);
 
-/** Farbschema eines Angebots — mit stabilem Fallback über die id. */
-export const schemeOf = (funding: Pick<Funding, 'funding_type' | 'id'>): Scheme => {
-  const type = funding.funding_type as FundingType | null | undefined;
-  if (type && SCHEMES[type]) return SCHEMES[type];
-  return SCHEMES[FALLBACK[(funding.id?.charCodeAt(0) ?? 0) % 3]];
+/** Farbschema eines Angebots nach seiner ersten Kategorie, sonst stabil über die id */
+export const schemeOf = (funding: { id?: string; categories?: string[] | null }): Scheme => {
+  const cat = funding.categories?.find((c) => CATEGORY_SCHEMES[c]);
+  if (cat) return CATEGORY_SCHEMES[cat];
+  const seed = [...(funding.id ?? '')].reduce((n, ch) => n + ch.charCodeAt(0), 0);
+  return PALETTE[seed % PALETTE.length];
 };
 
 /** Kategorie-Label für Chips — erste Kategorie, sonst der Fördertyp. */
