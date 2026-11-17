@@ -1,16 +1,17 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, Compass, Plus, Send } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ClipboardList, Compass, Linkedin, Plus, Send, User } from "lucide-react";
+import teamTechnik from "@/assets/team/technik.jpg";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { schemeOf } from "@/components/results/resultsTheme";
 import ScrollReveal from "@/components/home/ScrollReveal";
 import Counter from "@/components/home/Counter";
 import OfferStack from "@/components/home/OfferStack";
-import Marquee from "@/components/home/Marquee";
+import TopicBar, { type TopicCount } from "@/components/home/TopicBar";
 import { useLanguage, tr } from "@/i18n/LanguageContext";
 import { useFundingTranslations } from "@/hooks/useFundingTranslations";
 
@@ -27,18 +28,59 @@ interface FundingTeaser {
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const steps = () => [
-  { Icon: ClipboardList, title: tr("Fragen beantworten"), desc: tr("10 kurze Fragen zu deiner Lebenssituation.") },
-  { Icon: Compass, title: tr("Angebote entdecken"), desc: tr("Wir zeigen dir passende Förderungen und Unterstützung.") },
-  { Icon: Send, title: tr("Förderung beantragen"), desc: tr("Direkt zur richtigen Anlaufstelle — ohne Umwege.") },
+  {
+    Icon: ClipboardList,
+    title: tr("Fragen beantworten"),
+    desc: tr("Ein paar kurze Fragen zu deiner Lebenssituation."),
+    detail: tr("Viele Hilfen gelten nur für bestimmte Gruppen, etwa für Studierende, Familien mit Kindern oder Menschen mit geringem Einkommen. Deshalb fragen wir nach deinem Alter, deiner Tätigkeit, deinem Haushalt und deiner Wohnsituation, nach deinen Finanzen und möglichen Sozialleistungen, nach deiner Gesundheit und danach, was dich gerade beschäftigt. Über das Fragezeichen bei den Fragen erfährst du, wofür wir sie brauchen. Deine Antworten bleiben in deinem Browser und sind weg, sobald du das Fenster schließt."),
+  },
+  {
+    Icon: Compass,
+    title: tr("Angebote entdecken"),
+    desc: tr("Wir zeigen dir passende Förderungen und Unterstützung."),
+    detail: tr("Wir gleichen deine Antworten mit über tausend Angeboten aus ganz Berlin ab. Was klar nicht zu dir passt, etwa wegen deines Alters, fällt heraus. Was besonders gut zu deiner Lage passt, rückt nach oben. Du siehst zuerst deine Top Treffer und darunter weitere passende Angebote. Du kannst nach deinem Bezirk filtern und erkennst an der Farbe, ob ein Angebot staatlich, gemeinnützig oder privat ist."),
+  },
+  {
+    Icon: Send,
+    title: tr("Förderung beantragen"),
+    desc: tr("Direkt zur richtigen Anlaufstelle — ohne Umwege."),
+    detail: tr("Zu jedem Angebot gehört ein Link, der dich direkt zur zuständigen Stelle führt, also zur Antragsseite, zum Formular oder zur Beratungsstelle. So landest du nicht auf einer allgemeinen Startseite, sondern genau dort, wo du den nächsten Schritt machen kannst. Wenn ein Antrag kompliziert ist, findest du unter deinen Treffern oft auch Beratungsstellen, die dir beim Ausfüllen helfen."),
+  },
 ];
 
 const faqs = () => [
-  [tr("Was ist MehrDrin?"), tr("MehrDrin ist eine Plattform, die dir hilft, passende Förderungen und Unterstützungsangebote für deine Lebenssituation zu finden.")],
-  [tr("Ist die Nutzung kostenlos?"), tr("Ja, die Nutzung von MehrDrin ist komplett kostenlos.")],
-  [tr("Welche Daten werden erhoben?"), tr("Wir erheben nur die Daten, die für die Ermittlung passender Förderungen notwendig sind. Deine Daten werden vertraulich behandelt.")],
-  [tr("Was passiert mit meinen Angaben nach der Nutzung?"), tr("Deine Antworten werden ausschließlich zur Ermittlung passender Angebote verwendet und nicht an Dritte weitergegeben.")],
-  [tr("Wie aktuell sind die Informationen?"), tr("Unsere Datenbank wird regelmäßig aktualisiert und basiert auf offiziellen Quellen.")],
-  [tr("Wer steckt hinter MehrDrin?"), tr("MehrDrin wird von einem kleinen Berliner Team gebaut, das die Suche nach Förderungen einfacher machen möchte.")],
+  [
+    tr("Was ist MehrDrin?"),
+    tr("MehrDrin ist ein digitaler Wegweiser durch die Berliner Hilfelandschaft. Statt dich durch Dutzende Behördenseiten und Trägerangebote zu klicken, beantwortest du ein paar Fragen zu deiner Lebenssituation. Wir zeigen dir dann gebündelt, welche Förderungen, Leistungen, Beratungsstellen und Angebote zu dir passen, von Wohngeld über Familienhilfen bis zu Bildung, Gesundheit und Arbeit."),
+  ],
+  [
+    tr("Für wen ist MehrDrin gedacht?"),
+    tr("Für alle, die in Berlin leben und wissen wollen, welche Unterstützung ihnen offensteht. Besonders hilfreich ist MehrDrin auch für Fachkräfte in Sozialarbeit und Beratung, die gemeinsam mit Ratsuchenden schnell einen Überblick über passende Angebote brauchen."),
+  ],
+  [
+    tr("Ist die Nutzung kostenlos?"),
+    tr("Ja. MehrDrin ist komplett kostenlos, ohne Anmeldung und ohne Werbung. Auch die Angebote, die wir dir zeigen, sind sehr oft kostenlos. Wo etwas Geld kostet, steht es direkt am Angebot."),
+  ],
+  [
+    tr("Welche Daten werden erhoben?"),
+    tr("Du brauchst kein Konto, und wir fragen nie nach deinem Namen, deiner Adresse oder deinen Kontaktdaten. Deine Antworten werden nur in deinem Browser gespeichert und dort mit unserer Angebotsliste abgeglichen. Sie werden nicht an uns übertragen. Für unsere Statistik zählen wir lediglich anonym, wie viele Menschen welchen Abschnitt des Fragebogens erreichen, ohne Cookies und ohne deine Antworten."),
+  ],
+  [
+    tr("Was passiert mit meinen Angaben nach der Nutzung?"),
+    tr("Nichts. Deine Antworten bleiben nur so lange erhalten, wie dein Browserfenster geöffnet ist, damit du zurückblättern und Angaben ändern kannst. Sobald du das Fenster schließt, sind sie gelöscht. Wir geben keine Daten an Dritte weiter, weil wir deine Antworten gar nicht erst bekommen."),
+  ],
+  [
+    tr("Wie aktuell sind die Informationen?"),
+    tr("Unsere Angebote stammen aus offiziellen Quellen wie den Seiten des Landes Berlin und der Bezirke sowie direkt von den Trägern. Jede Nacht prüfen wir automatisch einen Teil der Datenbank auf funktionierende Links und aktuelle Angaben und korrigieren, was nicht mehr stimmt. Trotzdem können sich Bedingungen ändern. Wenn dir ein Fehler auffällt, schreib uns gern an info@mehrdrin-berlin.de."),
+  ],
+  [
+    tr("Ersetzt MehrDrin eine Beratung?"),
+    tr("Nein. MehrDrin zeigt dir, welche Angebote für dich infrage kommen, und bringt dich zur richtigen Stelle. Ob du einen Anspruch hast und in welcher Höhe, entscheidet am Ende immer die zuständige Behörde oder der Träger. Bei schwierigen Fragen findest du unter deinen Ergebnissen oft auch Beratungsstellen, die dich kostenlos begleiten."),
+  ],
+  [
+    tr("Wer steckt hinter MehrDrin?"),
+    tr("MehrDrin wird von einem kleinen, unabhängigen Team aus Berlin gebaut. Wir kümmern uns um Technik und Plattform, um Kommunikation und Vernetzung sowie um Inhalte und den Fragenpfad. Unser Ziel ist, MehrDrin als gemeinnütziges Projekt aufzustellen, damit der Zugang zu Unterstützung in Berlin für alle einfacher wird."),
+  ],
 ];
 
 /** Überschrift, deren Wörter nacheinander aus einer Maske nach oben gleiten */
@@ -70,12 +112,125 @@ const TeaserSkeleton = () => (
   </div>
 );
 
+/** Schritt-Kachel, die beim Anklicken einen erklärenden Text aufklappt */
+const StepTile = ({
+  index,
+  Icon,
+  title,
+  desc,
+  detail,
+}: {
+  index: number;
+  Icon: typeof ClipboardList;
+  title: string;
+  desc: string;
+  detail: string;
+}) => {
+  const { t } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const id = `schritt-${index}`;
+  return (
+    <button
+      type="button"
+      onClick={() => setOpen((o) => !o)}
+      aria-expanded={open}
+      aria-controls={id}
+      className={`group relative block w-full overflow-hidden rounded-[28px] bg-[var(--md-paper)] p-9 text-center shadow-[var(--md-shadow-sm)] ring-1 transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[var(--md-shadow-md)] md:p-10 ${
+        open ? "ring-[var(--md-brand)]/40 shadow-[var(--md-shadow-md)]" : "ring-border/70"
+      }`}
+    >
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute end-7 top-5 select-none text-[72px] font-extrabold leading-none transition-colors duration-500 group-hover:text-[var(--md-sun)] ${
+          open ? "text-[var(--md-sun)]" : "text-[var(--md-chip)]"
+        }`}
+        style={{ fontFamily: "var(--md-font-display)" }}
+      >
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <div className="relative z-10 mx-auto mb-7 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--md-ink)] text-[var(--md-sun)] transition-transform duration-500 group-hover:rotate-[-6deg] group-hover:scale-110">
+        <Icon className="h-7 w-7" strokeWidth={2.2} />
+      </div>
+      <h3 className="mb-2 !text-[clamp(1.3rem,1.1rem+0.6vw,1.6rem)]">{title}</h3>
+      <p className="text-[16px] text-muted-foreground">{desc}</p>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            id={id}
+            key="detail"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.45, ease: EASE }}
+            className="overflow-hidden"
+          >
+            <p className="mt-5 border-t border-[var(--md-line)] pt-5 text-start text-[15.5px] leading-relaxed text-[var(--md-ink-2)]">{detail}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <span className="mt-6 inline-flex items-center gap-2 text-[14px] font-semibold text-[var(--md-brand)]">
+        {open ? t("Weniger anzeigen") : t("Mehr erfahren")}
+        <span className={`flex h-6 w-6 items-center justify-center rounded-full bg-[var(--md-brand-tint)] transition-transform duration-300 ${open ? "rotate-45" : ""}`}>
+          <Plus className="h-3.5 w-3.5" strokeWidth={2.6} />
+        </span>
+      </span>
+    </button>
+  );
+};
+
+/** Angebotskarte im Karussell */
+const OfferCard = ({
+  funding,
+  lang,
+  t,
+  hidden,
+}: {
+  funding: FundingTeaser;
+  lang: string;
+  t: (key: string) => string;
+  hidden: boolean;
+}) => {
+  const colors = schemeOf(funding);
+  return (
+    <a
+      href={funding.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-hidden={hidden || undefined}
+      tabIndex={hidden ? -1 : undefined}
+      className="group/card relative flex min-h-[290px] w-[300px] flex-none flex-col rounded-3xl border p-7 transition-[transform,box-shadow] duration-500 hover:-translate-y-1.5 hover:shadow-[var(--md-shadow-md)] sm:w-[340px]"
+      style={{ backgroundColor: colors.cardBg, borderColor: colors.cardBorder }}
+    >
+      <span className="mb-6 inline-block self-start rounded-full px-3 py-1 text-[13px] font-semibold text-white" style={{ backgroundColor: colors.accent }}>
+        {funding.categories?.[0] ? t(funding.categories[0]) : funding.organization}
+      </span>
+      <h3 lang={lang} className="mb-3 line-clamp-2 !text-[21px] !leading-tight text-foreground [hyphens:auto]">
+        {funding.title}
+      </h3>
+      <p className="line-clamp-3 text-[15px] leading-relaxed text-muted-foreground">{funding.description}</p>
+      <div className="mt-auto flex items-center justify-between gap-3 pt-6">
+        <span className="truncate text-[13px] font-medium text-[var(--md-ink-4)]">{funding.organization}</span>
+        <span
+          className="flex h-10 w-10 flex-none items-center justify-center rounded-full transition-transform duration-300 group-hover/card:rotate-[-45deg] rtl:group-hover/card:rotate-[45deg]"
+          style={{ backgroundColor: colors.accent, color: "#fff" }}
+          aria-hidden
+        >
+          <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
+        </span>
+      </div>
+    </a>
+  );
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const { t, lang } = useLanguage();
   const [rawTeasers, setFundingTeasers] = useState<FundingTeaser[]>([]);
   const fundingTeasers = useFundingTranslations(rawTeasers);
   const [offerCount, setOfferCount] = useState<number | null>(null);
+  const [topics, setTopics] = useState<TopicCount[]>([]);
 
 
   useEffect(() => {
@@ -86,14 +241,24 @@ const Index = () => {
       if (data && !error) {
         setOfferCount(count ?? data.length);
         const shuffled = [...(data as unknown as FundingTeaser[])].sort(() => 0.5 - Math.random());
-        setFundingTeasers(shuffled.slice(0, 16));
+        setFundingTeasers(shuffled.slice(0, 14));
+        // Angebote je Thema zählen, ein Angebot kann in mehreren Themen stehen
+        const counts = new Map<string, number>();
+        for (const row of data as unknown as FundingTeaser[]) {
+          for (const c of row.categories ?? []) counts.set(c, (counts.get(c) ?? 0) + 1);
+        }
+        setTopics(
+          [...counts.entries()]
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 8),
+        );
       }
     };
     fetchRandomFunding();
   }, []);
 
   const startQuestionnaire = () => navigate("/questionnaire");
-  const marqueeItems = fundingTeasers.slice(4, 16).map((f) => f.title);
   const trust = [t("Kostenlos"), t("Ohne Anmeldung"), t("In 5 Sprachen")];
 
   return (
@@ -159,7 +324,7 @@ const Index = () => {
                 transition={{ duration: 0.8, ease: EASE, delay: 0.55 }}
                 className="mx-auto mb-10 mt-10 max-w-lg text-[19px] leading-relaxed text-[var(--md-ink-3)] md:text-[21px] lg:mx-0"
               >
-                {t("Beantworte 10 Fragen. Wir zeigen dir, was dir in Berlin zusteht.")}
+                {t("Ein paar kurze Fragen zu deiner Lebenssituation und du siehst, welche Hilfen und Förderungen in Berlin zu dir passen.")}
               </motion.p>
 
               <motion.div
@@ -226,7 +391,7 @@ const Index = () => {
           </div>
         </section>
 
-        <Marquee items={marqueeItems} />
+        <TopicBar topics={topics} />
 
         {/* Erkennungsmomente als Sprechblasen */}
         <section className="relative overflow-hidden px-4 py-28 md:py-36">
@@ -235,7 +400,7 @@ const Index = () => {
               {[
                 { text: t("„Schon wieder knapp vor dem Monatsende?“"), cls: "self-start bg-[var(--md-surface)] text-[var(--md-ink-2)] rounded-bl-md rtl:rounded-bl-[1.75rem] rtl:rounded-br-md", rot: -2 },
                 { text: t("„Irgendwo gibt's bestimmt was für mich — aber wann soll ich das rausfinden?“"), cls: "self-end bg-[var(--md-brand-tint)] text-[var(--md-brand-ink)] rounded-br-md rtl:rounded-br-[1.75rem] rtl:rounded-bl-md", rot: 1.5 },
-                { text: t("„Den Antrag hab ich angefangen. Liegt noch irgendwo.“"), cls: "self-start bg-[var(--md-ink)] text-white rounded-bl-md rtl:rounded-bl-[1.75rem] rtl:rounded-br-md md:ms-16", rot: -1 },
+                { text: t("„Wer blickt bei den ganzen Ämtern und Anträgen eigentlich noch durch?“"), cls: "self-start bg-[var(--md-ink)] text-white rounded-bl-md rtl:rounded-bl-[1.75rem] rtl:rounded-br-md md:ms-16", rot: -1 },
               ].map((q, i) => (
                 <ScrollReveal key={i} delay={i * 0.14} className={`max-w-[34rem] ${q.cls.includes("self-end") ? "self-end" : "self-start"}`}>
                   <motion.p
@@ -256,40 +421,18 @@ const Index = () => {
           </div>
         </section>
 
-        {/* So geht's */}
+        {/* So geht's: drei Kacheln, jede klappt beim Anklicken eine Erklärung auf */}
         <section id="so-gehts" className="scroll-mt-24 bg-[var(--md-surface)] px-4 py-24 md:py-28">
-          <div className="container mx-auto max-w-5xl">
+          <div className="container mx-auto max-w-6xl">
             <ScrollReveal>
               <p className="md-kicker mb-16 text-center !text-primary">
                 {t("Kein Amt. Keine Warteschlange. Nur deine Möglichkeiten.")}
               </p>
             </ScrollReveal>
-            <div className="relative grid grid-cols-1 gap-6 md:grid-cols-3">
-              {/* Verbindungslinie, die sich beim Hinscrollen zeichnet */}
-              <motion.div
-                aria-hidden
-                className="absolute left-[16.6%] right-[16.6%] top-[3.25rem] hidden h-[2px] origin-left rounded-full bg-primary/25 md:block rtl:origin-right"
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true, margin: "-120px" }}
-                transition={{ duration: 1.2, ease: EASE, delay: 0.2 }}
-              />
-              {steps().map(({ Icon, title, desc }, i) => (
-                <ScrollReveal key={title} delay={0.1 + i * 0.15}>
-                  <div className="group relative h-full overflow-hidden rounded-3xl bg-[var(--md-paper)] p-8 text-center shadow-[var(--md-shadow-sm)] ring-1 ring-border/70 transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[var(--md-shadow-md)]">
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute end-6 top-4 select-none text-[64px] font-extrabold leading-none text-[var(--md-chip)] transition-colors duration-500 group-hover:text-[var(--md-sun)]"
-                      style={{ fontFamily: "var(--md-font-display)" }}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="relative z-10 mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--md-ink)] text-[var(--md-sun)] transition-transform duration-500 group-hover:rotate-[-6deg] group-hover:scale-110">
-                      <Icon className="h-6 w-6" strokeWidth={2.2} />
-                    </div>
-                    <h3 className="mb-2">{title}</h3>
-                    <p className="text-[15px] text-muted-foreground">{desc}</p>
-                  </div>
+            <div className="relative grid grid-cols-1 items-start gap-6 md:grid-cols-3">
+              {steps().map((step, i) => (
+                <ScrollReveal key={step.title} delay={0.1 + i * 0.15}>
+                  <StepTile index={i} {...step} />
                 </ScrollReveal>
               ))}
             </div>
@@ -297,8 +440,8 @@ const Index = () => {
         </section>
 
         {/* Angebote */}
-        <section className="bg-[var(--md-paper)] px-4 py-24 md:py-28">
-          <div className="container mx-auto max-w-6xl">
+        <section className="overflow-hidden bg-[var(--md-paper)] py-24 md:py-28">
+          <div className="container mx-auto max-w-6xl px-4">
             <div className="mb-14 flex flex-col items-center text-center">
               <ScrollReveal>
                 <h2 className="mb-4 text-foreground">{t("Das wartet auf dich.")}</h2>
@@ -312,46 +455,33 @@ const Index = () => {
               </ScrollReveal>
             </div>
 
-            <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
-              {(fundingTeasers.length ? fundingTeasers.slice(4, 9) : Array.from({ length: 5 }, () => null)).map((funding, i) => {
-                if (!funding) {
-                  return (
-                    <div key={`s-${i}`} className="w-[260px] flex-none snap-start md:w-auto">
-                      <TeaserSkeleton />
-                    </div>
-                  );
-                }
-                const colors = schemeOf(funding);
-                return (
-                  <ScrollReveal key={funding.id} delay={i * 0.07} className="w-[260px] flex-none snap-start md:w-auto">
-                    <a
-                      href={funding.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative flex h-full flex-col rounded-2xl border p-6 transition-[transform,box-shadow] duration-500 hover:-translate-y-1.5 hover:shadow-[var(--md-shadow-md)]"
-                      style={{ backgroundColor: colors.cardBg, borderColor: colors.cardBorder }}
-                    >
-                      <span
-                        className="mb-5 inline-block self-start rounded-full px-2.5 py-1 text-xs font-semibold text-white"
-                        style={{ backgroundColor: colors.accent }}
-                      >
-                        {funding.categories?.[0] ? t(funding.categories[0]) : funding.organization}
-                      </span>
-                      <h3 lang={lang} className="mb-2 line-clamp-2 !text-[17px] font-semibold text-foreground [hyphens:auto]">{funding.title}</h3>
-                      <p className="line-clamp-3 text-sm text-muted-foreground">{funding.description}</p>
-                      <span
-                        className="mt-auto flex h-9 w-9 translate-y-1 items-center justify-center self-end rounded-full pt-0 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
-                        style={{ backgroundColor: colors.accent, color: "#fff", marginTop: "1.25rem" }}
-                        aria-hidden
-                      >
-                        <ArrowUpRight className="h-4 w-4" />
-                      </span>
-                    </a>
-                  </ScrollReveal>
-                );
-              })}
-            </div>
+          </div>
 
+          {/* Karussell: läuft langsam von rechts nach links, hält beim Darüberfahren an */}
+          <div className="md-carousel group relative">
+            {fundingTeasers.length ? (
+              <div
+                className="md-marquee-track flex w-max gap-5 py-3 group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused]"
+                style={{ animationDuration: "80s" }}
+              >
+                {[...fundingTeasers.slice(4, 14), ...fundingTeasers.slice(4, 14)].map((funding, i) => (
+                  <OfferCard key={`${funding.id}-${i}`} funding={funding} lang={lang} t={t} hidden={i >= Math.min(10, fundingTeasers.length - 4)} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex gap-5 overflow-hidden px-4 py-3">
+                {Array.from({ length: 6 }, (_, i) => (
+                  <div key={i} className="w-[300px] flex-none sm:w-[340px]">
+                    <TeaserSkeleton />
+                  </div>
+                ))}
+              </div>
+            )}
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 start-0 w-16 bg-gradient-to-r from-[var(--md-paper)] to-transparent md:w-40 rtl:bg-gradient-to-l" />
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 end-0 w-16 bg-gradient-to-l from-[var(--md-paper)] to-transparent md:w-40 rtl:bg-gradient-to-r" />
+          </div>
+
+          <div className="container mx-auto max-w-6xl">
             <ScrollReveal delay={0.2} className="mt-10 text-center">
               <button
                 type="button"
@@ -368,7 +498,7 @@ const Index = () => {
         </section>
 
         {/* Zahlen */}
-        <section className="relative overflow-hidden bg-[var(--md-brand)] px-4 py-24 text-white">
+        <section className="relative overflow-hidden bg-[#0b0b0d] px-4 py-24 text-white">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.07]"
@@ -380,17 +510,17 @@ const Index = () => {
           <div className="container relative mx-auto grid max-w-5xl grid-cols-1 gap-14 text-center md:grid-cols-3 md:gap-8">
             <ScrollReveal>
               <Counter to={offerCount ?? 0} className="mb-3 block text-6xl font-extrabold tracking-[-0.04em] text-[var(--md-sun)] md:text-8xl" />
-              <p className="text-white/80">{t("Angebote, staatlich und nicht-staatlich")}</p>
+              <p className="text-white/65">{t("Angebote, staatlich und nicht-staatlich")}</p>
             </ScrollReveal>
             <ScrollReveal delay={0.15}>
               <Counter to={10} className="mb-3 block text-6xl font-extrabold tracking-[-0.04em] text-[var(--md-sun)] md:text-8xl" />
-              <p className="text-white/80">{t("kurze Fragen bis zu deiner Übersicht")}</p>
+              <p className="text-white/65">{t("kurze Fragen bis zu deiner Übersicht")}</p>
             </ScrollReveal>
             <ScrollReveal delay={0.3}>
               <span className="mb-3 block text-6xl font-extrabold tracking-[-0.04em] text-[var(--md-sun)] md:text-8xl">
-                1-2<span className="ms-1 align-top text-2xl text-white">min</span>
+                1-2<span className="ms-1 align-top text-2xl">min</span>
               </span>
-              <p className="text-white/80">{t("bis du weißt, was für dich drin ist")}</p>
+              <p className="text-white/65">{t("bis du weißt, was für dich drin ist")}</p>
             </ScrollReveal>
           </div>
         </section>
@@ -406,20 +536,57 @@ const Index = () => {
                   {t("MehrDrin entsteht gerade — von Menschen, die selbst durch Berliner Bürokratie navigieren mussten. Noch gibt es keine große Geschichte zu erzählen, nur den Anspruch, das für dich einfacher zu machen.")}
                 </p>
               </ScrollReveal>
-              {/* TODO: Sobald ein echtes Teamfoto da ist, kann es diese Rollenkarten ersetzen */}
+              {/* Rollenkarten, mit Foto und LinkedIn, sofern vorhanden */}
               <div className="grid gap-3">
                 {[
-                  { label: t("Technik und Plattform"), color: "var(--md-brand)" },
-                  { label: t("Kommunikation und Netzwerk"), color: "var(--md-sun)" },
-                  { label: t("Inhalte und Fragenpfad"), color: "var(--md-kicker)" },
-                ].map((role, i) => (
-                  <ScrollReveal key={role.label} delay={0.1 + i * 0.1} y={18}>
-                    <div className="flex items-center gap-4 rounded-2xl border border-border bg-background p-5 shadow-[var(--md-shadow-sm)] transition-transform duration-500 hover:translate-x-1 rtl:hover:-translate-x-1">
-                      <span className="h-11 w-11 flex-none rounded-full" style={{ background: role.color }} aria-hidden />
-                      <span className="text-[17px] font-semibold">{role.label}</span>
-                    </div>
-                  </ScrollReveal>
-                ))}
+                  { label: t("Technik und Plattform"), color: "var(--md-brand)", photo: teamTechnik, href: "https://www.linkedin.com/in/jonas-helm-ba66aa2a9" },
+                  // TODO: Foto für Kommunikation und Netzwerk ergänzen (src/assets/team/kommunikation.jpg)
+                  { label: t("Kommunikation und Netzwerk"), color: "var(--md-sun)", photo: null, href: "https://www.linkedin.com/in/max-reschke/" },
+                  { label: t("Inhalte und Fragenpfad"), color: "var(--md-kicker)", photo: null, href: null },
+                ].map((role, i) => {
+                  const inner = (
+                    <>
+                      <span
+                        className="relative flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-full ring-[3px] ring-offset-2 ring-offset-[var(--md-surface)]"
+                        style={{ background: role.color, ["--tw-ring-color" as string]: role.color }}
+                        aria-hidden
+                      >
+                        {role.photo ? (
+                          <img src={role.photo} alt="" className="h-full w-full object-cover" loading="lazy" />
+                        ) : (
+                          <User className="h-6 w-6 text-white" strokeWidth={2.4} />
+                        )}
+                      </span>
+                      <span className="flex-1 text-[17px] font-semibold">{role.label}</span>
+                      {role.href && (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--md-brand-tint)] px-3 py-1.5 text-[13px] font-semibold text-[var(--md-brand-ink)] transition-colors duration-300 group-hover:bg-[#0a66c2] group-hover:text-white">
+                          <Linkedin className="h-3.5 w-3.5" strokeWidth={2.4} />
+                          LinkedIn
+                          <ArrowUpRight className="h-3.5 w-3.5" />
+                        </span>
+                      )}
+                    </>
+                  );
+                  const cls =
+                    "group flex items-center gap-4 rounded-2xl border border-border bg-[var(--md-surface)] p-4 pe-5 shadow-[var(--md-shadow-sm)] transition-[transform,box-shadow] duration-500";
+                  return (
+                    <ScrollReveal key={role.label} delay={0.1 + i * 0.1} y={18}>
+                      {role.href ? (
+                        <a
+                          href={role.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${role.label}, LinkedIn`}
+                          className={`${cls} hover:-translate-y-0.5 hover:shadow-[var(--md-shadow-md)]`}
+                        >
+                          {inner}
+                        </a>
+                      ) : (
+                        <div className={cls}>{inner}</div>
+                      )}
+                    </ScrollReveal>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -217,6 +217,13 @@
     animation-direction: reverse;
   }
 
+  /* Karussell: bei reduzierter Bewegung steht es still und lässt sich wischen */
+  @media (prefers-reduced-motion: reduce) {
+    .md-carousel {
+      overflow-x: auto;
+    }
+  }
+
   /* Ladeplatzhalter */
   .md-skeleton {
     background: linear-gradient(90deg, var(--md-chip) 0%, var(--md-line) 50%, var(--md-chip) 100%);

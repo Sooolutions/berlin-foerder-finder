@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, X } from "lucide-react";
@@ -10,35 +10,25 @@ interface HeaderProps {
   backToHome?: boolean;
   /** liegt transparent über einem dunklen Hero und wird beim Scrollen hell */
   overlay?: boolean;
-  /** klebt beim Scrollen oben, blendet sich beim Runterscrollen aus */
+  /** klebt beim Scrollen oben und bleibt immer sichtbar */
   sticky?: boolean;
   /** liegt transparent über einem hellen Hero und bekommt beim Scrollen Glas */
   floating?: boolean;
 }
 
-/** Scrollzustand: über der Kante und Richtung, mit etwas Toleranz gegen Zittern */
-const useScrollState = (enabled: boolean) => {
+/** Ob die Seite schon gescrollt ist, dann bekommt der Header seinen Glashintergrund */
+const useScrolled = (enabled: boolean) => {
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const last = useRef(0);
 
   useEffect(() => {
     if (!enabled) return;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 24);
-      const delta = y - last.current;
-      if (Math.abs(delta) > 6) {
-        setHidden(delta > 0 && y > 320);
-        last.current = y;
-      }
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [enabled]);
 
-  return { scrolled, hidden };
+  return scrolled;
 };
 
 const Header = ({ backToHome = false, overlay = false, sticky = true, floating = false }: HeaderProps) => {
@@ -46,7 +36,7 @@ const Header = ({ backToHome = false, overlay = false, sticky = true, floating =
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useLanguage();
-  const { scrolled, hidden } = useScrollState(sticky);
+  const scrolled = useScrolled(sticky);
 
   // Über dem Hero hell auf dunkel, sonst die normale helle Leiste
   const transparentTop = (overlay || floating) && !scrolled && !menuOpen;
@@ -73,9 +63,7 @@ const Header = ({ backToHome = false, overlay = false, sticky = true, floating =
   return (
     <>
       <div
-        className={`${position} inset-x-0 top-0 z-40 w-full px-3 pt-3 sm:px-4 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${
-          hidden && !menuOpen ? "-translate-y-[120%]" : "translate-y-0"
-        }`}
+        className={`${position} inset-x-0 top-0 z-40 w-full px-3 pt-3 sm:px-4`}
       >
         <header
           className={`container mx-auto rounded-2xl border px-4 py-2.5 sm:px-5 transition-[background-color,border-color,box-shadow,color] duration-300 ${
