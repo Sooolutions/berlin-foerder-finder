@@ -9,7 +9,7 @@ export const HOME_TITLE = "Da ist noch mehr drin!";
 export const HOME_SUB =
   "Prüf in etwa 3 Minuten, welches Geld und welche Hilfen dir in Berlin zustehen könnten, zum Beispiel Wohngeld, Kinderzuschlag oder Geld für die Klassenfahrt.";
 
-export const HOME_TRUST = ["Kostenlos", "Anonym, ohne Anmeldung", "Nichts geht ans Amt", "In 5 Sprachen"];
+export const HOME_TRUST = ["Kostenlos", "Anonym, ohne Anmeldung", "Nichts geht ans Amt"];
 
 export const HOME_FAQ: [string, string][] = [
   [
