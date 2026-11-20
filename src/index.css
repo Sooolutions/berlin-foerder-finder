@@ -264,6 +264,37 @@
     }
   }
 
+  /* Fragebogen: Vor und zurück, auf dem Handy als feste Leiste unten */
+  .md-qnav {
+    padding: 0 16px 72px;
+  }
+  .md-qnav-spacer {
+    display: none;
+  }
+  @media (max-width: 767px) {
+    .md-qnav {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 40;
+      padding: 10px 14px max(10px, env(safe-area-inset-bottom));
+      background: color-mix(in srgb, var(--md-paper) 92%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--md-line);
+    }
+    .md-qnav-spacer {
+      display: block;
+      height: 96px;
+    }
+    .md-qnav-dots {
+      display: none !important;
+    }
+    .md-qcard-commit {
+      display: none !important;
+    }
+  }
+
   /* Ladeplatzhalter */
   .md-skeleton {
     background: linear-gradient(90deg, var(--md-chip) 0%, var(--md-line) 50%, var(--md-chip) 100%);
@@ -354,4 +385,8 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.md-sticky-filter::-webkit-scrollbar {
+  display: none;
 }

@@ -99,13 +99,15 @@ const OptionButton = ({
  * Eine Frage als Karte auf dem Band
  * ------------------------------------------------------------------ */
 const QuestionBlock = ({
-  questionId, section, answers, answered, onCommit,
+  questionId, section, answers, answered, onCommit, onDraft,
 }: {
   questionId: string;
   section: SectionId;
   answers: UserAnswers;
   answered: boolean;
   onCommit: (value: string | string[]) => void;
+  /** meldet die aktuelle Mehrfachauswahl, damit die Leiste unten sie übernehmen kann */
+  onDraft?: (draft: string[]) => void;
 }) => {
   const q = getQuestionData(questionId)!;
   const multi = q.multiSelect === true;
@@ -127,6 +129,10 @@ const QuestionBlock = ({
 
   const single = !multi ? (answers[questionId] as string | undefined) : undefined;
   const label = SECTIONS.find((x) => x.id === section)?.label ?? '';
+
+  useEffect(() => {
+    if (multi) onDraft?.(draft);
+  }, [draft, multi]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div
@@ -193,7 +199,7 @@ const QuestionBlock = ({
           {multi && (
             <button
               type="button"
-              className="md-press"
+              className="md-press md-qcard-commit"
               disabled={draft.length === 0}
               onClick={() => onCommit(draft)}
               style={{
@@ -355,6 +361,17 @@ const QuestionnaireFeed = () => {
     return () => clearTimeout(t);
   }, [view, started]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Mehrfachauswahl, die noch nicht übernommen ist, je Frage
+  const [drafts, setDrafts] = useState<Record<string, string[]>>({});
+  const viewQ = viewPage.kind === 'question' ? viewPage.questionId : null;
+  const viewMulti = viewQ ? getQuestionData(viewQ)?.multiSelect === true : false;
+  const viewMax = viewQ ? getQuestionData(viewQ)?.maxSelections ?? 3 : 3;
+  const viewDraft = viewQ ? drafts[viewQ] ?? asList(answers[viewQ]) : [];
+  const draftChanged =
+    viewMulti && viewQ ? JSON.stringify([...viewDraft].sort()) !== JSON.stringify([...asList(answers[viewQ])].sort()) : false;
+  const onCurrentMulti = viewMulti && view === currentIndex && !path.complete;
+  const canForward = view < currentIndex || (onCurrentMulti && viewDraft.length > 0);
+
   const go = useCallback(
     (to: number) => setView(Math.max(0, Math.min(to, currentIndex))),
     [currentIndex],
@@ -398,7 +415,7 @@ const QuestionnaireFeed = () => {
   const canEarlyOut = started && !path.complete && sectionIndex >= EARLY_OUT_FROM;
 
   return (
-    <div style={{ position: 'relative', isolation: 'isolate', ['--q-accent' as string]: sectionColor(viewSection) }}>
+    <div style={{ position: 'relative', zIndex: 1, ['--q-accent' as string]: sectionColor(viewSection) }}>
       {/* Weicher Farbschein in der Farbe des Abschnitts */}
       <div
         aria-hidden
@@ -520,6 +537,7 @@ const QuestionnaireFeed = () => {
                           answers={answers}
                           answered={i < path.steps.length - (path.complete ? 0 : 1)}
                           onCommit={(v) => commit(page.questionId, v)}
+                          onDraft={(d) => setDrafts((prev) => ({ ...prev, [page.questionId]: d }))}
                         />
                       )}
                       {page.kind === 'ghost' && <GhostPage section={page.section} />}
@@ -548,42 +566,53 @@ const QuestionnaireFeed = () => {
             )}
           </div>
 
-          {/* Vor und zurück */}
-          <div style={{ maxWidth: pageW, margin: '0 auto', padding: '0 0 72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-            <button
-              type="button"
-              onClick={() => go(view - 1)}
-              disabled={view === 0}
-              className="md-press"
-              style={{ ...navBtn, opacity: view === 0 ? 0.35 : 1 }}
-            >
-              <ArrowLeft size={17} className="rtl:-scale-x-100" />
-              {tr('Zurück')}
-            </button>
-            <div aria-hidden style={{ display: 'flex', gap: 6 }}>
-              {pages.map((p, i) => (
-                <span
-                  key={i}
-                  style={{
-                    width: i === view ? 18 : 6,
-                    height: 6,
-                    borderRadius: 99,
-                    background: i === view ? QA : 'var(--md-line-strong)',
-                    transition: 'width .4s cubic-bezier(.22,1,.36,1), background .4s',
-                  }}
-                />
-              ))}
+          {/* Vor und zurück. Auf dem Handy als feste Leiste am unteren Rand (md-qnav) */}
+          <div className="md-qnav-spacer" aria-hidden />
+          <div className="md-qnav">
+            <div style={{ maxWidth: pageW, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <button
+                type="button"
+                onClick={() => go(view - 1)}
+                disabled={view === 0}
+                className="md-press"
+                style={{ ...navBtn, opacity: view === 0 ? 0.35 : 1 }}
+              >
+                <ArrowLeft size={17} className="rtl:-scale-x-100" />
+                {tr('Zurück')}
+              </button>
+              <div aria-hidden className="md-qnav-dots" style={{ display: 'flex', gap: 6 }}>
+                {pages.map((p, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      width: i === view ? 18 : 6,
+                      height: 6,
+                      borderRadius: 99,
+                      background: i === view ? QA : 'var(--md-line-strong)',
+                      transition: 'width .4s cubic-bezier(.22,1,.36,1), background .4s',
+                    }}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  // Offene Mehrfachauswahl übernehmen, sonst einfach weiterschieben
+                  if (viewQ && viewMulti && (onCurrentMulti || draftChanged) && viewDraft.length > 0) commit(viewQ, viewDraft);
+                  else go(view + 1);
+                }}
+                disabled={!canForward}
+                className="md-press"
+                style={{
+                  ...navBtn,
+                  opacity: canForward ? 1 : 0.35,
+                  ...(onCurrentMulti && viewDraft.length > 0 ? { background: QA, color: '#fff', borderColor: 'transparent' } : {}),
+                }}
+              >
+                {onCurrentMulti ? `${tr('Weiter')} (${viewDraft.length}/${viewMax})` : tr('Weiter')}
+                <ArrowRight size={17} className="rtl:-scale-x-100" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => go(view + 1)}
-              disabled={view >= currentIndex}
-              className="md-press"
-              style={{ ...navBtn, opacity: view >= currentIndex ? 0.35 : 1 }}
-            >
-              {tr('Weiter')}
-              <ArrowRight size={17} className="rtl:-scale-x-100" />
-            </button>
           </div>
         </>
       )}

@@ -89,7 +89,7 @@ const readDistrict = (): string => {
   }
 };
 
-const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
+const DistrictSelect = ({ value, onChange, large = false }: { value: string; onChange: (v: string) => void; large?: boolean }) => {
   const active = value !== '';
   return (
     <label
@@ -98,13 +98,15 @@ const DistrictSelect = ({ value, onChange }: { value: string; onChange: (v: stri
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
-        padding: '5px 10px',
-        paddingInlineEnd: 28,
-        borderRadius: r(-6),
+        padding: large ? '9px 14px' : '5px 10px',
+        paddingInlineEnd: large ? 34 : 28,
+        borderRadius: large ? 99 : r(-6),
         border: `1.5px solid ${active ? 'var(--md-brand)' : 'var(--md-line-strong)'}`,
         background: active ? 'var(--md-brand-tint)' : '#fff',
         color: active ? 'var(--md-brand-ink)' : 'var(--md-ink-2)',
-        font: `700 11.5px ${FONT}`,
+        font: `700 ${large ? 14 : 11.5}px ${FONT}`,
+        flex: 'none',
+        whiteSpace: 'nowrap',
         cursor: 'pointer',
       }}
     >
@@ -146,18 +148,45 @@ const FilterBar = ({
   answers,
   district,
   onDistrictChange,
+  sticky = false,
 }: {
   answers: UserAnswers;
   district: string;
   onDistrictChange: (v: string) => void;
-}) => (
-  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 7, marginBottom: 18 }}>
-    <DistrictSelect value={district} onChange={onDistrictChange} />
-    <AnswerChips answers={answers} />
-  </div>
-);
+  /** Handy: klebt unter dem Header, eine Zeile zum Wischen, größere Flächen */
+  sticky?: boolean;
+}) =>
+  sticky ? (
+    <div
+      className="md-sticky-filter"
+      style={{
+        position: 'sticky',
+        top: 76,
+        zIndex: 20,
+        margin: '0 -16px 16px',
+        padding: '10px 16px',
+        background: 'color-mix(in srgb, var(--md-paper) 92%, transparent)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid var(--md-line)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        overflowX: 'auto',
+        scrollbarWidth: 'none',
+      }}
+    >
+      <DistrictSelect value={district} onChange={onDistrictChange} large />
+      <AnswerChips answers={answers} large />
+    </div>
+  ) : (
+    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 7, marginBottom: 18 }}>
+      <DistrictSelect value={district} onChange={onDistrictChange} />
+      <AnswerChips answers={answers} />
+    </div>
+  );
 
-const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
+const AnswerChips = ({ answers, large = false }: { answers: UserAnswers; large?: boolean }) => {
   // Alle Antworten des durchlaufenen Pfads, in Reihenfolge der Fragen.
   // Angaben, die nur als Rahmen dienen (Alter filtert hart, neutrale Antworten
   // wie „Deutsch“ oder „keine Beeinträchtigung“), erscheinen heller.
@@ -170,7 +199,8 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
   const isNarrow = typeof window !== 'undefined' && window.matchMedia?.('(max-width: 1023px)').matches;
   const LIMIT = 3;
   if (!unique.length) return null;
-  const shown = isNarrow && !expanded ? unique.slice(0, LIMIT) : unique;
+  // In der wischbaren Leiste stehen alle Antworten, sonst auf dem Handy zuerst wenige
+  const shown = isNarrow && !expanded && !large ? unique.slice(0, LIMIT) : unique;
   const hiddenCount = unique.length - shown.length;
 
   return (
@@ -182,9 +212,10 @@ const AnswerChips = ({ answers }: { answers: UserAnswers }) => {
             key={`${c.questionId}:${c.option}`}
             title={`${c.question} ${c.option}`}
             style={{
-              font: `600 11.5px ${FONT}`,
-              padding: '5px 10px',
-              borderRadius: r(-6),
+              font: `600 ${large ? 14 : 11.5}px ${FONT}`,
+              padding: large ? '9px 14px' : '5px 10px',
+              borderRadius: large ? 99 : r(-6),
+              flex: 'none',
               background: meaningful ? 'var(--md-chip)' : 'var(--md-paper)',
               color: meaningful ? 'var(--md-ink-3)' : 'var(--md-ink-5)',
               border: `1px ${meaningful ? 'solid' : 'dashed'} var(--md-line-strong)`,
@@ -780,7 +811,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
 
         {mobileMode === 'overview' ? (
           <div>
-            <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} />
+            <FilterBar answers={answers} district={district} onDistrictChange={setDistrict} sticky />
 
             {/* Top-Treffer */}
             <div
@@ -847,7 +878,7 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                           ['--md-delay' as string]: `${80 + i * 60}ms`,
                           display: 'flex',
                           gap: 13,
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
                           padding: 14,
                           border: `1px solid ${scheme.cardBorder}`,
                           background: scheme.cardBg,
@@ -872,13 +903,16 @@ const ResultsScreen = ({ fundings: allFundings, answers }: { fundings: Funding[]
                           {i + 2}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
+                          {/* Kategorie über dem Titel, damit der Titel die ganze Breite hat */}
+                          <div style={{ marginBottom: 6 }}>
+                            <CategoryChip funding={funding} label={categoryOf(funding)} />
+                          </div>
                           <div style={{ font: `var(--md-display-weight) 16px/1.25 ${DFONT}`, color: 'var(--md-ink)' }}>{funding.title}</div>
-                          <div style={{ font: `500 12.5px ${FONT}`, color: 'var(--md-ink-4)', marginTop: 4 }}>
+                          <div style={{ font: `500 13px/1.4 ${FONT}`, color: 'var(--md-ink-4)', marginTop: 4 }}>
                             {funding.organization}
                             {funding.amount ? ` · ${funding.amount}` : ''}
                           </div>
                         </div>
-                        <CategoryChip funding={funding} label={categoryOf(funding)} />
                       </div>
                     );
                   })}

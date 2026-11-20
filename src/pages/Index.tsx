@@ -5,7 +5,7 @@ import teamTechnik from "@/assets/team/technik.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { THEMEN } from "@/content/hilfe/themen";
 import { HOME_FAQ, HOME_SUB, HOME_TITLE, HOME_TRUST } from "@/content/home";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchAllRows } from "@/integrations/supabase/fetchAll";
@@ -15,6 +15,7 @@ import ScrollReveal from "@/components/home/ScrollReveal";
 import Counter from "@/components/home/Counter";
 import OfferStack from "@/components/home/OfferStack";
 import TopicBar, { type TopicCount } from "@/components/home/TopicBar";
+import MobileStartBar from "@/components/home/MobileStartBar";
 import { useLanguage, tr } from "@/i18n/LanguageContext";
 import { useFundingTranslations } from "@/hooks/useFundingTranslations";
 
@@ -290,6 +291,8 @@ const Index = () => {
   }, []);
 
   const startQuestionnaire = () => navigate("/questionnaire");
+  const heroRef = useRef<HTMLElement>(null);
+  const endRef = useRef<HTMLElement>(null);
   const trust = HOME_TRUST.map((x) => t(x));
 
   return (
@@ -298,7 +301,7 @@ const Index = () => {
 
       <main className="flex-grow">
         {/* Hero: helles Papier, große Schrift, rechts echte Angebote als Kartenstapel */}
-        <section className="relative overflow-hidden bg-[var(--md-paper)] pb-20 pt-32 md:pb-28 md:pt-40">
+        <section ref={heroRef} className="relative overflow-hidden bg-[var(--md-paper)] pb-20 pt-32 md:pb-28 md:pt-40">
           {/*
             Weiche Farbflächen im Hintergrund. Bewusst ohne Blur-Filter und ohne
             Dauerbewegung: beides zusammen hat auf Handys das Scrollen ruckeln lassen.
@@ -677,7 +680,7 @@ const Index = () => {
         </section>
 
         {/* Abschluss */}
-        <section className="relative overflow-hidden bg-[var(--md-sun)] px-4 py-32">
+        <section ref={endRef} className="relative overflow-hidden bg-[var(--md-sun)] px-4 py-32">
           <div
             aria-hidden
             className="pointer-events-none absolute -start-32 -top-32 h-[30rem] w-[30rem]"
@@ -706,6 +709,7 @@ const Index = () => {
       </main>
 
       <Footer />
+      <MobileStartBar heroRef={heroRef} endRef={endRef} onStart={startQuestionnaire} />
     </div>
   );
 };
