@@ -234,6 +234,36 @@
     }
   }
 
+  /*
+   * Auf Touchgeräten laufen die Bänder nicht von selbst. Man wischt sie wie
+   * eine normale Leiste, Karte für Karte. Die Kopien für die Endlosschleife
+   * werden ausgeblendet.
+   */
+  @media (hover: none) and (pointer: coarse) {
+    .md-carousel {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 1.25rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .md-carousel::-webkit-scrollbar {
+      display: none;
+    }
+    .md-carousel .md-marquee-track {
+      animation: none;
+      padding-inline: 1.25rem;
+    }
+    .md-carousel .md-marquee-track > * {
+      scroll-snap-align: start;
+    }
+    .md-carousel .md-marquee-track > [aria-hidden='true'],
+    .md-carousel .md-fade {
+      display: none;
+    }
+  }
+
   /* Ladeplatzhalter */
   .md-skeleton {
     background: linear-gradient(90deg, var(--md-chip) 0%, var(--md-line) 50%, var(--md-chip) 100%);

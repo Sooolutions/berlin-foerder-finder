@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Fragment, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/integrations/supabase/fetchAll";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { schemeOf } from "@/components/results/resultsTheme";
 import ScrollReveal from "@/components/home/ScrollReveal";
@@ -282,23 +283,38 @@ const Index = () => {
 
   useEffect(() => {
     const fetchRandomFunding = async () => {
-      const { data, error, count } = await supabase
+      // Erst nur Kennung und Themen aller Angebote (wenige Kilobyte), damit die
+      // Startseite auf dem Handy nicht alle Beschreibungen laden muss.
+      const { rows, count } = await fetchAllRows<Pick<FundingTeaser, "id" | "categories">>((from, to, withCount) =>
+        supabase
+          .from("funding")
+          .select("id, categories", withCount ? { count: "exact" } : undefined)
+          .order("id")
+          .range(from, to),
+      ).catch(() => ({ rows: [], count: 0 }));
+      if (!rows.length) return;
+      setOfferCount(count);
+
+      // Angebote je Thema zählen, ein Angebot kann in mehreren Themen stehen
+      const counts = new Map<string, number>();
+      for (const row of rows) {
+        for (const c of row.categories ?? []) counts.set(c, (counts.get(c) ?? 0) + 1);
+      }
+      setTopics(
+        [...counts.entries()]
+          .map(([name, n]) => ({ name, count: n }))
+          .sort((a, b) => b.count - a.count),
+      );
+
+      // Danach nur die 14 zufälligen Karten vollständig laden
+      const ids = [...rows].sort(() => 0.5 - Math.random()).slice(0, 14).map((r) => r.id);
+      const { data } = await supabase
         .from("funding")
-        .select("id, title, description, organization, url, categories, funding_type", { count: "exact" });
-      if (data && !error) {
-        setOfferCount(count ?? data.length);
-        const shuffled = [...(data as unknown as FundingTeaser[])].sort(() => 0.5 - Math.random());
-        setFundingTeasers(shuffled.slice(0, 14));
-        // Angebote je Thema zählen, ein Angebot kann in mehreren Themen stehen
-        const counts = new Map<string, number>();
-        for (const row of data as unknown as FundingTeaser[]) {
-          for (const c of row.categories ?? []) counts.set(c, (counts.get(c) ?? 0) + 1);
-        }
-        setTopics(
-          [...counts.entries()]
-            .map(([name, count]) => ({ name, count }))
-            .sort((a, b) => b.count - a.count),
-        );
+        .select("id, title, description, organization, url, categories, funding_type")
+        .in("id", ids);
+      if (data) {
+        const byId = new Map((data as unknown as FundingTeaser[]).map((d) => [d.id, d]));
+        setFundingTeasers(ids.map((id) => byId.get(id)).filter((d): d is FundingTeaser => !!d));
       }
     };
     fetchRandomFunding();
@@ -314,20 +330,20 @@ const Index = () => {
       <main className="flex-grow">
         {/* Hero: helles Papier, große Schrift, rechts echte Angebote als Kartenstapel */}
         <section className="relative overflow-hidden bg-[var(--md-paper)] pb-20 pt-32 md:pb-28 md:pt-40">
-          {/* Weiche Farbflächen im Hintergrund */}
-          <motion.div
+          {/*
+            Weiche Farbflächen im Hintergrund. Bewusst ohne Blur-Filter und ohne
+            Dauerbewegung: beides zusammen hat auf Handys das Scrollen ruckeln lassen.
+            Der radiale Verlauf allein ist weich genug.
+          */}
+          <div
             aria-hidden
-            className="pointer-events-none absolute -end-40 -top-40 h-[38rem] w-[38rem] rounded-full opacity-60 blur-3xl"
+            className="pointer-events-none absolute -end-40 -top-40 h-[40rem] w-[40rem] opacity-70"
             style={{ background: "radial-gradient(closest-side, var(--md-brand-tint), transparent)" }}
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
           />
-          <motion.div
+          <div
             aria-hidden
-            className="pointer-events-none absolute -bottom-48 -start-32 h-[30rem] w-[30rem] rounded-full opacity-50 blur-3xl"
+            className="pointer-events-none absolute -bottom-48 -start-32 h-[32rem] w-[32rem] opacity-40"
             style={{ background: "radial-gradient(closest-side, var(--md-sun), transparent)" }}
-            animate={{ scale: [1, 1.12, 1] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
           />
 
           <div className="container relative mx-auto grid max-w-6xl items-center gap-16 px-6 lg:grid-cols-[1.1fr_1fr]">
@@ -350,7 +366,7 @@ const Index = () => {
                   className="!text-[clamp(3rem,1.6rem+6vw,6.25rem)] font-extrabold leading-[0.95] tracking-[-0.045em] text-[var(--md-ink)]"
                 />
                 {/* Handgezeichneter Strich unter der Überschrift */}
-                <svg aria-hidden viewBox="0 0 420 24" preserveAspectRatio="none" className="absolute -bottom-4 start-0 h-5 w-[70%] lg:w-[60%] rtl:-scale-x-100">
+                <svg aria-hidden viewBox="0 0 420 24" preserveAspectRatio="none" className="absolute -bottom-4 left-1/2 h-5 w-[70%] -translate-x-1/2 lg:w-[60%] lg:translate-x-0 ltr:lg:left-0 rtl:lg:left-auto rtl:lg:right-0 rtl:-scale-x-100">
                   <motion.path
                     d="M4 16 C 80 4, 160 6, 230 12 S 360 20, 416 8"
                     fill="none"
@@ -526,8 +542,8 @@ const Index = () => {
                 ))}
               </div>
             )}
-            <div aria-hidden className="pointer-events-none absolute inset-y-0 start-0 w-16 bg-gradient-to-r from-[var(--md-paper)] to-transparent md:w-40 rtl:bg-gradient-to-l" />
-            <div aria-hidden className="pointer-events-none absolute inset-y-0 end-0 w-16 bg-gradient-to-l from-[var(--md-paper)] to-transparent md:w-40 rtl:bg-gradient-to-r" />
+            <div aria-hidden className="md-fade pointer-events-none absolute inset-y-0 start-0 w-16 bg-gradient-to-r from-[var(--md-paper)] to-transparent md:w-40 rtl:bg-gradient-to-l" />
+            <div aria-hidden className="md-fade pointer-events-none absolute inset-y-0 end-0 w-16 bg-gradient-to-l from-[var(--md-paper)] to-transparent md:w-40 rtl:bg-gradient-to-r" />
           </div>
 
           <div className="container mx-auto max-w-6xl">
@@ -666,17 +682,15 @@ const Index = () => {
 
         {/* Abschluss */}
         <section className="relative overflow-hidden bg-[var(--md-sun)] px-4 py-32">
-          <motion.div
+          <div
             aria-hidden
-            className="pointer-events-none absolute -start-24 -top-24 h-96 w-96 rounded-full bg-white/50 blur-3xl"
-            animate={{ x: [0, 60, 0], y: [0, 30, 0] }}
-            transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none absolute -start-32 -top-32 h-[30rem] w-[30rem]"
+            style={{ background: "radial-gradient(closest-side, rgba(255,255,255,.6), transparent)" }}
           />
-          <motion.div
+          <div
             aria-hidden
-            className="pointer-events-none absolute -bottom-32 -end-16 h-[28rem] w-[28rem] rounded-full bg-[#ff9d2e]/40 blur-3xl"
-            animate={{ x: [0, -50, 0], y: [0, -20, 0] }}
-            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none absolute -bottom-40 -end-24 h-[34rem] w-[34rem]"
+            style={{ background: "radial-gradient(closest-side, rgba(255,157,46,.45), transparent)" }}
           />
           <ScrollReveal>
             <div className="container relative mx-auto max-w-3xl text-center">

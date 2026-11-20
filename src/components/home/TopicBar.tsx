@@ -76,8 +76,8 @@ const TopicBar = ({ topics }: { topics: TopicCount[] }) => {
               );
             })}
           </ul>
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 start-0 w-[12vw] min-w-12 bg-gradient-to-r from-[var(--md-ink)] to-transparent rtl:bg-gradient-to-l" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 end-0 w-[12vw] min-w-12 bg-gradient-to-l from-[var(--md-ink)] to-transparent rtl:bg-gradient-to-r" />
+          <div aria-hidden className="md-fade pointer-events-none absolute inset-y-0 start-0 w-[12vw] min-w-12 bg-gradient-to-r from-[var(--md-ink)] to-transparent rtl:bg-gradient-to-l" />
+          <div aria-hidden className="md-fade pointer-events-none absolute inset-y-0 end-0 w-[12vw] min-w-12 bg-gradient-to-l from-[var(--md-ink)] to-transparent rtl:bg-gradient-to-r" />
         </div>
       </div>
     </section>

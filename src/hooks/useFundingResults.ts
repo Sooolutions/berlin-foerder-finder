@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/integrations/supabase/fetchAll";
 import { UserAnswers } from "@/context/QuestionnaireContext";
 import { getAgeRange, rankFundings } from "@/utils/answerMappingUtils";
 
@@ -36,17 +37,22 @@ export const useFundingResults = (answers?: UserAnswers) => {
     queryFn: async () => {
       // 1. Server: grober Altersfilter über min_age und max_age. Angebote ohne
       //    gepflegte Altersfelder kommen immer mit.
-      let query = supabase.from('funding').select('*');
+      //    Supabase liefert höchstens 1.000 Zeilen je Abfrage, deshalb seitenweise.
       const ageAnswer = answers?.alter;
       const ageRange = typeof ageAnswer === 'string' ? getAgeRange(ageAnswer) : null;
-      if (ageRange) {
-        query = query
-          .or(`min_age.is.null,min_age.lte.${ageRange.maxAge}`)
-          .or(`max_age.is.null,max_age.gte.${ageRange.minAge}`);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
+      const { rows: data } = await fetchAllRows((from, to, withCount) => {
+        let query = supabase
+          .from('funding')
+          .select('*', withCount ? { count: 'exact' } : undefined)
+          .order('id')
+          .range(from, to);
+        if (ageRange) {
+          query = query
+            .or(`min_age.is.null,min_age.lte.${ageRange.maxAge}`)
+            .or(`max_age.is.null,max_age.gte.${ageRange.minAge}`);
+        }
+        return query;
+      });
       if (!data || data.length === 0) return [];
 
       // 2. Client: harte Kriterien (Alters-Tags, migrationsspezifische

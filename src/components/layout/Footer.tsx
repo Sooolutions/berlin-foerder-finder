@@ -36,7 +36,7 @@ const Footer = () => {
       {/* Weicher Lichtfleck in Markenfarbe, rein dekorativ */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-40 end-[-10%] h-[28rem] w-[28rem] rounded-full opacity-25 blur-3xl"
+        className="pointer-events-none absolute -top-40 end-[-10%] h-[32rem] w-[32rem] opacity-25"
         style={{ background: "radial-gradient(closest-side, var(--md-brand), transparent)" }}
       />
 
