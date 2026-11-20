@@ -47,8 +47,8 @@
     --mehrdrin-red: 7 84% 62%;
     --mehrdrin-lightblue: 228 100% 94%;
 
-    --md-font: 'Outfit', system-ui, -apple-system, sans-serif;
-    --md-font-display: 'Bricolage Grotesque', 'Outfit', system-ui, sans-serif;
+    --md-font: 'Outfit Variable', 'Outfit', system-ui, -apple-system, sans-serif;
+    --md-font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Outfit Variable', system-ui, sans-serif;
     --md-display-weight: 800;
     --md-brand: #2f5bea;
     --md-brand-ink: #1d3cb4;

@@ -14,10 +14,6 @@
  * aufgebaut, daher sind auch diese Texte immer aktuell.
  */
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import en from "./en";
-import tr_ from "./tr";
-import ar from "./ar";
-import uk from "./uk";
 
 export type Lang = "de" | "en" | "tr" | "ar" | "uk";
 
@@ -30,7 +26,24 @@ export const LANGUAGES: { code: Lang; label: string; short: string; rtl?: boolea
   { code: "uk", label: "Українська", short: "UA" },
 ];
 
-export const DICTIONARIES: Record<Exclude<Lang, "de">, Record<string, string>> = { en, tr: tr_, ar, uk };
+/**
+ * Wörterbücher werden erst geladen, wenn jemand die Sprache wählt. Wer die
+ * Seite auf Deutsch nutzt, lädt keine Übersetzungen mit (spart gut 200 kB).
+ */
+const LOADERS: Record<Exclude<Lang, "de">, () => Promise<{ default: Record<string, string> }>> = {
+  en: () => import("./en"),
+  tr: () => import("./tr"),
+  ar: () => import("./ar"),
+  uk: () => import("./uk"),
+};
+const loaded: Partial<Record<Lang, Record<string, string>>> = {};
+
+const isReady = (l: Lang) => l === "de" || !!loaded[l];
+
+export const loadDictionary = async (l: Lang) => {
+  if (isReady(l)) return;
+  loaded[l] = (await LOADERS[l as Exclude<Lang, "de">]()).default;
+};
 
 export const isRtl = (lang: Lang) => LANGUAGES.some((l) => l.code === lang && l.rtl);
 
@@ -61,7 +74,7 @@ const fill = (text: string, vars?: Record<string, string | number>) =>
 /** Übersetzt einen deutschen Text in die aktuelle Sprache. */
 export function tr(de: string, vars?: Record<string, string | number>): string {
   if (currentLang === "de") return fill(de, vars);
-  return fill(DICTIONARIES[currentLang][de] ?? de, vars);
+  return fill(loaded[currentLang]?.[de] ?? de, vars);
 }
 
 export const getLang = (): Lang => currentLang;
@@ -75,9 +88,21 @@ interface LanguageContextValue {
 const LanguageContext = createContext<LanguageContextValue>({ lang: "de", setLang: () => {}, t: tr });
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-  const [lang, setLangState] = useState<Lang>(initialLang);
+  // gewählte Sprache und die Sprache, deren Wörterbuch schon geladen ist
+  const [wanted, setLangState] = useState<Lang>(initialLang);
+  const [lang, setShown] = useState<Lang>(() => (isReady(wanted) ? wanted : "de"));
   // Vor dem Rendern der Kinder setzen, damit auch tr() die neue Sprache kennt
   currentLang = lang;
+
+  useEffect(() => {
+    let alive = true;
+    loadDictionary(wanted)
+      .then(() => alive && setShown(wanted))
+      .catch(() => alive && setShown("de"));
+    return () => {
+      alive = false;
+    };
+  }, [wanted]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
