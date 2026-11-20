@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Facebook, Instagram, Mail } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { THEMEN } from "@/content/hilfe/themen";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -12,9 +13,14 @@ const Footer = () => {
       links: [
         { to: "/", label: t("Start") },
         { to: "/questionnaire", label: t("Fragebogen") },
+        { to: "/hilfe", label: t("Hilfe nach Thema") },
         { to: "/blog", label: t("Blog") },
         { to: "/about", label: t("Über uns") },
       ],
+    },
+    {
+      title: t("Häufige Anliegen"),
+      links: THEMEN.slice(0, 6).map((th) => ({ to: `/hilfe/${th.slug}`, label: t(th.kurz) })),
     },
     {
       title: t("Rechtliches"),
@@ -41,14 +47,14 @@ const Footer = () => {
       />
 
       <div className="relative mx-auto max-w-6xl px-6 py-16 md:py-20">
-        <div className="grid gap-12 md:grid-cols-12">
-          <div className="md:col-span-5">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-12">
+          <div className="sm:col-span-2 lg:col-span-3">
             <Link to="/" className="inline-flex items-center gap-2.5 text-[20px] font-bold tracking-tight">
               <img src={logo} alt="" className="h-8 w-auto brightness-0 invert" />
               MehrDrin
             </Link>
             <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-white/60">
-              {t("Finde passende Förderungen, Angebote und Unterstützung für deine Lebenssituation in Berlin. Kostenlos und vertraulich.")}
+              {t("Prüf in etwa 3 Minuten, welche Hilfen dir in Berlin zustehen könnten, von Wohngeld bis Kinderzuschlag. Kostenlos, anonym und ohne Anmeldung.")}
             </p>
             <Link
               to="/questionnaire"
@@ -60,7 +66,7 @@ const Footer = () => {
           </div>
 
           {columns.map((col) => (
-            <div key={col.title} className="md:col-span-2">
+            <div key={col.title} className="lg:col-span-2">
               <h3 className="mb-4 !text-[13px] font-semibold uppercase tracking-[0.12em] text-white/45">{col.title}</h3>
               <ul className="space-y-2.5">
                 {col.links.map((l) => (
@@ -74,7 +80,7 @@ const Footer = () => {
             </div>
           ))}
 
-          <div className="md:col-span-3">
+          <div className="lg:col-span-3">
             <h3 className="mb-4 !text-[13px] font-semibold uppercase tracking-[0.12em] text-white/45">{t("Kontakt")}</h3>
             <ul className="space-y-2.5">
               {social.map(({ href, label, Icon, external }) => (

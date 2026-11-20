@@ -16,6 +16,8 @@ import { getAllQuestionnaireTexts } from "../src/data/questionnaireData";
 import { ALL_QUESTION_INFO } from "../src/data/questionInfo";
 import { SECTIONS } from "../src/questionnaire/flow";
 import { HINT_NOTE, HINT_TITLE } from "../src/utils/answerMappingUtils";
+import { HOME_FAQ, HOME_SUB, HOME_TITLE, HOME_TRUST } from "../src/content/home";
+import { THEMEN } from "../src/content/hilfe/themen";
 import en from "../src/i18n/en";
 import tr from "../src/i18n/tr";
 import ar from "../src/i18n/ar";
@@ -56,6 +58,8 @@ SECTIONS.forEach((sec) => keys.add(sec.label));
 ALL_QUESTION_INFO.forEach((k) => keys.add(k));
 CATEGORY_KEYS.forEach((k) => keys.add(k));
 EXTRA_KEYS.forEach((k) => keys.add(k));
+// Ausgelagerte Texte der Startseite und Kurzlabels der Themenseiten
+[HOME_TITLE, HOME_SUB, ...HOME_TRUST, ...HOME_FAQ.flat(), ...THEMEN.map((t) => t.kurz)].forEach((k) => keys.add(k));
 
 if (process.argv.includes("--json")) {
   console.log(JSON.stringify([...keys].filter((k) => !(k in en)).sort(), null, 1));

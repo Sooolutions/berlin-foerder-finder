@@ -23,7 +23,7 @@ export const DetailRows = ({ funding }: { funding: Funding }) => {
         >
           <div
             style={{
-              font: "600 11px 'Outfit', system-ui, sans-serif",
+              font: "600 11px 'Outfit Variable', system-ui, sans-serif",
               letterSpacing: '.09em',
               textTransform: 'uppercase',
               color: 'var(--md-ink-4)',
@@ -37,7 +37,7 @@ export const DetailRows = ({ funding }: { funding: Funding }) => {
               href={row.href}
               onClick={(e) => e.stopPropagation()}
               style={{
-                font: "600 15px/1.5 'Outfit', system-ui, sans-serif",
+                font: "600 15px/1.5 'Outfit Variable', system-ui, sans-serif",
                 color: scheme.accent,
                 textDecoration: 'none',
               }}
@@ -48,8 +48,8 @@ export const DetailRows = ({ funding }: { funding: Funding }) => {
             <div
               style={{
                 font: row.strong
-                  ? "700 19px/1.3 'Outfit', system-ui, sans-serif"
-                  : "400 15px/1.62 'Outfit', system-ui, sans-serif",
+                  ? "700 19px/1.3 'Outfit Variable', system-ui, sans-serif"
+                  : "400 15px/1.62 'Outfit Variable', system-ui, sans-serif",
                 color: row.strong ? scheme.accent : 'var(--md-ink-2)',
               }}
             >
@@ -76,7 +76,7 @@ export const ApplyButton = ({ funding, block = false }: { funding: Funding; bloc
       style={{
         display: block ? 'block' : 'inline-block',
         textAlign: 'center',
-        font: "700 15px 'Outfit', system-ui, sans-serif",
+        font: "700 15px 'Outfit Variable', system-ui, sans-serif",
         color: '#fff',
         background: scheme.accent,
         padding: block ? '17px 26px' : '15px 26px',
@@ -106,7 +106,7 @@ export const CategoryChip = ({
       style={{
         display: 'inline-block',
         alignSelf: 'flex-start',
-        font: "700 10.5px 'Outfit', system-ui, sans-serif",
+        font: "700 10.5px 'Outfit Variable', system-ui, sans-serif",
         letterSpacing: '.06em',
         textTransform: 'uppercase',
         padding: '5px 11px',

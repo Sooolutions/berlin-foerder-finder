@@ -126,18 +126,10 @@ const Datenschutz = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold mb-4">7. Eingebettete Inhalte und externe Dienste</h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Die Website nutzt Google Fonts zur Darstellung der Schriftart. Beim Laden der Seite wird eine
-              Anfrage an die Server von Google (Google LLC, USA) gesendet. Dabei kann deine IP-Adresse
-              übertragen werden. Weitere Informationen unter{" "}
-              <a
-                href="https://policies.google.com/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-foreground transition-colors"
-              >
-                policies.google.com/privacy
-              </a>
-              .
+              Die Schriftarten (Outfit und Bricolage Grotesque) werden direkt von unserem eigenen Server
+              ausgeliefert. Beim Laden der Seite wird keine Verbindung zu Google oder anderen Schriftanbietern
+              aufgebaut. Links zu externen Seiten, etwa zu Behörden oder offiziellen Rechnern, öffnen diese
+              Seiten erst, wenn du sie anklickst. Dort gelten die Datenschutzhinweise des jeweiligen Anbieters.
             </p>
           </section>
 

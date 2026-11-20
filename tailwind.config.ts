@@ -19,7 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'outfit': ['Outfit', 'system-ui', 'sans-serif'],
+				'outfit': ['Outfit Variable', 'Outfit', 'system-ui', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

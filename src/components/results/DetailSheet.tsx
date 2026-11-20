@@ -77,14 +77,14 @@ const DetailSheet = ({ funding, onClose }: { funding: Funding | null; onClose: (
             <CategoryChip funding={funding} label={categoryOf(funding)} />
             <div
               style={{
-                font: "800 29px/1.14 'Outfit', system-ui, sans-serif",
+                font: "800 29px/1.14 'Outfit Variable', system-ui, sans-serif",
                 color: 'var(--md-ink)',
                 margin: '14px 0 7px',
               }}
             >
               {funding.title}
             </div>
-            <div style={{ font: "600 15px 'Outfit', system-ui, sans-serif", color: scheme.accent }}>
+            <div style={{ font: "600 15px 'Outfit Variable', system-ui, sans-serif", color: scheme.accent }}>
               {funding.organization}
             </div>
           </div>
@@ -97,7 +97,7 @@ const DetailSheet = ({ funding, onClose }: { funding: Funding | null; onClose: (
         >
           <div
             style={{
-              font: "400 15.5px/1.68 'Outfit', system-ui, sans-serif",
+              font: "400 15.5px/1.68 'Outfit Variable', system-ui, sans-serif",
               color: 'var(--md-ink-2)',
               paddingBottom: 20,
               borderBottom: '1px solid var(--md-line)',

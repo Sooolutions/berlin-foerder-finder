@@ -4,6 +4,14 @@
   "rewrites": [
     { "source": "/blog", "destination": "/blog/index.html" },
     { "source": "/blog/:slug", "destination": "/blog/:slug/index.html" },
-    { "source": "/((?!assets/|.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/hilfe", "destination": "/hilfe/index.html" },
+    { "source": "/hilfe/:slug", "destination": "/hilfe/:slug/index.html" },
+    { "source": "/((?!assets/|og/|.*\\..*).+)", "destination": "/app.html" }
+  ],
+  "headers": [
+    {
+      "source": "/og/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+    }
   ]
 }

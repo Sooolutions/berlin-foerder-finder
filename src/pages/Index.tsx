@@ -2,7 +2,9 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { ArrowDown, ArrowRight, Check, ClipboardList, Compass, Plus, Send, User } from "lucide-react";
 import teamTechnik from "@/assets/team/technik.jpg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { THEMEN } from "@/content/hilfe/themen";
+import { HOME_FAQ, HOME_SUB, HOME_TITLE, HOME_TRUST } from "@/content/home";
 import { Fragment, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,40 +51,7 @@ const steps = () => [
   },
 ];
 
-const faqs = () => [
-  [
-    tr("Was ist MehrDrin?"),
-    tr("MehrDrin ist ein digitaler Wegweiser durch die Berliner Hilfelandschaft. Statt dich durch Dutzende Behördenseiten und Trägerangebote zu klicken, beantwortest du ein paar Fragen zu deiner Lebenssituation. Wir zeigen dir dann gebündelt, welche Förderungen, Leistungen, Beratungsstellen und Angebote zu dir passen, von Wohngeld über Familienhilfen bis zu Bildung, Gesundheit und Arbeit."),
-  ],
-  [
-    tr("Für wen ist MehrDrin gedacht?"),
-    tr("Für alle, die in Berlin leben und wissen wollen, welche Unterstützung ihnen offensteht. Besonders hilfreich ist MehrDrin auch für Fachkräfte in Sozialarbeit und Beratung, die gemeinsam mit Ratsuchenden schnell einen Überblick über passende Angebote brauchen."),
-  ],
-  [
-    tr("Ist die Nutzung kostenlos?"),
-    tr("Ja. MehrDrin ist komplett kostenlos, ohne Anmeldung und ohne Werbung. Auch die Angebote, die wir dir zeigen, sind sehr oft kostenlos. Wo etwas Geld kostet, steht es direkt am Angebot."),
-  ],
-  [
-    tr("Welche Daten werden erhoben?"),
-    tr("Du brauchst kein Konto, und wir fragen nie nach deinem Namen, deiner Adresse oder deinen Kontaktdaten. Deine Antworten werden nur in deinem Browser gespeichert und dort mit unserer Angebotsliste abgeglichen. Sie werden nicht an uns übertragen. Für unsere Statistik zählen wir lediglich anonym, wie viele Menschen welchen Abschnitt des Fragebogens erreichen, ohne Cookies und ohne deine Antworten."),
-  ],
-  [
-    tr("Was passiert mit meinen Angaben nach der Nutzung?"),
-    tr("Nichts. Deine Antworten bleiben nur so lange erhalten, wie dein Browserfenster geöffnet ist, damit du zurückblättern und Angaben ändern kannst. Sobald du das Fenster schließt, sind sie gelöscht. Wir geben keine Daten an Dritte weiter, weil wir deine Antworten gar nicht erst bekommen."),
-  ],
-  [
-    tr("Wie aktuell sind die Informationen?"),
-    tr("Unsere Angebote stammen aus offiziellen Quellen wie den Seiten des Landes Berlin und der Bezirke sowie direkt von den Trägern. Jede Nacht prüfen wir automatisch einen Teil der Datenbank auf funktionierende Links und aktuelle Angaben und korrigieren, was nicht mehr stimmt. Trotzdem können sich Bedingungen ändern. Wenn dir ein Fehler auffällt, schreib uns gern an info@mehrdrin-berlin.de."),
-  ],
-  [
-    tr("Ersetzt MehrDrin eine Beratung?"),
-    tr("Nein. MehrDrin zeigt dir, welche Angebote für dich infrage kommen, und bringt dich zur richtigen Stelle. Ob du einen Anspruch hast und in welcher Höhe, entscheidet am Ende immer die zuständige Behörde oder der Träger. Bei schwierigen Fragen findest du unter deinen Ergebnissen oft auch Beratungsstellen, die dich kostenlos begleiten."),
-  ],
-  [
-    tr("Wer steckt hinter MehrDrin?"),
-    tr("MehrDrin wird von einem kleinen, unabhängigen Team aus Berlin gebaut. Wir kümmern uns um Technik und Plattform, um Kommunikation und Vernetzung sowie um Inhalte und den Fragenpfad. Unser Ziel ist, MehrDrin als gemeinnütziges Projekt aufzustellen, damit der Zugang zu Unterstützung in Berlin für alle einfacher wird."),
-  ],
-];
+const faqs = () => HOME_FAQ.map(([q, a]) => [tr(q), tr(a)] as const);
 
 /** Überschrift, deren Wörter nacheinander aus einer Maske nach oben gleiten */
 const RevealTitle = ({ text, className }: { text: string; className?: string }) => (
@@ -321,7 +290,7 @@ const Index = () => {
   }, []);
 
   const startQuestionnaire = () => navigate("/questionnaire");
-  const trust = [t("Kostenlos"), t("Ohne Anmeldung"), t("In 5 Sprachen")];
+  const trust = HOME_TRUST.map((x) => t(x));
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
@@ -362,7 +331,7 @@ const Index = () => {
 
               <div className="relative inline-block">
                 <RevealTitle
-                  text={t("Da ist noch mehr drin!")}
+                  text={t(HOME_TITLE)}
                   className="!text-[clamp(3rem,1.6rem+6vw,6.25rem)] font-extrabold leading-[0.95] tracking-[-0.045em] text-[var(--md-ink)]"
                 />
                 {/* Handgezeichneter Strich unter der Überschrift */}
@@ -386,7 +355,7 @@ const Index = () => {
                 transition={{ duration: 0.8, ease: EASE, delay: 0.55 }}
                 className="mx-auto mb-10 mt-10 max-w-lg text-[19px] leading-relaxed text-[var(--md-ink-3)] md:text-[21px] lg:mx-0"
               >
-                {t("Ein paar kurze Fragen zu deiner Lebenssituation und du siehst, welche Hilfen und Förderungen in Berlin zu dir passen.")}
+                {t(HOME_SUB)}
               </motion.p>
 
               <motion.div
@@ -480,6 +449,33 @@ const Index = () => {
                 {t("Genau dafür ist MehrDrin da.")}
               </p>
             </ScrollReveal>
+          </div>
+        </section>
+
+        {/* Einstieg über das konkrete Problem, verlinkt die Themenseiten unter /hilfe */}
+        <section className="bg-[var(--md-paper)] px-4 pb-24 pt-4 md:pb-28">
+          <div className="container mx-auto max-w-5xl text-center">
+            <ScrollReveal>
+              <h2 className="mb-3 text-foreground">{t("Wobei brauchst du Hilfe?")}</h2>
+              <p className="mx-auto mb-10 max-w-xl text-muted-foreground">
+                {t("Such dir dein Anliegen aus. Wir zeigen dir, welche Hilfen es gibt, und verlinken die offiziellen Rechner.")}
+              </p>
+            </ScrollReveal>
+            <ul className="flex flex-wrap justify-center gap-3">
+              {THEMEN.map((th, i) => (
+                <li key={th.slug}>
+                  <ScrollReveal delay={0.05 * i} y={12}>
+                    <Link
+                      to={`/hilfe/${th.slug}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-[var(--md-line-strong)] bg-[var(--md-surface)] px-5 py-3 text-[16px] font-semibold text-[var(--md-ink)] shadow-[var(--md-shadow-sm)] transition-[transform,border-color] duration-300 hover:-translate-y-0.5 hover:border-[var(--md-brand)]"
+                    >
+                      {t(th.kurz)}
+                      <ArrowRight className="h-4 w-4 text-[var(--md-brand)] rtl:-scale-x-100" />
+                    </Link>
+                  </ScrollReveal>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
